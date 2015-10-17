@@ -46,13 +46,12 @@ class Database {
         $values = array();
         foreach ($data as $key => $value) {
             $keys[] = $key;
-            $values[] = $value;
-            // $values[] = Database::$pdo->quote($value);
+            $values[] = ":" . $key;
         }
         $keys = join(",", $keys);
-        $values = join("','", $values);
-        $insertquery = "INSERT INTO `$dbname` ($keys) VALUES ('$values')";
-        Database::exec($insertquery);
+        $values = join(",", $values);
+        $insertquery = "INSERT INTO `$dbname` ($keys) VALUES ($values)";
+        Database::queryWith($insertquery, $data);
 
         if ($returnInsertId) {
             return Database::$pdo->lastInsertId();

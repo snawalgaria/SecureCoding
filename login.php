@@ -22,7 +22,7 @@ class Login {
 
     public function __invoke() {
         // 0 = no login, 1 = user, 2 = employee
-        return max($_SESSION["Login"]["privileges"]);
+        return $_SESSION["Login"]["privileges"];
     }
 
     public function reset() {
@@ -63,7 +63,7 @@ class Login {
 
         $user = $users[0];
 
-        if (password_verify($submitteddata["password"], $user["auth"])) {
+        if (password_verify($submitteddata["password"], $user["credentials"])) {
             $_SESSION["Login"]["privileges"] = $user["isEmployee"] + 1;
             $_SESSION["Login"]["login"] = TRUE;
             $_SESSION["Login"]["username"] = $username;

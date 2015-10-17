@@ -13,25 +13,30 @@ $page = "_home";
 
 if (isset($_GET["page"])) {
     $page = "_" . $_GET["page"];
-    if (strlen($page) > 2 && (substr($page, 1, 1) === "u" || substr($page, 1, 1) === "2")) {
+    if (strlen($page) > 2 && (substr($page, 1, 1) === "u" || substr($page, 1, 1) === "e")) {
         $page = $_GET["page"];
     }
 }
-
-// TODO: Some style, html wrapper, etc.
-?>
-<html><head><title>SecureBank</title><link rel="stylesheet" href="style.css" /></head><body><div class="container">
-<?php
 
 if (!Database::open()) {
     $page = "!dberror";
 }
 
-if (substr($page, 1, 1) === "u" && $login() !== 1) {
+if (substr($page, 0, 1) === "u" && $login() !== 1) {
     $page = "!auth";
-} else if (substr($page, 1, 1) === "e" && $login() !== 2) {
+} else if (substr($page, 0, 1) === "e" && $login() !== 2) {
     $page = "!auth";
 }
+
+if ($login() !== 0 && substr($page, 0, 1) === "_" && $page !== "_logout") {
+    // $page = ($login() === 1 ? "u" : "e") . "home";
+    header("Location: index.php?page=" . ($login() === 1 ? "u" : "e") . "home");
+    exit;
+}
+
+?>
+<html><head><title>SecureBank</title><link rel="stylesheet" href="style.css" /></head><body><div class="container">
+<?php
 
 switch ($page) {
     case "_home":

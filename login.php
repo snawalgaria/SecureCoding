@@ -25,11 +25,16 @@ class Login {
         return $_SESSION["Login"]["privileges"];
     }
 
+    public function userid() {
+        return $_SESSION["Login"]["id"];
+    }
+
     public function reset() {
         $_SESSION["Login"] = array(
             "login" => 0,
             "privileges" => 0,
             "username" => FALSE,
+            "id" => -1,
             "logged-in-since" => 0,
             "last-action" => 0
         );
@@ -67,6 +72,7 @@ class Login {
             $_SESSION["Login"]["privileges"] = $user["isEmployee"] + 1;
             $_SESSION["Login"]["login"] = TRUE;
             $_SESSION["Login"]["username"] = $username;
+            $_SESSION["Login"]["id"] = $user["userid"];
             $_SESSION["Login"]["logged-in-since"] = time();
 
             return 0;

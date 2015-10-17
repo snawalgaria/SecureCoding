@@ -84,6 +84,10 @@ switch ($page) {
         break;
     case "uhome":
         echo "<h1>Welcome client</h1>";
+        $userid = $login->userid();
+        $users = Database::queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
+        $balance = $users->fetch()["balance"];
+        echo "Your account balance: $balance €";
         break;
     case "ehome":
         echo "<h1>Welcome employee</h1>";

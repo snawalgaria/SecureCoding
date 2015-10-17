@@ -61,7 +61,7 @@ switch ($page) {
             else {
                 $data = array("email" => $_POST["email"], "credentials" => password_hash($_POST["password"], PASSWORD_DEFAULT), "isVerified" => "0", "isEmployee" => "0");
                 $userid = Database::insert("users", $data, TRUE);
-                $accountData = array("userid" => $userid, "balance" => "1000"); // We are generous!
+                $accountData = array("userid" => $userid, "balance" => "1000"); // We are generous and are giving everyone so much money!
                 Database::insert("accounts", $accountData);
                 echo "<h1>Registration successful.</h1>Your account has to be approved, before you can login.";
             }
@@ -83,14 +83,27 @@ switch ($page) {
         }
         break;
     case "uhome":
-        echo "<h1>Welcome client</h1>";
+        echo "<h1>Welcome, client</h1>";
         $userid = $login->userid();
         $users = Database::queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
         $balance = $users->fetch()["balance"];
-        echo "Your account balance: $balance €";
+        echo "<p>Your account balance: $balance €</p><p><a href='?page=utransaction'>New transaction</a></p>";
+        $transactions = Database::queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = 1 ORDER BY unixtime DESC", array("userid" => $userid));
+        if ($transactions->rowCount() === 0)
+        {
+            echo "<p>No transactions yet!</p>";
+        }
+        else {
+            // TODO: format
+            foreach ($transactions as $t) {
+                var_dump($t);
+            }
+        }
+        // TODO: Display outstanding transactions
         break;
     case "ehome":
-        echo "<h1>Welcome employee</h1>";
+        echo "<h1>Welcome, employee</h1><p>Things to do:</p>";
+        // TODO: Find unverified accounts and unverified transactions
         break;
     case "_logout":
         $login->reset();

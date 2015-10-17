@@ -61,9 +61,9 @@ switch ($page) {
             else {
                 $data = array("email" => $_POST["email"], "credentials" => password_hash($_POST["password"], PASSWORD_DEFAULT), "isVerified" => "0", "isEmployee" => "0");
                 $userid = Database::insert("users", $data, TRUE);
-                $accountData = array("userid" => $userid, "balance" => "1000"); // We are generous and are giving everyone so much money!
+                $accountData = array("userid" => $userid, "balance" => "10000"); // We are generous and are giving everyone so much money!
                 Database::insert("accounts", $accountData);
-                echo "<h1>Registration successful.</h1>Your account has to be approved, before you can login.";
+                echo "<h1>Registration successful.</h1>Your account has to be approved, before you can login. We will send you an e-mail when we verified your account.";
             }
         }
         break;
@@ -86,7 +86,7 @@ switch ($page) {
         echo "<h1>Welcome, client</h1>";
         $userid = $login->userid();
         $users = Database::queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
-        $balance = $users->fetch()["balance"];
+        $balance = $users->fetch()["balance"] / 100.0;
         echo "<p>Your account balance: $balance €</p><p><a href='?page=utransaction'>New transaction</a></p>";
         $transactions = Database::queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = 1 ORDER BY unixtime DESC", array("userid" => $userid));
         if ($transactions->rowCount() === 0)
@@ -94,10 +94,23 @@ switch ($page) {
             echo "<p>No transactions yet!</p>";
         }
         else {
-            // TODO: format
+            echo "<table class='transactions'><thead><tr><th>Date</th><th>Description</th><th>Other Party</th><th>Volume</th></tr></thead><tbody>";
             foreach ($transactions as $t) {
-                var_dump($t);
+                echo "<tr><td>" . date("Y-m-d H:i", $t["unixtime"]) . "</td><td>$t[description]</td>";
+                $volume = $t["volume"] / 100.0;
+                $other = $t["sourceAccount"];
+                if ($t["sourceAccount"] === $userid) {
+                    if ($t["targetAccount"] === $userid) {
+                        $volume = 0;
+                    }
+                    else {
+                        $volume = -$volume;
+                    }
+                    $other = $t["targetAccount"];
+                }
+                echo "<td>$other</td><td>$volume €</td></tr>";
             }
+            echo "</tbody></table>";
         }
         // TODO: Display outstanding transactions
         break;

@@ -21,6 +21,7 @@ class Login {
     }
 
     public function __invoke() {
+        // 0 = no login, 1 = user, 2 = employee
         return max($_SESSION["Login"]["privileges"]);
     }
 
@@ -63,7 +64,7 @@ class Login {
         $user = $users[0];
 
         if (password_verify($submitteddata["password"], $user["auth"])) {
-            $_SESSION["Login"]["privileges"] = $user["level"];
+            $_SESSION["Login"]["privileges"] = $user["isEmployee"] + 1;
             $_SESSION["Login"]["login"] = TRUE;
             $_SESSION["Login"]["username"] = $username;
             $_SESSION["Login"]["logged-in-since"] = time();

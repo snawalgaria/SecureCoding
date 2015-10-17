@@ -114,9 +114,31 @@ switch ($page) {
         }
         // TODO: Display outstanding transactions
         break;
+    case "utransaction":
+        // Transaction UI
+        break;
+    case "udotransaction":
+        // Perform transaction. if volume < 10000€ change account balances.
+        break;
+    case "udotransactionupload":
+        // Perform transaction from uploaded file
+        // popen the C program here, and get parsed data back
+        break;
     case "ehome":
         echo "<h1>Welcome, employee</h1><p>Things to do:</p>";
         // TODO: Find unverified accounts and unverified transactions
+        break;
+    case "everify":
+        // Display data for account and a verify button
+        break;
+    case "edoverify":
+        // Verify account and drop a mail with TANs, or delete account
+        break;
+    case "eapprovetransaction":
+        // Verify transaction UI
+        break;
+    case "edoapprovetransaction":
+        // Perform transaction, if not verified yet and change account balances.
         break;
     case "_logout":
         $login->reset();

@@ -60,7 +60,9 @@ switch ($page) {
             }
             else {
                 $data = array("email" => $_POST["email"], "credentials" => password_hash($_POST["password"], PASSWORD_DEFAULT), "isVerified" => "0", "isEmployee" => "0");
-                Database::insert("users", $data);
+                $userid = Database::insert("users", $data, TRUE);
+                $accountData = array("userid" => $userid, "balance" => "1000"); // We are generous!
+                Database::insert("accounts", $accountData);
                 echo "<h1>Registration successful.</h1>Your account has to be approved, before you can login.";
             }
         }

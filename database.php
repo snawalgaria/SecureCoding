@@ -11,9 +11,9 @@ class Database {
             // We could use foreign keys here, if we are sure that we use InnoDB.
 
             Database::ensureExists("users", "`userid` INT(11) AUTO_INCREMENT PRIMARY KEY, `email` VARCHAR(64) NOT NULL, `isEmployee` TINYINT(1) NOT NULL, `isVerified` TINYINT(1) NOT NULL, `credentials` TINYTEXT NOT NULL");
-            Database::ensureExists("accounts", "accountid INT(11) AUTO_INCREMENT PRIMARY KEY, userid INT(11) NOT NULL, balance INT(11) NOT NULL");
+            Database::ensureExists("accounts", "userid INT(11) NOT NULL PRIMARY KEY, balance INT(11) NOT NULL");
             // Transactions
-            Database::ensureExists("transactions", "tid INT(11) AUTO_INCREMENT PRIMARY KEY, sourceAccount INT(11) NOT NULL, targetAccount INT(11) NOT NULL, volume INT(11) NOT NULL");
+            Database::ensureExists("transactions", "tid INT(11) AUTO_INCREMENT PRIMARY KEY, sourceAccount INT(11) NOT NULL, targetAccount INT(11) NOT NULL, volume INT(11) NOT NULL, unixtime INT(11) NOT NULL");
             // Generated TANs
             Database::ensureExists("tans", "tan CHAR(15) PRIMARY KEY, userid INT(11) NOT NULL, used TINYINT(1) NOT NULL DEFAULT 0");
             return TRUE;

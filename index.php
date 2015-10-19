@@ -139,7 +139,7 @@ switch ($page) {
         // Transaction UI
         break;
     case "udotransactionupload":
-        if (!isset($_FILES["transactionfile"]) || $_FILES["transactionfile"]["size"] > 3000) {
+        if (!isset($_FILES["transactionfile"]) || $_FILES["transactionfile"]["size"] > 3000 || $_FILES["transactionfile"]["error"] !== UPLOAD_ERR_OK) {
             echo "<h1>Error while processing the transaction file.</h1>";
         }
         else {

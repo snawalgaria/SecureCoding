@@ -18,7 +18,7 @@ if (isset($_GET["page"])) {
     }
 }
 
-if (!Database::open()) {
+if (!db_open()) {
     $page = "!dberror";
 }
 
@@ -58,23 +58,23 @@ switch ($page) {
             echo "<h1>Registration failed.</h1>";
         }
         else {
-            $users = Database::queryWith("SELECT userid,email,isEmployee,credentials FROM users WHERE (email = :email)", array("email" => $email));
+            $users = db_queryWith("SELECT userid,email,isEmployee,credentials FROM users WHERE (email = :email)", array("email" => $email));
             if ($users->rowCount() !== 0) {
                 // We don't want to give more details here, do we?
                 echo "<h1>Registration failed.</h1>";
             }
             else {
                 $data = array("email" => $_POST["email"], "credentials" => password_hash($_POST["password"], PASSWORD_DEFAULT), "isVerified" => "0", "isEmployee" => "0");
-                $userid = Database::insert("users", $data, TRUE);
+                $userid = db_insert("users", $data, TRUE);
                 $accountData = array("userid" => $userid, "balance" => "10000"); // We are generous and are giving everyone so much money!
-                Database::insert("accounts", $accountData);
+                db_insert("accounts", $accountData);
                 echo "<h1>Registration successful.</h1>Your account has to be approved, before you can login. We will send you an e-mail when we verified your account.";
             }
         }
         break;
     case "_dologin":
         $getUsersForName = function($email) {
-            return Database::queryWith("SELECT userid,email,isEmployee,credentials FROM users WHERE isVerified = 1 AND (email = :email)", array("email" => $email));
+            return db_queryWith("SELECT userid,email,isEmployee,credentials FROM users WHERE isVerified = 1 AND (email = :email)", array("email" => $email));
         };
         $success = $login->login($_POST, $getUsersForName);
         if ($success !== 0) {
@@ -90,11 +90,11 @@ switch ($page) {
     case "uhome":
         echo "<h1>Welcome, client</h1>";
         $userid = $login->userid();
-        $users = Database::queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
+        $users = db_queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
         $balance = $users->fetch()["balance"] / 100.0;
         echo "<p>Your account balance: $balance €</p><p><a href='?page=utransaction'>New transaction</a></p>";
         for ($verified = 1; $verified >= 0; $verified--) {
-            $transactions = Database::queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
+            $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
             echo "<hr><h3>" . ($verified ? "Performed Transactions" : "Unverified Transactions") . "</h3>";
             if ($transactions->rowCount() === 0)
             {
@@ -184,7 +184,7 @@ if ($login() !== 0) {
     echo "<hr><p><a href='?page=logout'>Logout</a></p>";
 }
 
-Database::close();
+db_close();
 
 ?>
 </div></body></html>

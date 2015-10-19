@@ -5,7 +5,7 @@ session_start();
 require_once "database.php";
 require_once "login.php";
 
-$login = new Login(600); // Auto logout after ten minutes inactivity
+login_init(600); // Auto logout after ten minutes inactivity
 
 
 // first char: _ means public, ! means error, u means user (login privileges 1), e means employee (p 2)
@@ -22,15 +22,15 @@ if (!db_open()) {
     $page = "!dberror";
 }
 
-if (substr($page, 0, 1) === "u" && $login() !== 1) {
+if (substr($page, 0, 1) === "u" && login_privileges() !== 1) {
     $page = "!auth";
-} else if (substr($page, 0, 1) === "e" && $login() !== 2) {
+} else if (substr($page, 0, 1) === "e" && login_privileges() !== 2) {
     $page = "!auth";
 }
 
-if ($login() !== 0 && substr($page, 0, 1) === "_" && $page !== "_logout") {
-    // $page = ($login() === 1 ? "u" : "e") . "home";
-    header("Location: index.php?page=" . ($login() === 1 ? "u" : "e") . "home");
+if (login_privileges() !== 0 && substr($page, 0, 1) === "_" && $page !== "_logout") {
+    // $page = (login_privileges() === 1 ? "u" : "e") . "home";
+    header("Location: index.php?page=" . (login_privileges() === 1 ? "u" : "e") . "home");
     exit;
 }
 
@@ -76,20 +76,20 @@ switch ($page) {
         $getUsersForName = function($email) {
             return db_queryWith("SELECT userid,email,isEmployee,credentials FROM users WHERE isVerified = 1 AND (email = :email)", array("email" => $email));
         };
-        $success = $login->login($_POST, $getUsersForName);
+        $success = login_dologin($_POST, $getUsersForName);
         if ($success !== 0) {
             echo "<h1>Login failed.$success</h1>";
             echo "<a href='?page=login'>Try again</a>";
         }
         else {
             echo "<h1>Login successful.</h1>Redirecting...";
-            if ($login() === 1) header("Location: index.php?page=uhome");
-            if ($login() === 2) header("Location: index.php?page=ehome");
+            if (login_privileges() === 1) header("Location: index.php?page=uhome");
+            if (login_privileges() === 2) header("Location: index.php?page=ehome");
         }
         break;
     case "uhome":
         echo "<h1>Welcome, client</h1>";
-        $userid = $login->userid();
+        $userid = login_userid();
         $users = db_queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
         $balance = $users->fetch()["balance"] / 100.0;
         echo "<p>Your account balance: $balance €</p><p><a href='?page=utransaction'>New transaction</a></p>";
@@ -165,7 +165,7 @@ switch ($page) {
         // Perform transaction, if not verified yet and change account balances.
         break;
     case "_logout":
-        $login->reset();
+        login_reset();
         header("Location: index.php");
         break;
     case "!dberror":
@@ -180,7 +180,7 @@ switch ($page) {
         break;
 }
 
-if ($login() !== 0) {
+if (login_privileges() !== 0) {
     echo "<hr><p><a href='?page=logout'>Logout</a></p>";
 }
 

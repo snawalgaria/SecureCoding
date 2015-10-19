@@ -93,31 +93,34 @@ switch ($page) {
         $users = Database::queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
         $balance = $users->fetch()["balance"] / 100.0;
         echo "<p>Your account balance: $balance €</p><p><a href='?page=utransaction'>New transaction</a></p>";
-        $transactions = Database::queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = 1 ORDER BY unixtime DESC", array("userid" => $userid));
-        if ($transactions->rowCount() === 0)
-        {
-            echo "<p>No transactions yet!</p>";
-        }
-        else {
-            echo "<table class='transactions'><thead><tr><th>Date</th><th>Description</th><th>Other Party</th><th>Volume</th></tr></thead><tbody>";
-            foreach ($transactions as $t) {
-                echo "<tr><td>" . date("Y-m-d H:i", $t["unixtime"]) . "</td><td>$t[description]</td>";
-                $volume = $t["volume"] / 100.0;
-                $other = $t["sourceAccount"];
-                if ($t["sourceAccount"] === $userid) {
-                    if ($t["targetAccount"] === $userid) {
-                        $volume = 0;
-                    }
-                    else {
-                        $volume = -$volume;
-                    }
-                    $other = $t["targetAccount"];
-                }
-                echo "<td>$other</td><td>$volume €</td></tr>";
+        for ($verified = 1; $verified >= 0; $verified--) {
+            $transactions = Database::queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
+            echo "<hr><h3>" . ($verified ? "Performed Transactions" : "Unverified Transactions") . "</h3>";
+            if ($transactions->rowCount() === 0)
+            {
+                echo "<p>There are no transactions in this section.</p>";
             }
-            echo "</tbody></table>";
+            else {
+                echo "<table class='transactions'><thead><tr><th>Date</th><th>Description</th><th>Other Party</th><th>Volume</th></tr></thead><tbody>";
+                foreach ($transactions as $t) {
+                    echo "<tr><td>" . date("Y-m-d H:i", $t["unixtime"]) . "</td><td>$t[description]</td>";
+                    $volume = $t["volume"] / 100.0;
+                    $other = $t["sourceAccount"];
+                    if ($t["sourceAccount"] === $userid) {
+                        if ($t["targetAccount"] === $userid) {
+                            $volume = 0;
+                        }
+                        else {
+                            $volume = -$volume;
+                        }
+                        $other = $t["targetAccount"];
+                    }
+                    echo "<td>$other</td><td>$volume €</td></tr>";
+                }
+                echo "</tbody></table>";
+            }
+
         }
-        // TODO: Display outstanding transactions
         break;
     case "utransaction":
         // Transaction UI
@@ -162,7 +165,7 @@ switch ($page) {
 }
 
 if ($login() !== 0) {
-    echo "<p><a href='?page=logout'>Logout</a></p>";
+    echo "<hr><p><a href='?page=logout'>Logout</a></p>";
 }
 
 Database::close();

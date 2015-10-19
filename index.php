@@ -123,14 +123,30 @@ switch ($page) {
         }
         break;
     case "utransaction":
+        echo "<h1>New transaction</h1>";
+        echo "You can enter the information of the transaction here, our you can <a href='?page=utransactionupload'>upload a transaction file</a>.";
         // Transaction UI
         break;
     case "udotransaction":
         // Perform transaction. if volume < 10000€ change account balances.
         break;
+    case "utransactionupload":
+        echo "<h1>Transaction from file</h1>";
+        echo "<form enctype='multipart/form-data' action='?page=udotransactionupload' method='POST'>";
+        echo "<input type='hidden' name='MAX_FILE_SIZE' value='3000'>";
+        echo "<p>File containing the transaction: <input name='transactionfile' type='file'>";
+        echo "<input type='submit'></form></p>";
+        // Transaction UI
+        break;
     case "udotransactionupload":
-        // Perform transaction from uploaded file
-        // popen the C program here, and get parsed data back
+        if (!isset($_FILES["transactionfile"]) || $_FILES["transactionfile"]["size"] > 3000) {
+            echo "<h1>Error while processing the transaction file.</h1>";
+        }
+        else {
+            // TODO: popen the C program here and implement further logic
+            echo "Got file at " . $_FILES["transactionfile"]["tmp_name"];
+            // Perform transaction from uploaded file
+        }
         break;
     case "ehome":
         echo "<h1>Welcome, employee</h1><p>Things to do:</p>";

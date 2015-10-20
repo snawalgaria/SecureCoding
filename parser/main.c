@@ -8,6 +8,8 @@
 
 #include "main.h"
 
+// #define DEBUG 1
+
 void process(char * buffer, size_t size){
     int i;
 
@@ -22,7 +24,10 @@ void process(char * buffer, size_t size){
     for(i = 0; i < size; ++i){
         if(buffer[i]=='I'){
             if(!cmp_string(buffer,iban,i,SIZE_4)){
+                #ifdef DEBUG
                 printf("ERROR: invalid parameter in file at position %i (IBAN)",i);
+                #endif
+                exit(2);
                 return;
             }
             i += SIZE_4;
@@ -30,7 +35,10 @@ void process(char * buffer, size_t size){
         }
         else if(buffer[i]=='B'){
             if(!cmp_string(buffer,bic,i,SIZE_3)){
+                #ifdef DEBUG
                 printf("ERROR: invalid parameter in file at position %i (BIC)",i);
+                #endif
+                exit(2);
                 return;
             }
             i += SIZE_3;
@@ -38,7 +46,10 @@ void process(char * buffer, size_t size){
         }
         else if(buffer[i]=='T'){
             if(!cmp_string(buffer,tan,i,SIZE_3)){
+                #ifdef DEBUG
                 printf("ERROR: invalid parameter in file at position %i (TAN)",i);
+                #endif
+                exit(2);
                 return;
             }
             i += SIZE_3;
@@ -46,7 +57,10 @@ void process(char * buffer, size_t size){
         }
         else if(buffer[i]=='A'){
             if(!cmp_string(buffer,amount,i,SIZE_6)){
+                #ifdef DEBUG
                 printf("ERROR: invalid parameter in file at position %i (AMOUNT)",i);
+                #endif
+                exit(2);
                 return;
             }
             i += SIZE_6;
@@ -54,7 +68,10 @@ void process(char * buffer, size_t size){
         }
         else if(buffer[i]=='D'){
             if(!cmp_string(buffer,date,i,SIZE_4)){
+                #ifdef DEBUG
                 printf("ERROR: invalid parameter in file at position %i (DATE)",i);
+                #endif
+                exit(2);
                 return;
             }
             i += SIZE_4;
@@ -62,7 +79,10 @@ void process(char * buffer, size_t size){
         }
         else if(buffer[i]=='S'){
             if(!cmp_string(buffer,subject,i,SIZE_7)){
+                #ifdef DEBUG
                 printf("ERROR: invalid parameter in file at position %i (SUBJECT)",i);
+                #endif
+                exit(2);
                 return;
             }
             i += SIZE_7;
@@ -70,48 +90,78 @@ void process(char * buffer, size_t size){
         }
         else if(buffer[i]=='C'){
             if(!cmp_string(buffer,comment,i,SIZE_7)){
+                #ifdef DEBUG
                 printf("ERROR: invalid parameter in file at position %i",i);
+                #endif
+                exit(2);
                 return;
             }
             i += SIZE_7;
             i = parse_value(buffer,&comment_val,i);
         }
         else {
+            #ifdef DEBUG
             printf("ERROR: invalid parameter in file at position %i",i);
+            #endif
+            exit(2);
             return;
         }
         if(++i == -1){
+            #ifdef DEBUG
             printf("ERROR: illegal character ';' %c",0);
+            #endif
+            exit(2);
         }
     }
 
     //validate input
     if(!validate_iban(iban_val)){
+        #ifdef DEBUG
         printf("ERROR: invalid IBAN:\n'%s'",iban_val);
+        #endif
+        exit(2);
         return;
     }
     if(!validate_bic(bic_val)){
+        #ifdef DEBUG
         printf("ERROR: invalid BIC:\n'%s'",bic_val);
+        #endif
+        exit(2);
         return;
     }
     if(!validate_tan(tan_val)){
+        #ifdef DEBUG
         printf("ERROR: invalid TAN:\n'%s'",tan_val);
+        #endif
+        exit(2);
         return;
     }
     if(!validate_amount(amount_val)){
+        #ifdef DEBUG
         printf("ERROR: invalid amount:\n'%s'",amount_val);
+        #endif
+        exit(2);
         return;
     }
     if(!validate_date(date_val)){
+        #ifdef DEBUG
         printf("ERROR: invalid date:\n'%s'",date_val);
+        #endif
+        exit(2);
         return;
     }
     if(!validate_subject(subject_val)){
+        #ifdef DEBUG
         printf("ERROR: invalid subject:\n'%s'",subject_val);
+        #endif
+        exit(2);
         return;
     }
     if(!validate_comment(comment_val)){
+        #ifdef DEBUG
         printf("ERROR: invalid comment:\n'%s'",comment_val);
+        #endif
+        exit(2);
         return;
     }
 
@@ -135,7 +185,10 @@ int cmp_string(char * actual, const char * expected, int pos, const int size){
 
 int parse_value(char * buffer, char ** target, int index){
     if(buffer[index++] != '=' || buffer[index++] != '"'){
+        #ifdef DEBUG
         printf("ERROR: invalid format");
+        #endif
+        exit(2);
         return -1;
     }
     target[0] = (buffer + index);
@@ -265,18 +318,24 @@ int main(int argc, char * argv[]){
 
     //check parameters
     if(argc != 2){
+        #ifdef DEBUG
         printf("ERROR: no filename supplied");
-        return 0;
+        #endif
+        exit(2);
     }
     //check file exists
     if( access(argv[1],F_OK) == -1){
+        #ifdef DEBUG
         printf("ERROR: file '%s' does not exist",argv[1]);
-        return 0;
+        #endif
+        exit(2);
     }
     //check file readable
     if( access(argv[1],R_OK) == -1){
+        #ifdef DEBUG
         printf("ERROR: file '%s' is not readable",argv[1]);
-        return 0;
+        #endif
+        exit(2);
     }
     //open file
     if((file_handle = fopen(argv[1], "r"))){
@@ -286,7 +345,7 @@ int main(int argc, char * argv[]){
         rewind(file_handle);
         if(size > 0){
             //load the contents
-            char buffer[size + sizeof(int)];
+            char* buffer = (char*) malloc((size + 1) * sizeof(char));
             buffer[size]=0;
             fread(buffer,size,1, file_handle);
             fclose(file_handle);

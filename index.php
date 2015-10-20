@@ -158,10 +158,17 @@ switch ($page) {
         break;
     case "utransaction":
         echo "<h1>New transaction</h1>";
-        echo "You can enter the information of the transaction here, our you can <a href='?page=utransactionupload'>upload a transaction file</a>.";
-        // Transaction UI
+        echo "You can enter the information of the transaction here, our you can <a href='?page=utransactionupload'>upload a transaction file</a>.<hr>";
+        echo "<h3>Transaction data</h3>";
+        echo "<form action='?page=udotransaction' method='POST'>";
+        echo "<p><input name='target'> Target account</p>";
+        echo "<p><input name='volume'> Transaction volume</p>";
+        echo "<p>Description</p><textarea cols='80' rows='3' name='desc'></textarea>";
+        echo "<p><input name='tan'> Enter a TAN here.</p>";
+        echo "<p><input type='submit' value='Perform Transaction'></p></form>";
         break;
     case "udotransaction":
+        var_dump($_POST); // Debugging.
         // Perform transaction. if volume < 10000€ change account balances.
         break;
     case "utransactionupload":
@@ -170,7 +177,6 @@ switch ($page) {
         echo "<input type='hidden' name='MAX_FILE_SIZE' value='3000'>";
         echo "<p>File containing the transaction: <input name='transactionfile' type='file'>";
         echo "<input type='submit'></form></p>";
-        // Transaction UI
         break;
     case "udotransactionupload":
         if (!isset($_FILES["transactionfile"]) || $_FILES["transactionfile"]["size"] > 3000 || $_FILES["transactionfile"]["error"] !== UPLOAD_ERR_OK) {
@@ -189,6 +195,7 @@ switch ($page) {
         $users = db_queryWith("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
         echo "<ul>";
         if ($users->rowCount() === 0) {
+            // TODO: This never gets displayed. Why?
             "<li>No users to verify.</li>";
         }
         else {

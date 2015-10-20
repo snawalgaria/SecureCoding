@@ -45,7 +45,15 @@ switch ($page) {
         break;
     case "_register":
         ?><h1>Register at the SecureBank</h1>
-        <form action="?page=doregister" method="post">E-Mail<br><input type="email" name="email"><br><br>Password<br><input type="password" name="password"><br><br><input type="submit" value="Register"></form>
+        <form action="?page=doregister" method="post">
+        Name<br><input name="name"><br><br>
+        E-Mail<br><input type="email" name="email"><br><br>
+        Password<br><input type="password" name="password"><br><br>
+        <label for="employee">
+        <input type="checkbox" name="isEmployee" value="employee" id="employee">
+        You are an employee? (be honest!)
+        </label><br><br>
+        <input type="submit" value="Register"></form>
         <?php
         break;
     case "_login":
@@ -54,20 +62,30 @@ switch ($page) {
         <?php
         break;
     case "_doregister":
-        if (!isset($_POST["email"]) || !isset($_POST["password"])) {
+        var_dump($_POST);
+        if (!isset($_POST["name"]) || !isset($_POST["email"]) || !isset($_POST["password"]) ||
+            strlen($_POST["name"]) === 0 || strlen($_POST["email"]) === 0) {
             echo "<h1>Registration failed.</h1>";
         }
         else {
+            $employee = isset($_POST["isEmployee"]) ? 1 : 0;
+            $email = htmlspecialchars($_POST["email"]);
+            $name = htmlspecialchars($_POST["name"]);
             $users = db_queryWith("SELECT userid,email,isEmployee,credentials FROM users WHERE (email = :email)", array("email" => $email));
             if ($users->rowCount() !== 0) {
                 // We don't want to give more details here, do we?
                 echo "<h1>Registration failed.</h1>";
             }
             else {
-                $data = array("email" => $_POST["email"], "credentials" => password_hash($_POST["password"], PASSWORD_DEFAULT), "isVerified" => "0", "isEmployee" => "0");
+                // If we were allowed to use PHP > 5.5, this would be *MUCH* more secure.
+                //$credential = password_hash($_POST["password"], PASSWORD_DEFAULT);
+                $credentials = sha1($_POST["password"]);
+                $data = array("name" => $name, "email" => $email, "credentials" => $credentials, "isVerified" => "0", "isEmployee" => $employee);
                 $userid = db_insert("users", $data, TRUE);
-                $accountData = array("userid" => $userid, "balance" => "10000"); // We are generous and are giving everyone so much money!
-                db_insert("accounts", $accountData);
+                if (!$employee) {
+                    $accountData = array("userid" => $userid, "balance" => "10000"); // We are generous and are giving everyone so much money!
+                    db_insert("accounts", $accountData);
+                }
                 echo "<h1>Registration successful.</h1>Your account has to be approved, before you can login. We will send you an e-mail when we verified your account.";
             }
         }
@@ -119,7 +137,6 @@ switch ($page) {
                 }
                 echo "</tbody></table>";
             }
-
         }
         break;
     case "utransaction":
@@ -150,13 +167,39 @@ switch ($page) {
         break;
     case "ehome":
         echo "<h1>Welcome, employee</h1><p>Things to do:</p>";
-        // TODO: Find unverified accounts and unverified transactions
-        break;
-    case "everify":
-        // Display data for account and a verify button
+        $users = db_queryWith("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
+        echo "<ul>";
+        if ($users->rowCount() === 0) {
+            "<li>No users to verify.</li>";
+        }
+        else {
+            foreach ($users as $user) {
+                echo "<li>" . ($user["isEmployee"] ? "Employee" : "New customer") . " '" . $user["name"] . "' with e-mail '" . $user["email"] . "' registered.";
+                echo "<form style='display: inline-block;' action='?page=edoverify' method='post'><input type='hidden' name='userid' value='" . $user["userid"] . "'><input type='hidden' name='success' value='true'><input type='submit' value='Verify'></form>";
+                echo "<form style='display: inline-block;' action='?page=edoverify' method='post'><input type='hidden' name='userid' value='" . $user["userid"] . "'><input type='hidden' name='success' value='not true'><input type='submit' value='Drop'></form>";
+                echo "</li>";
+            }
+        }
+        echo "</ul>";
+
+        // TODO: Find and display unverified transactions
         break;
     case "edoverify":
-        // Verify account and drop a mail with TANs, or delete account
+        if (!isset($_POST["userid"]) || !isset($_POST["success"])) {
+            echo "<h1>Your are clever, but not clever enough.</h1>";
+        }
+        else {
+            $success = $_POST["success"] === "true";
+            if ($success) {
+                db_queryWith("UPDATE users SET isVerified = 1 WHERE userid = :userid", array("userid" => $_POST["userid"]));
+                // TODO: Send Email with TAN if it is not an employee.
+            }
+            else {
+                db_queryWith("DELETE FROM users WHERE userid = :userid", array("userid" => $_POST["userid"]));
+                db_queryWith("DELETE FROM accounts WHERE userid = :userid", array("userid" => $_POST["userid"]));
+            }
+        }
+        header("Location: index.php?page=ehome");
         break;
     case "eapprovetransaction":
         // Verify transaction UI

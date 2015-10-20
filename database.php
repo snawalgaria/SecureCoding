@@ -9,7 +9,7 @@ function db_open() {
 
         // We could use foreign keys here, if we are sure that we use InnoDB.
 
-        db_ensureExists("users", "`userid` INT(11) AUTO_INCREMENT PRIMARY KEY, `email` VARCHAR(64) NOT NULL, `isEmployee` TINYINT(1) NOT NULL, `isVerified` TINYINT(1) NOT NULL, `credentials` TINYTEXT NOT NULL");
+        db_ensureExists("users", "`userid` INT(11) AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(64) NOT NULL, `email` VARCHAR(64) NOT NULL, `isEmployee` TINYINT(1) NOT NULL, `isVerified` TINYINT(1) NOT NULL, `credentials` TINYTEXT NOT NULL");
 
         // balance stores cents (not euros)
         db_ensureExists("accounts", "userid INT(11) NOT NULL PRIMARY KEY, balance INT(11) NOT NULL");

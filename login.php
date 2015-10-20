@@ -67,7 +67,8 @@ function login_dologin($submitteddata, $getUsersForName) {
 
     $user = $users[0];
 
-    if (password_verify($submitteddata["password"], $user["credentials"])) {
+    //password_verify($submitteddata["password"], $user["credentials"])
+    if (sha1($submitteddata["password"]) === $user["credentials"]) {
         $_SESSION["Login"]["privileges"] = $user["isEmployee"] + 1;
         $_SESSION["Login"]["login"] = TRUE;
         $_SESSION["Login"]["username"] = $username;

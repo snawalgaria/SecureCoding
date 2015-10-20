@@ -5,7 +5,7 @@ session_start();
 require_once "database.php";
 require_once "login.php";
 
-$login = new Login(600); // Auto logout after ten minutes inactivity
+login_init(600); // Auto logout after ten minutes inactivity
 
 
 // first char: _ means public, ! means error, u means user (login privileges 1), e means employee (p 2)
@@ -18,19 +18,19 @@ if (isset($_GET["page"])) {
     }
 }
 
-if (!Database::open()) {
+if (!db_open()) {
     $page = "!dberror";
 }
 
-if (substr($page, 0, 1) === "u" && $login() !== 1) {
+if (substr($page, 0, 1) === "u" && login_privileges() !== 1) {
     $page = "!auth";
-} else if (substr($page, 0, 1) === "e" && $login() !== 2) {
+} else if (substr($page, 0, 1) === "e" && login_privileges() !== 2) {
     $page = "!auth";
 }
 
-if ($login() !== 0 && substr($page, 0, 1) === "_" && $page !== "_logout") {
-    // $page = ($login() === 1 ? "u" : "e") . "home";
-    header("Location: index.php?page=" . ($login() === 1 ? "u" : "e") . "home");
+if (login_privileges() !== 0 && substr($page, 0, 1) === "_" && $page !== "_logout") {
+    // $page = (login_privileges() === 1 ? "u" : "e") . "home";
+    header("Location: index.php?page=" . (login_privileges() === 1 ? "u" : "e") . "home");
     exit;
 }
 
@@ -58,43 +58,43 @@ switch ($page) {
             echo "<h1>Registration failed.</h1>";
         }
         else {
-            $users = Database::queryWith("SELECT userid,email,isEmployee,credentials FROM users WHERE (email = :email)", array("email" => $email));
+            $users = db_queryWith("SELECT userid,email,isEmployee,credentials FROM users WHERE (email = :email)", array("email" => $email));
             if ($users->rowCount() !== 0) {
                 // We don't want to give more details here, do we?
                 echo "<h1>Registration failed.</h1>";
             }
             else {
                 $data = array("email" => $_POST["email"], "credentials" => password_hash($_POST["password"], PASSWORD_DEFAULT), "isVerified" => "0", "isEmployee" => "0");
-                $userid = Database::insert("users", $data, TRUE);
+                $userid = db_insert("users", $data, TRUE);
                 $accountData = array("userid" => $userid, "balance" => "10000"); // We are generous and are giving everyone so much money!
-                Database::insert("accounts", $accountData);
+                db_insert("accounts", $accountData);
                 echo "<h1>Registration successful.</h1>Your account has to be approved, before you can login. We will send you an e-mail when we verified your account.";
             }
         }
         break;
     case "_dologin":
         $getUsersForName = function($email) {
-            return Database::queryWith("SELECT userid,email,isEmployee,credentials FROM users WHERE isVerified = 1 AND (email = :email)", array("email" => $email));
+            return db_queryWith("SELECT userid,email,isEmployee,credentials FROM users WHERE isVerified = 1 AND (email = :email)", array("email" => $email));
         };
-        $success = $login->login($_POST, $getUsersForName);
+        $success = login_dologin($_POST, $getUsersForName);
         if ($success !== 0) {
             echo "<h1>Login failed.$success</h1>";
             echo "<a href='?page=login'>Try again</a>";
         }
         else {
             echo "<h1>Login successful.</h1>Redirecting...";
-            if ($login() === 1) header("Location: index.php?page=uhome");
-            if ($login() === 2) header("Location: index.php?page=ehome");
+            if (login_privileges() === 1) header("Location: index.php?page=uhome");
+            if (login_privileges() === 2) header("Location: index.php?page=ehome");
         }
         break;
     case "uhome":
         echo "<h1>Welcome, client</h1>";
-        $userid = $login->userid();
-        $users = Database::queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
+        $userid = login_userid();
+        $users = db_queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
         $balance = $users->fetch()["balance"] / 100.0;
         echo "<p>Your account balance: $balance €</p><p><a href='?page=utransaction'>New transaction</a></p>";
         for ($verified = 1; $verified >= 0; $verified--) {
-            $transactions = Database::queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
+            $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
             echo "<hr><h3>" . ($verified ? "Performed Transactions" : "Unverified Transactions") . "</h3>";
             if ($transactions->rowCount() === 0)
             {
@@ -165,7 +165,7 @@ switch ($page) {
         // Perform transaction, if not verified yet and change account balances.
         break;
     case "_logout":
-        $login->reset();
+        login_reset();
         header("Location: index.php");
         break;
     case "!dberror":
@@ -180,11 +180,11 @@ switch ($page) {
         break;
 }
 
-if ($login() !== 0) {
+if (login_privileges() !== 0) {
     echo "<hr><p><a href='?page=logout'>Logout</a></p>";
 }
 
-Database::close();
+db_close();
 
 ?>
 </div></body></html>

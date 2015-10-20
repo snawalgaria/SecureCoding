@@ -286,7 +286,7 @@ int main(int argc, char * argv[]){
         rewind(file_handle);
         if(size > 0){
             //load the contents
-            char buffer[size + sizeof(int)];
+            char* buffer = (char*) malloc((size + 1) * sizeof(char));
             buffer[size]=0;
             fread(buffer,size,1, file_handle);
             fclose(file_handle);

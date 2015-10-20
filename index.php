@@ -34,6 +34,52 @@ if (login_privileges() !== 0 && substr($page, 0, 1) === "_" && $page !== "_logou
     exit;
 }
 
+function display_userstate($userid) {
+    if ($userid !== login_userid() && login_privileges() !== 2) {
+        echo "<p>Access denied for this information.</p>";
+        return;
+    }
+    $userData = db_queryWith("SELECT * FROM users WHERE userid = :userid", array("userid" => $userid));
+    if ($userData->rowCount() === 0) {
+        echo "<p>Access denied for this information.</p>";
+        return;
+    }
+    $userData = $userData->fetch();
+    echo "<p>Customer Details: " . $userData["name"] . " ($userData[email])</p>";
+    $users = db_queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
+    $balance = $users->fetch()["balance"] / 100.0;
+    echo "<hr><p>Account balance: $balance €</p>";
+    if ($userid === login_userid()) echo "<p><a href='?page=utransaction'>New transaction</a></p>";
+    for ($verified = 1; $verified >= 0; $verified--) {
+        $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
+        echo "<hr><h3>" . ($verified ? "Performed Transactions" : "Unverified Transactions") . "</h3>";
+        if ($transactions->rowCount() === 0)
+        {
+            echo "<p>There are no transactions in this section.</p>";
+        }
+        else {
+            echo "<table class='transactions'><thead><tr><th>Date</th><th>Description</th><th>Other Party</th><th>Volume</th></tr></thead><tbody>";
+            foreach ($transactions as $t) {
+                echo "<tr><td>" . date("Y-m-d H:i", $t["unixtime"]) . "</td><td>$t[description]</td>";
+                $volume = $t["volume"] / 100.0;
+                $other = $t["sourceAccount"];
+                if ($t["sourceAccount"] === $userid) {
+                    if ($t["targetAccount"] === $userid) {
+                        $volume = 0;
+                    }
+                    else {
+                        $volume = -$volume;
+                    }
+                    $other = $t["targetAccount"];
+                }
+                echo "<td>$other</td><td>$volume €</td></tr>";
+            }
+            echo "</tbody></table>";
+        }
+    }
+    // TODO: Offer Download as PDF according to latest specification.
+}
+
 ?>
 <html><head><title>SecureBank</title><link rel="stylesheet" href="style.css" /></head><body><div class="container">
 <?php
@@ -108,36 +154,7 @@ switch ($page) {
     case "uhome":
         echo "<h1>Welcome, client</h1>";
         $userid = login_userid();
-        $users = db_queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
-        $balance = $users->fetch()["balance"] / 100.0;
-        echo "<p>Your account balance: $balance €</p><p><a href='?page=utransaction'>New transaction</a></p>";
-        for ($verified = 1; $verified >= 0; $verified--) {
-            $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
-            echo "<hr><h3>" . ($verified ? "Performed Transactions" : "Unverified Transactions") . "</h3>";
-            if ($transactions->rowCount() === 0)
-            {
-                echo "<p>There are no transactions in this section.</p>";
-            }
-            else {
-                echo "<table class='transactions'><thead><tr><th>Date</th><th>Description</th><th>Other Party</th><th>Volume</th></tr></thead><tbody>";
-                foreach ($transactions as $t) {
-                    echo "<tr><td>" . date("Y-m-d H:i", $t["unixtime"]) . "</td><td>$t[description]</td>";
-                    $volume = $t["volume"] / 100.0;
-                    $other = $t["sourceAccount"];
-                    if ($t["sourceAccount"] === $userid) {
-                        if ($t["targetAccount"] === $userid) {
-                            $volume = 0;
-                        }
-                        else {
-                            $volume = -$volume;
-                        }
-                        $other = $t["targetAccount"];
-                    }
-                    echo "<td>$other</td><td>$volume €</td></tr>";
-                }
-                echo "</tbody></table>";
-            }
-        }
+        display_userstate($userid);
         break;
     case "utransaction":
         echo "<h1>New transaction</h1>";
@@ -166,7 +183,9 @@ switch ($page) {
         }
         break;
     case "ehome":
-        echo "<h1>Welcome, employee</h1><p>Things to do:</p>";
+        echo "<h1>Welcome, employee</h1>";
+        echo "View account for customer with ID: <form style='display: inline-block;' action='?page=etakeover' method='POST'><input name='userid'><input type='submit' value='Show'></form>";
+        echo "<hr><p>Things to do:</p>";
         $users = db_queryWith("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
         echo "<ul>";
         if ($users->rowCount() === 0) {
@@ -206,6 +225,12 @@ switch ($page) {
         break;
     case "edoapprovetransaction":
         // Perform transaction, if not verified yet and change account balances.
+        break;
+    case "etakeover":
+        echo "<h1>Customer details</h1>";
+        echo "<p><a href='?page=ehome'>Back to dashboard</a></p><hr>";
+        // PVUL: Check existence.
+        display_userstate($_POST["userid"]);
         break;
     case "_logout":
         login_reset();

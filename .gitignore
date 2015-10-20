@@ -1,7 +1,4 @@
 *.sublime-workspace
 *.sublime-project
-parser/CMakeFiles/
-parser/CMakeCache.txt
 parser/Makefile
-parser/*.cmake
 parser/parser

@@ -12,13 +12,12 @@ const int SIZE_7 = 7;
 
 const char * iban = "IBAN";
 const char * bic = "BIC";
+const char * name = "NAME";
 const char * amount = "AMOUNT";
 const char * subject = "SUBJECT";
 const char * tan = "TAN";
 const char * date = "DATE";
 const char * comment = "COMMENT";
-
-const int IBAN_MAX_LENGTH;
 
 void process(char *, size_t);
 

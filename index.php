@@ -183,9 +183,16 @@ switch ($page) {
             echo "<h1>Error while processing the transaction file.</h1>";
         }
         else {
-            // TODO: popen the C program here and implement further logic
-            echo "Got file at " . $_FILES["transactionfile"]["tmp_name"];
-            // Perform transaction from uploaded file
+            $handle = popen("./parser/parser " . $_FILES["transactionfile"]["tmp_name"], "r");
+            $read = fread($handle, 3000);
+            $status = pclose($handle);
+            if ($status !== 0) {
+                echo "<h1>Error while processing the transaction file.</h1>";
+            }
+            else {
+                echo $read;
+                // TODO: Perform transaction.
+            }
         }
         break;
     case "ehome":

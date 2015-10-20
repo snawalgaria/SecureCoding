@@ -364,8 +364,8 @@ int main(int argc, char * argv[]){
             buffer[size]=0;
             fread(buffer,size,1, file_handle);
             fclose(file_handle);
-            free(buffer);
             process(buffer,size);
+            free(buffer);
         } else fclose(file_handle);
     }
 

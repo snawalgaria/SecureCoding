@@ -254,7 +254,6 @@ int validate_tan(char * val){
 }
 
 int validate_amount(char * val){
-    //TODO
     int length = -1;
     int cur;
     while((cur = val[++length])){
@@ -365,9 +364,8 @@ int main(int argc, char * argv[]){
             buffer[size]=0;
             fread(buffer,size,1, file_handle);
             fclose(file_handle);
-
+            free(buffer);
             process(buffer,size);
-
         } else fclose(file_handle);
     }
 

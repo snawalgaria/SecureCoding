@@ -31,6 +31,8 @@ int validate_iban(char *);
 
 int validate_bic(char *);
 
+int validate_name(char *);
+
 int validate_tan(char *);
 
 int validate_amount(char *);

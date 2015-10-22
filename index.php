@@ -90,26 +90,20 @@ switch ($page) {
         pb_replace_all("main", "register.html");
         break;
     case "_login":
-        ?><h1>Login at the SecureBank</h1>
-        <form action="?page=dologin" method="post">E-Mail<br><input type="email" name="email"><br><br>Password<br><input type="password" name="password"><br><br><input type="submit" value="Login"></form>
-        <?php
+        pb_replace_all("main", "login.html");
         break;
     case "_doregister":
-        var_dump($_POST);
+        //var_dump($_POST);
         if (!isset($_POST["name"]) || !isset($_POST["email"]) || !isset($_POST["password"]) ||
             strlen($_POST["name"]) === 0 || strlen($_POST["email"]) === 0) {
-            echo "<h1>Registration failed.</h1>";
+            //echo "<h1>Registration failed.</h1>";
         }
         else {
             $employee = isset($_POST["isEmployee"]) ? 1 : 0;
             $email = htmlspecialchars($_POST["email"]);
             $name = htmlspecialchars($_POST["name"]);
             $users = db_queryWith("SELECT userid,email,isEmployee,credentials FROM users WHERE (email = :email)", array("email" => $email));
-            if ($users->rowCount() !== 0) {
-                // We don't want to give more details here, do we?
-                echo "<h1>Registration failed.</h1>";
-            }
-            else {
+            if ($users->rowCount() === 0) {
                 // If we were allowed to use PHP > 5.5, this would be *MUCH* more secure.
                 //$credential = password_hash($_POST["password"], PASSWORD_DEFAULT);
                 $credentials = sha1($_POST["password"]);
@@ -119,9 +113,12 @@ switch ($page) {
                     $accountData = array("userid" => $userid, "balance" => "10000"); // We are generous and are giving everyone so much money!
                     db_insert("accounts", $accountData);
                 }
-                echo "<h1>Registration successful.</h1>Your account has to be approved, before you can login. We will send you an e-mail when we verified your account.";
+                //echo "<h1>Registration successful.</h1>Your account has to be approved, before you can login. We will send you an e-mail when we verified your account.";
+                pb_replace_all("main", "doregister_success.html");
             }
         }
+        // only happens if failed, since otherwise '%%main%%' is already removed from the html
+        pb_replace_all("main", "doregister_fail.html");
         break;
     case "_dologin":
         $getUsersForName = function($email) {
@@ -129,11 +126,11 @@ switch ($page) {
         };
         $success = login_dologin($_POST, $getUsersForName);
         if ($success !== 0) {
-            echo "<h1>Login failed.$success</h1>";
-            echo "<a href='?page=login'>Try again</a>";
+			pb_replace_all("main", "dologin_fail.html");
+			pb_replace_with("ERRORCODE", $success);
         }
         else {
-            echo "<h1>Login successful.</h1>Redirecting...";
+            pb_replace_all("main", "dologin_success.html");
             if (login_privileges() === 1) header("Location: index.php?page=uhome");
             if (login_privileges() === 2) header("Location: index.php?page=ehome");
         }
@@ -144,69 +141,62 @@ switch ($page) {
         display_userstate($userid);
         break;
     case "utransaction":
-        echo "<h1>New transaction</h1>";
-        echo "You can enter the information of the transaction here, our you can <a href='?page=utransactionupload'>upload a transaction file</a>.<hr>";
-        echo "<h3>Transaction data</h3>";
-        echo "<form action='?page=udotransaction' method='POST'>";
-        echo "<p><input name='target'> Target account</p>";
-        echo "<p><input name='volume'> Transaction volume</p>";
-        echo "<p>Description</p><textarea cols='80' rows='3' name='desc'></textarea>";
-        echo "<p><input name='tan'> Enter a TAN here.</p>";
-        echo "<p><input type='submit' value='Perform Transaction'></p></form>";
+        pb_replace_all("main", "utransaction.html");
         break;
     case "udotransaction":
         var_dump($_POST); // Debugging.
         // Perform transaction. if volume < 10000€ change account balances.
         break;
     case "utransactionupload":
-        echo "<h1>Transaction from file</h1>";
-        echo "<form enctype='multipart/form-data' action='?page=udotransactionupload' method='POST'>";
-        echo "<input type='hidden' name='MAX_FILE_SIZE' value='3000'>";
-        echo "<p>File containing the transaction: <input name='transactionfile' type='file'>";
-        echo "<input type='submit'></form></p>";
+        pb_replace_all("main", "utransactionupload.html");
         break;
     case "udotransactionupload":
-        if (!isset($_FILES["transactionfile"]) || $_FILES["transactionfile"]["size"] > 3000 || $_FILES["transactionfile"]["error"] !== UPLOAD_ERR_OK) {
-            echo "<h1>Error while processing the transaction file.</h1>";
-        }
-        else {
+        if (isset($_FILES["transactionfile"]) && $_FILES["transactionfile"]["size"] <= 3000 && $_FILES["transactionfile"]["error"] === UPLOAD_ERR_OK) {
             $handle = popen("./parser/parser " . $_FILES["transactionfile"]["tmp_name"], "r");
             $read = fread($handle, 3000);
             $status = pclose($handle);
-            if ($status !== 0) {
-                echo "<h1>Error while processing the transaction file.</h1>";
-            }
-            else {
+            if ($status === 0) {
                 echo $read;
                 // TODO: Perform transaction.
+				//pb_replace_all("main", "udotransactionupload_success.html");
             }
         }
+        pb_replace_all("main", "udotransactionupload_fail.html");
         break;
     case "ehome":
-        echo "<h1>Welcome, employee</h1>";
+        pb_replace_all("main", "ehome.html");
+        $users = db_queryWith("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
+        /*echo "<h1>Welcome, employee</h1>";
         echo "View account for customer with ID: <form style='display: inline-block;' action='?page=etakeover' method='POST'><input name='userid'><input type='submit' value='Show'></form>";
         echo "<hr><p>Things to do:</p>";
-        $users = db_queryWith("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
-        echo "<ul>";
+        echo "<ul>";*/
         if ($users->rowCount() === 0) {
             // TODO: This never gets displayed. Why?
-            "<li>No users to verify.</li>";
+			pb_replace_with("element", "<li>No users to verify.</li>");
         }
         else {
+			pb_replace_with("element", str_repeat("%%element%%\n", $users->rowCount()));
+			pb_replace_all("element", "ehome_user.html");
             foreach ($users as $user) {
-                echo "<li>" . ($user["isEmployee"] ? "Employee" : "New customer") . " '" . $user["name"] . "' with e-mail '" . $user["email"] . "' registered.";
+				pb_replace_with("type", $user["isEmployee"] ? "Employee" : "New customer");
+				pb_replace_with("name", $user["name"]);
+				pb_replace_with("email", $user["email"]);
+				pb_replace_with("userid", $user["userid"]);
+				pb_replace_with("userid", $user["userid"]);
+                /*echo "<li>" . ($user["isEmployee"] ? "Employee" : "New customer") . " '" . $user["name"] . "' with e-mail '" . $user["email"] . "' registered.";
                 echo "<form style='display: inline-block;' action='?page=edoverify' method='post'><input type='hidden' name='userid' value='" . $user["userid"] . "'><input type='hidden' name='success' value='true'><input type='submit' value='Verify'></form>";
                 echo "<form style='display: inline-block;' action='?page=edoverify' method='post'><input type='hidden' name='userid' value='" . $user["userid"] . "'><input type='hidden' name='success' value='not true'><input type='submit' value='Drop'></form>";
-                echo "</li>";
+                echo "</li>";*/
             }
         }
-        echo "</ul>";
+        // echo "</ul>";
 
         // TODO: Find and display unverified transactions
         break;
     case "edoverify":
         if (!isset($_POST["userid"]) || !isset($_POST["success"])) {
-            echo "<h1>Your are clever, but not clever enough.</h1>";
+            //echo "<h1>Your are clever, but not clever enough.</h1>";
+			pb_replace_all("main", "edoverify_fail.html");
         }
         else {
             $success = $_POST["success"] === "true";
@@ -228,8 +218,7 @@ switch ($page) {
         // Perform transaction, if not verified yet and change account balances.
         break;
     case "etakeover":
-        echo "<h1>Customer details</h1>";
-        echo "<p><a href='?page=ehome'>Back to dashboard</a></p><hr>";
+        pb_replace_all("main", "etakeover.html");
         // PVUL: Check existence.
         display_userstate($_POST["userid"]);
         break;
@@ -238,19 +227,21 @@ switch ($page) {
         header("Location: index.php");
         break;
     case "!dberror":
-        echo "<h1>Could not connect to the database</h1>";
+        pb_replace_all("main", "dberror.html");
         break;
     case "!auth":
-        echo "<h1>You are not authenticated to do this.</h1>";
-        echo "<a href='?page=login'>Login</a>";
+        pb_replace_all("main", "auth.html");
         break;
     default:
-        echo "<h1>Could not find requested page.</h1><a href='?page=home'>Go home instead</a>";
+        pb_replace_all("main", "default.html");
         break;
 }
 
 if (login_privileges() !== 0) {
-    echo "<hr><p><a href='?page=logout'>Logout</a></p>";
+    pb_replace_with("logout", "<hr><p><a href='?page=logout'>Logout</a></p>");
+}
+else {
+    pb_replace_with("logout", "");
 }
 
 db_close();

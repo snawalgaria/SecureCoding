@@ -7,7 +7,7 @@ $pb_error = "";
  * Loads the chosen template
  * Should be the first function of this file to be called
  */
-function pb_init($mainfile = "default.html")
+function pb_init($mainfile = "root.html")
 {
     global $pb_string;
     global $pb_error;

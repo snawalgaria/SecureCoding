@@ -38,31 +38,38 @@ if (login_privileges() !== 0 && substr($page, 0, 1) === "_" && $page !== "_logou
 
 function display_userstate($userid) {
     if ($userid !== login_userid() && login_privileges() !== 2) {
-        echo "<p>Access denied for this information.</p>";
+        pb_replace_with("main", "<p>Access denied for this information.</p>");
         return;
     }
     $userData = db_queryWith("SELECT * FROM users WHERE userid = :userid", array("userid" => $userid));
     if ($userData->rowCount() === 0) {
-        echo "<p>Access denied for this information.</p>";
+        pb_replace_with("main", "<p>Access denied for this information.</p>");
         return;
     }
     $userData = $userData->fetch();
-    echo "<p>Customer Details: " . $userData["name"] . ", " . ($userData["email"]) . "</p>";
+    pb_replace_all("main", "display_userstate.html");
+    pb_replace_with("name", $userData["name"]);
+    pb_replace_with("email", $userData["email"]);
+    //echo "<p>Customer Details: " . $userData["name"] . ", " . ($userData["email"]) . "</p>";
     $users = db_queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
-    $balance = 0;//$users->fetch()["balance"] / 100.0;
-    echo "<hr><p>Account balance: $balance €</p>";
-    if ($userid === login_userid()) echo "<p><a href='?page=utransaction'>New transaction</a></p>";
+    $balance = $users->fetch(PDO::FETCH_ASSOC);
+    $balance = $balance["balance"] / 100.0;
+    //echo "<hr><p>Account balance: $balance €</p>";
+    pb_replace_with("balance", $balance);
+    if ($userid === login_userid())
+        pb_replace_with("utransaction", "<p><a href='?page=utransaction'>New transaction</a></p>");
+        //echo "<p><a href='?page=utransaction'>New transaction</a></p>";
     for ($verified = 1; $verified >= 0; $verified--) {
         $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
-        echo "<hr><h3>" . ($verified ? "Performed Transactions" : "Unverified Transactions") . "</h3>";
-        if ($transactions->rowCount() === 0)
-        {
-            echo "<p>There are no transactions in this section.</p>";
-        }
-        else {
-            echo "<table class='transactions'><thead><tr><th>Date</th><th>Description</th><th>Other Party</th><th>Volume</th></tr></thead><tbody>";
+        //echo "<hr><h3>" . ($verified ? "Performed Transactions" : "Unverified Transactions") . "</h3>";
+        pb_replace_with("transactions", str_repeat("%%transaction%%\n", $transactions->rowCount()));
+        pb_replace_all("transaction", "transaction.html");
+        //if ($transactions->rowCount() !== 0) {
+            //echo "<table class='transactions'><thead><tr><th>Date</th><th>Description</th><th>Other Party</th><th>Volume</th></tr></thead><tbody>";
             foreach ($transactions as $t) {
-                echo "<tr><td>" . date("Y-m-d H:i", $t["unixtime"]) . "</td><td>$t[description]</td>";
+                //echo "<tr><td>" . date("Y-m-d H:i", $t["unixtime"]) . "</td><td>$t[description]</td>";
+                pb_replace_with("time", date("Y-m-d H:i", $t["unixtime"]));
+                pb_replace_with("description", $t[description]);
                 $volume = $t["volume"] / 100.0;
                 $other = $t["sourceAccount"];
                 if ($t["sourceAccount"] === $userid) {
@@ -74,10 +81,12 @@ function display_userstate($userid) {
                     }
                     $other = $t["targetAccount"];
                 }
-                echo "<td>$other</td><td>$volume €</td></tr>";
+                pb_replace_with("other", $other);
+                pb_replace_with("volume", $volume);
+                //echo "<td>$other</td><td>$volume €</td></tr>";
             }
-            echo "</tbody></table>";
-        }
+            //echo "</tbody></table>";
+        //}
     }
     // TODO: Offer Download as PDF according to latest specification.
 }
@@ -136,9 +145,10 @@ switch ($page) {
         }
         break;
     case "uhome":
-        echo "<h1>Welcome, client</h1>";
+        //echo "<h1>Welcome, client</h1>";
         $userid = login_userid();
         display_userstate($userid);
+        pb_replace_with("headline", "<h1>Welcome, client</h1>");
         break;
     case "utransaction":
         pb_replace_all("main", "utransaction.html");
@@ -156,9 +166,8 @@ switch ($page) {
             $read = fread($handle, 3000);
             $status = pclose($handle);
             if ($status === 0) {
-                echo $read;
                 // TODO: Perform transaction.
-				//pb_replace_all("main", "udotransactionupload_success.html");
+				pb_replace_with("main", $read);
             }
         }
         pb_replace_all("main", "udotransactionupload_fail.html");
@@ -166,12 +175,7 @@ switch ($page) {
     case "ehome":
         pb_replace_all("main", "ehome.html");
         $users = db_queryWith("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
-        /*echo "<h1>Welcome, employee</h1>";
-        echo "View account for customer with ID: <form style='display: inline-block;' action='?page=etakeover' method='POST'><input name='userid'><input type='submit' value='Show'></form>";
-        echo "<hr><p>Things to do:</p>";
-        echo "<ul>";*/
         if ($users->rowCount() === 0) {
-            // TODO: This never gets displayed. Why?
 			pb_replace_with("element", "<li>No users to verify.</li>");
         }
         else {
@@ -183,19 +187,13 @@ switch ($page) {
 				pb_replace_with("email", $user["email"]);
 				pb_replace_with("userid", $user["userid"]);
 				pb_replace_with("userid", $user["userid"]);
-                /*echo "<li>" . ($user["isEmployee"] ? "Employee" : "New customer") . " '" . $user["name"] . "' with e-mail '" . $user["email"] . "' registered.";
-                echo "<form style='display: inline-block;' action='?page=edoverify' method='post'><input type='hidden' name='userid' value='" . $user["userid"] . "'><input type='hidden' name='success' value='true'><input type='submit' value='Verify'></form>";
-                echo "<form style='display: inline-block;' action='?page=edoverify' method='post'><input type='hidden' name='userid' value='" . $user["userid"] . "'><input type='hidden' name='success' value='not true'><input type='submit' value='Drop'></form>";
-                echo "</li>";*/
             }
         }
-        // echo "</ul>";
 
         // TODO: Find and display unverified transactions
         break;
     case "edoverify":
         if (!isset($_POST["userid"]) || !isset($_POST["success"])) {
-            //echo "<h1>Your are clever, but not clever enough.</h1>";
 			pb_replace_all("main", "edoverify_fail.html");
         }
         else {
@@ -221,6 +219,7 @@ switch ($page) {
         pb_replace_all("main", "etakeover.html");
         // PVUL: Check existence.
         display_userstate($_POST["userid"]);
+        pb_replace_with("headline", "");
         break;
     case "_logout":
         login_reset();

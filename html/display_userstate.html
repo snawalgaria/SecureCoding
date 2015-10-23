@@ -1,0 +1,41 @@
+%%headline%%
+<p>
+    Customer Details: %%name%%, %%email%%
+</p>
+<hr>
+<p>
+    Account balance: %%balance%% €
+    %%utransaction%%
+    <hr>
+    
+    <h3>Performed Transactions</h3>
+    <table class='transactions'>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Other Party</th>
+                <th>Volume</th>
+            </tr>
+        </thead>
+        <tbody>
+            %%transactions%%
+        </tbody>
+    </table>
+    
+    <hr>
+    <h3>Unverified Transactions</h3>
+    <table class='transactions'>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Other Party</th>
+                <th>Volume</th>
+            </tr>
+        </thead>
+        <tbody>
+            %%transactions%%
+        </tbody>
+    </table>
+</p>

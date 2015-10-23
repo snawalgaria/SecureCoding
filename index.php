@@ -58,6 +58,7 @@ function display_userstate($userid) {
     pb_replace_with("balance", $balance);
     if ($userid === login_userid())
         pb_replace_with("utransaction", "<p><a href='?page=utransaction'>New transaction</a></p>");
+    else pb_replace_with("utransaction", "");
         //echo "<p><a href='?page=utransaction'>New transaction</a></p>";
     for ($verified = 1; $verified >= 0; $verified--) {
         $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));

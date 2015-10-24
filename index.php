@@ -59,34 +59,34 @@ function display_userstate($userid) {
     if ($userid === login_userid())
         pb_replace_with("utransaction", "<p><a href='?page=utransaction'>New transaction</a></p>");
     else pb_replace_with("utransaction", "");
-        //echo "<p><a href='?page=utransaction'>New transaction</a></p>";
+    //echo "<p><a href='?page=utransaction'>New transaction</a></p>";
     for ($verified = 1; $verified >= 0; $verified--) {
         $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
         //echo "<hr><h3>" . ($verified ? "Performed Transactions" : "Unverified Transactions") . "</h3>";
         pb_replace_with("transactions", str_repeat("%%transaction%%\n", $transactions->rowCount()));
         pb_replace_all("transaction", "transaction.html");
         //if ($transactions->rowCount() !== 0) {
-            //echo "<table class='transactions'><thead><tr><th>Date</th><th>Description</th><th>Other Party</th><th>Volume</th></tr></thead><tbody>";
-            foreach ($transactions as $t) {
-                //echo "<tr><td>" . date("Y-m-d H:i", $t["unixtime"]) . "</td><td>$t[description]</td>";
-                pb_replace_with("time", date("Y-m-d H:i", $t["unixtime"]));
-                pb_replace_with("description", $t[description]);
-                $volume = $t["volume"] / 100.0;
-                $other = $t["sourceAccount"];
-                if ($t["sourceAccount"] === $userid) {
-                    if ($t["targetAccount"] === $userid) {
-                        $volume = 0;
-                    }
-                    else {
-                        $volume = -$volume;
-                    }
-                    $other = $t["targetAccount"];
+        //echo "<table class='transactions'><thead><tr><th>Date</th><th>Description</th><th>Other Party</th><th>Volume</th></tr></thead><tbody>";
+        foreach ($transactions as $t) {
+            //echo "<tr><td>" . date("Y-m-d H:i", $t["unixtime"]) . "</td><td>$t[description]</td>";
+            pb_replace_with("time", date("Y-m-d H:i", $t["unixtime"]));
+            pb_replace_with("description", $t[description]);
+            $volume = $t["volume"] / 100.0;
+            $other = $t["sourceAccount"];
+            if ($t["sourceAccount"] === $userid) {
+                if ($t["targetAccount"] === $userid) {
+                    $volume = 0;
                 }
-                pb_replace_with("other", $other);
-                pb_replace_with("volume", $volume);
-                //echo "<td>$other</td><td>$volume €</td></tr>";
+                else {
+                    $volume = -$volume;
+                }
+                $other = $t["targetAccount"];
             }
-            //echo "</tbody></table>";
+            pb_replace_with("other", $other);
+            pb_replace_with("volume", $volume);
+            //echo "<td>$other</td><td>$volume €</td></tr>";
+        }
+        //echo "</tbody></table>";
         //}
     }
     // TODO: Offer Download as PDF according to latest specification.
@@ -103,10 +103,27 @@ switch ($page) {
         pb_replace_all("main", "login.html");
         break;
     case "_doregister":
+
+
+        $input_complete =
+            isset($_POST["name"]) &&
+            isset($_POST["email"]) &&
+            isset($_POST["password"]) &&
+            isset($_POST["confirm_password"]);
+
+        $input_valid = strlen($_POST["name"]) != 0 && strlen($_POST["email"]) != 0;
+
+        //could do other checks... or some type of policy maybe
+        $valid_password =
+            strlen($_POST["password"]) >= 8 &&
+            strcmp($_POST["confirm_password"], $_POST["password"]) === 0;
+
         //var_dump($_POST);
-        if (!isset($_POST["name"]) || !isset($_POST["email"]) || !isset($_POST["password"]) ||
-            strlen($_POST["name"]) === 0 || strlen($_POST["email"]) === 0) {
-            //echo "<h1>Registration failed.</h1>";
+        if (!$input_complete || !$input_valid) {
+            //pb_replace_all("main", "doregister_faila.html");
+        }
+        else if($input_complete && !$valid_password){
+            //pb_replace_all("main", "doregister_failb.html");
         }
         else {
             $employee = isset($_POST["isEmployee"]) ? 1 : 0;
@@ -136,8 +153,8 @@ switch ($page) {
         };
         $success = login_dologin($_POST, $getUsersForName);
         if ($success !== 0) {
-			pb_replace_all("main", "dologin_fail.html");
-			pb_replace_with("ERRORCODE", $success);
+            pb_replace_all("main", "dologin_fail.html");
+            pb_replace_with("ERRORCODE", $success);
         }
         else {
             pb_replace_all("main", "dologin_success.html");
@@ -168,7 +185,7 @@ switch ($page) {
             $status = pclose($handle);
             if ($status === 0) {
                 // TODO: Perform transaction.
-				pb_replace_with("main", $read);
+                pb_replace_with("main", $read);
             }
         }
         pb_replace_all("main", "udotransactionupload_fail.html");
@@ -177,17 +194,17 @@ switch ($page) {
         pb_replace_all("main", "ehome.html");
         $users = db_queryWith("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
         if ($users->rowCount() === 0) {
-			pb_replace_with("element", "<li>No users to verify.</li>");
+            pb_replace_with("element", "<li>No users to verify.</li>");
         }
         else {
-			pb_replace_with("element", str_repeat("%%element%%\n", $users->rowCount()));
-			pb_replace_all("element", "ehome_user.html");
+            pb_replace_with("element", str_repeat("%%element%%\n", $users->rowCount()));
+            pb_replace_all("element", "ehome_user.html");
             foreach ($users as $user) {
-				pb_replace_with("type", $user["isEmployee"] ? "Employee" : "New customer");
-				pb_replace_with("name", $user["name"]);
-				pb_replace_with("email", $user["email"]);
-				pb_replace_with("userid", $user["userid"]);
-				pb_replace_with("userid", $user["userid"]);
+                pb_replace_with("type", $user["isEmployee"] ? "Employee" : "New customer");
+                pb_replace_with("name", $user["name"]);
+                pb_replace_with("email", $user["email"]);
+                pb_replace_with("userid", $user["userid"]);
+                pb_replace_with("userid", $user["userid"]);
             }
         }
 
@@ -195,7 +212,7 @@ switch ($page) {
         break;
     case "edoverify":
         if (!isset($_POST["userid"]) || !isset($_POST["success"])) {
-			pb_replace_all("main", "edoverify_fail.html");
+            pb_replace_all("main", "edoverify_fail.html");
         }
         else {
             $success = $_POST["success"] === "true";

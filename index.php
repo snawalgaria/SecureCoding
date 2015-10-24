@@ -120,10 +120,11 @@ switch ($page) {
 
         //var_dump($_POST);
         if (!$input_complete || !$input_valid) {
-            //pb_replace_all("main", "doregister_faila.html");
+            //TODO... exchange registration failed against ui info to user
         }
         else if($input_complete && !$valid_password){
-            //pb_replace_all("main", "doregister_failb.html");
+            //TODO... inform user that something went wrong with the password
+            pb_replace_all("main", "register.html");
         }
         else {
             $employee = isset($_POST["isEmployee"]) ? 1 : 0;

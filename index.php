@@ -94,7 +94,7 @@ function display_userstate($userid) {
 
 switch ($page) {
     case "_home":
-        pb_replace_all("main", "home.html");
+        pb_replace_all("main", "entry_page.html");//"home.html");
         break;
     case "_register":
         pb_replace_all("main", "register.html");

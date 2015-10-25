@@ -1,13 +1,47 @@
- <html>
-    <head>
-        <title>SecureBank</title>
-        <link rel="stylesheet" href="style.css" />
-    </head>
-	<body>
-		
-		<div class="container">
-			%%main%%
-			%%logout%%
-		</div>
-	</body>
+<!--<html>-->
+<!--<head>-->
+<!--<title>SecureBank</title>-->
+<!--<link rel="stylesheet" href="style.css" />-->
+<!--</head>-->
+<!--<body>-->
+<!-- -->
+<!--<div class="container">-->
+<!--%%main%%-->
+<!--%%logout%%-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
+<html>
+
+<head>
+
+</head>
+
+<body style="height:100%;width:100%;background-color:#DDFFDD;font-family:Arial, Helvetica, sans-serif;">
+
+<div style="height:75px;width:100%;margin-top:-8px;margin-left:-8px;background-color:#2d6b00;">
+	<div onclick="location.href='?page=home'" style="color:#DDFFDD;text-align:center;cursor:pointer;">
+		The <h2>Secure Bank</h2>
+	</div>
+</div>
+<div style="height:100%;width:125px;margin-left:-8px;background-color:#2d6b00;float:left;">
+
+	<div onMouseOver="this.style.backgroundColor='#173B0B'" onMouseOut="this.style.backgroundColor='#2d6b00'"style="color:#DDFFDD;hover-color:#2cdb00;width:100%;background-color:#2d6b00;margin-left:5px;text-align:center;cursor:pointer;margin-top:50px;margin-bottom:10px;padding-top:10px;padding-bottom:10px;" onclick="location.href='?page=login'">
+		login
+	</div>
+
+	<div onMouseOver="this.style.backgroundColor='#173B0B'" onMouseOut="this.style.backgroundColor='#2d6b00'"style="color:#DDFFDD;hover-color:#2cdb00;width:100%;background-color:#2d6b00;margin-left:5px;text-align:center;cursor:pointer;margin-top:10px;padding-top:10px;padding-bottom:10px;" onclick="location.href='?page=register'">
+		register
+	</div>
+
+</div>
+<div style="height:100px;width:100px;background-color:#2d6b00;float:left;">
+	<div style="height:200px;border-radius:50px;width:200px;background-color:#DDFFDD;float:left;"></div>
+</div>
+<div class="container">
+	%%main%%
+	%%logout%%
+</div>
+</body>
 </html>

@@ -2,17 +2,40 @@ html, body {
     margin: 0;
     padding: 0;
     min-height: 100%;
-    font-family: Tahoma, Arial, sans-serif;
+    font-family: Cantarell, Arial, sans-serif;
 }
 body {
     background: #eee;
 }
 .container {
-    width: 920px;
-    padding: 20px;
+    width: 960px;
     background: #fff;
     min-height: 100%;
     margin: 0 auto;
+}
+.header {
+    width: 920px;
+    height: 1.44em;
+    padding: 8px 20px;
+    background: #0a0;
+    color: #fff;
+}
+.header .title {
+    float: left;
+    font-size: 120%;
+}
+.header .logout {
+    float: right;
+}
+.header .logout a {
+    color: #fff;
+    text-decoration: none;
+}
+.header .logout a:hover {
+    text-decoration: underline;
+}
+.content {
+    padding: 20px;
 }
 .transactions {
     width: 100%;

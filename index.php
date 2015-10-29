@@ -253,14 +253,14 @@ switch ($page) {
                         $tans = array_slice($tans, 0, 100);
                         $tanQueryPart = array();
                         foreach ($tans as $tan) {
-                            $tanQueryPart[] = "('$tan'," . $_POST["userid"] . ")";
+                            $tanQueryPart[] = "('$tan',:userid)";
                         }
 
                         $tanQueryPart = join(",", $tanQueryPart);
                         $tanQuery = "INSERT INTO tans (`tan`, `userid`) VALUES $tanQueryPart";
 
                         try {
-                            db_query($tanQuery);
+                            db_queryWith($tanQuery, array("userid" => $_POST["userid"]));
                         } catch (Exception $e) {
                             pb_replace_with("main", "Error: ETANGENT");
                             $failed = TRUE;

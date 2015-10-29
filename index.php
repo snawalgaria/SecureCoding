@@ -98,14 +98,18 @@ function performTransaction($tid) {
     //
     // One potential problem: ensure database atomicity.
    
-    $transaction= db_queryWith("SELECT * FROM transactions WHERE tid = :tid", array("tid" => $tid));
-    $srcAccount = $transaction->sourceAccount;
-    $targAccount = $transaction->targetAccount;
-    $srcArray=db_queryWith("Select * from accounts where userid =:userid",array("userid" =>$srcAccount));
-    $targArray=db_queryWith("Select * from accounts where userid=:userid",array("userid" =>$targAccount));
-    $srcBalance=$srcArray->balance-$transaction->volume;
+    $transaction = db_queryWith("SELECT * FROM transactions WHERE tid = :tid", array("tid" => $tid));
+    if ($transaction->rowCount() !== 1) {
+        return "Transaction does not exist.";
+    }
+    $transaction = $transaction->fetch();
+    $srcAccount = $transaction["sourceAccount"];
+    $targAccount = $transaction["targetAccount"];
+    $srcArray =db_queryWith("SELECT * FROM accounts WHERE userid =:userid", array("userid" => $srcAccount));
+    $targArray =db_queryWith("SELECT * FROM accounts WHERE userid= :userid", array("userid" => $targAccount));
+    $srcBalance =$srcArray->balance-$transaction->volume;
     $targBalance = $targArray->balance + $transaction->volume;
-    if(srcBalance >=0 && targBalance >=0)
+    if($srcBalance >= 0 && $targBalance >=0)
     {
         $firstTxn=db_queryWith("update accounts set balance =:srcBalance where userid=:userid",array("srcBalance" =>$srcBalance,"userid"=>$srcAccount));
         if($firstTxn)
@@ -129,7 +133,7 @@ function performTransaction($tid) {
         }
         else
         {
-        echo "Transaction Failed";
+            echo "Transaction Failed";
         }
     }
     else
@@ -356,7 +360,12 @@ switch ($page) {
         } else {
             $success = $_POST["success"] === "true";
             if ($success) {
-                performTransaction($_POST["tid"]);
+                $error = performTransaction($_POST["tid"]);
+                if ($error === FALSE) {
+                    header("Location: index.php?page=ehome");
+                } else {
+                    pb_replace_with("main", $error);
+                }
             } else {
                 db_queryWith("DELETE FROM transactions WHERE tid = :tid", array("tid" => $_POST["tid"]));
                 header("Location: index.php?page=ehome");

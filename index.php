@@ -165,20 +165,12 @@ switch ($page) {
 
         //var_dump($_POST);
         if (!$input_complete || !$input_valid) {
-<<<<<<< HEAD
-           
-	  
-=======
->>>>>>> cfa39c682041f17e9defcb3bbcbe1b54768ce04e
+           	  
 			pb_replace_all("main", "doregister_fail.html");
             pb_replace_with("ERRORCODE", "Please make sure that you enter values into all fields!");
         }
         else if(!$valid_password){
-<<<<<<< HEAD
-         
-	
-=======
->>>>>>> cfa39c682041f17e9defcb3bbcbe1b54768ce04e
+
             pb_replace_all("main", "doregister_fail.html");
             pb_replace_with("ERRORCODE", "Please make sure that your password is at least 8 signs long and identical to the confirmation field!");
         }

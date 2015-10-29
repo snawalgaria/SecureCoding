@@ -7,17 +7,21 @@
  */
 
 /**
- * @param string $address, the address of the mail server, may be ip or fqdn
- * @param int $port, the std port is 587
  * @param array(string, string) $from, the name of the sender; the address fo the sender
  * @param array(string, string) $rcpt, he name of the receiver; the address fo the receiver
  * @param subject , thr subject of the message
  * @param string $msg, the message to send
- * @return int 0 if everything went ok, 1 else
+ * @param int $port, the std port is 587
+ * @return int 0 if everything went ok, 1 if error, 2 for invalid arguments
  */
 function send_mail($from, $rcpt, $subject, $msg, $port = 587) {
 
+    if(count($from) !== 2 || count($rcpt) !== 2)
+        return 2;
     $offset = strpos($rcpt[1],"@") + 1;
+    if(!$offset)
+        return 2;
+
     $address = substr($rcpt[1],$offset,strlen($rcpt[1]) - $offset);
 
     $socket = fsockopen($address, $port, $timeout = .5);
@@ -34,7 +38,7 @@ function send_mail($from, $rcpt, $subject, $msg, $port = 587) {
     }
 
     if(!is_resource($socket))
-        return 1;
+        return 2;
 
     //follow the std mail protocol
     $received = trim(fread($socket, 4096));
@@ -89,9 +93,5 @@ function send_mail($from, $rcpt, $subject, $msg, $port = 587) {
 }
 
 send_mail(array("tmaier", "absolute512@gmail.com"), array("absolute512","absolute512@fs.cs.hm.edu"),"test mail","this is a test")
-
-
-
-
 
 ?>

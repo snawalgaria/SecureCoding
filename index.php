@@ -87,6 +87,18 @@ function display_userstate($userid) {
     // TODO: PDF export button!!
 }
 
+function performTransaction($tid) {
+    // TODO: Implement logic.
+    //  1. Get data from database via queryWith(..., array("tid" => $tid))
+    //  2. Load accounts from participants
+    //  3. Fail gracefully, if that didn't work (i.e. we don't have exactly one unverified transaction, excactly one account for each participants, etc.)
+    //  4. Perform account balance change
+    //  5. Mark as transaction as verified
+    //  6. Store updated data
+    //
+    // One potential problem: ensure database atomicity.
+}
+
 switch ($page) {
     case "_home":
         pb_replace_all("main", "entry_page.html");//"home.html");
@@ -168,7 +180,7 @@ switch ($page) {
         break;
     case "udotransaction":
         var_dump($_POST); // Debugging.
-        // Perform transaction. if volume < 10000€ change account balances.
+        // TODO: Insert transaction into db and call performTransaction.
         break;
     case "utransactionupload":
         pb_replace_all("main", "utransactionupload.html");
@@ -179,16 +191,13 @@ switch ($page) {
             $read = fread($handle, 3000);
             $status = pclose($handle);
             if ($status === 0) {
-                // TODO: Perform transaction.
+                // TODO: Insert transaction into db and call performTransaction.
                 pb_replace_with("main", $read);
             }
         }
         pb_replace_all("main", "udotransactionupload_fail.html");
         break;
     case "ehome":
-		// mail("johannes.w.fischer@web.de", "Test", "This is just a test.", 'From: webmaster@example.com' . "\r\n" .
-		// 			'Reply-To: webmaster@example.com' . "\r\n" .
-		// 			'X-Mailer: PHP/' . phpversion());
         pb_replace_all("main", "ehome.html");
         $users = db_query("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
         if ($users->rowCount() === 0) {
@@ -232,6 +241,8 @@ switch ($page) {
 
                         while (count($tans) < 100) {
                             $tanQuery = "SELECT tan FROM tans WHERE ";
+                            // TODO: Is the query really complete?
+                            // We have some TANs from the last iteration. Ensure that this works.
                             for ($i = count($tans); $i < 110; $i++) {
                                 $tan = substr(base64_encode(openssl_random_pseudo_bytes(12)), 0, 15);
                                 $tans[] = $tan;
@@ -291,15 +302,20 @@ switch ($page) {
             }
         }
         break;
-    case "eapprovetransaction":
-        // Verify transaction UI
-        break;
     case "edoapprovetransaction":
-        // Perform transaction, if not verified yet and change account balances.
+        if (!isset($_POST["tid"]) || !isset($_POST["success"])) {
+            pb_replace_all("main", "edoverify_fail.html");
+        } else {
+            $success = $_POST["success"] === "true";
+            if ($success) {
+                performTransaction($_POST["tid"]);
+            } else {
+                db_queryWith("DELETE FROM transactions WHERE tid = :tid", array("tid" => $_POST["tid"]));
+            }
+        }
         break;
     case "etakeover":
         pb_replace_all("main", "etakeover.html");
-        // PVUL: Check existence.
         display_userstate($_POST["userid"]);
         pb_replace_with("headline", "");
         break;

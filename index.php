@@ -127,12 +127,10 @@ switch ($page) {
 
         //var_dump($_POST);
         if (!$input_complete || !$input_valid) {
-            //TODO... exchange registration failed against ui info to user
 			pb_replace_all("main", "doregister_fail.html");
             pb_replace_with("ERRORCODE", "Please make sure that you enter values into all fields!");
         }
         else if(!$valid_password){
-            //TODO... inform user that something went wrong with the password
             pb_replace_all("main", "doregister_fail.html");
             pb_replace_with("ERRORCODE", "Please make sure that your password is at least 8 signs long and identical to the confirmation field!");
         }
@@ -223,6 +221,7 @@ switch ($page) {
         }
         else {
             $success = $_POST["success"] === "true";
+            $failed = FALSE;
             if ($success) {
                 try {
                     $verified_user = db_queryWith("SELECT name, email, isEmployee FROM users WHERE userid = :userid AND isVerified = 0", array("userid" => $_POST["userid"]));

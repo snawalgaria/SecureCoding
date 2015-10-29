@@ -79,6 +79,8 @@ function display_userstate($userid) {
             pb_replace_with("volume", $volume);
         }
     }
+
+    // TODO: PDF export button!!
 }
 
 switch ($page) {
@@ -180,9 +182,9 @@ switch ($page) {
         pb_replace_all("main", "udotransactionupload_fail.html");
         break;
     case "ehome":
-		mail("johannes.w.fischer@web.de", "Test", "This is just a test.", 'From: webmaster@example.com' . "\r\n" .
-					'Reply-To: webmaster@example.com' . "\r\n" .
-					'X-Mailer: PHP/' . phpversion());
+		// mail("johannes.w.fischer@web.de", "Test", "This is just a test.", 'From: webmaster@example.com' . "\r\n" .
+		// 			'Reply-To: webmaster@example.com' . "\r\n" .
+		// 			'X-Mailer: PHP/' . phpversion());
         pb_replace_all("main", "ehome.html");
         $users = db_query("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
         if ($users->rowCount() === 0) {
@@ -209,19 +211,81 @@ switch ($page) {
         else {
             $success = $_POST["success"] === "true";
             if ($success) {
-                db_queryWith("UPDATE users SET isVerified = 1 WHERE userid = :userid", array("userid" => $_POST["userid"]));
-                // TODO: Generate Tans
-                // TODO: Send Email with TAN if it is not an employee.
-                
-                //$verified_user = db_queryWith("SELECT name, email WHERE userid = :userid", array("userid" => $_POST["userid"]));
-                //mail($verified_user["email"], "Test", "This is just a test.");
+                try {
+                    $verified_user = db_queryWith("SELECT name, email, isEmployee FROM users WHERE userid = :userid AND isVerified = 0", array("userid" => $_POST["userid"]));
+
+                    if ($verified_user->rowCount() !== 1) {
+                        pb_replace_all("main", "edoverify_fail.html");
+                        $failed = TRUE;
+                    }
+                    else {
+                        $user = $verified_user->fetch();
+                        db_queryWith("UPDATE users SET isVerified = 1 WHERE userid = :userid", array("userid" => $_POST["userid"]));
+                    }
+
+                    if (!$failed && !$user["isEmployee"]) {
+                        $tans = array();
+
+                        while (count($tans) < 100) {
+                            $tanQuery = "SELECT tan FROM tans WHERE ";
+                            for ($i = count($tans); $i < 110; $i++) {
+                                $tan = substr(base64_encode(openssl_random_pseudo_bytes(12)), 0, 15);
+                                $tans[] = $tan;
+                                if ($i !== 0) $tanQuery .= " OR ";
+                                $tanQuery .= "tan = '$tan'"; // No need for placeholder unless base64 is hijacked.
+                            }
+
+                            array_unique($tans);
+
+                            // Small overhead for database query.
+                            if (count($tans) < 105) continue; // Don't spam the database.
+
+                            $existingTans = db_query($tanQuery);
+
+                            foreach ($existingTans as $etan) {
+                                if (($index = array_search($etan["tan"], $tans)) !== FALSE) {
+                                    array_splice($tans, $index, 1);
+                                }
+                            }
+                        }
+
+                        // We found 100 tans.
+                        $tans = array_slice($tans, 0, 100);
+                        $tanQueryPart = array();
+                        foreach ($tans as $tan) {
+                            $tanQueryPart[] = "('$tan'," . $_POST["userid"] . ")";
+                        }
+
+                        $tanQueryPart = join(",", $tanQueryPart);
+                        $tanQuery = "INSERT INTO tans (`tan`, `userid`) VALUES $tanQueryPart";
+
+                        try {
+                            db_query($tanQuery);
+                        } catch (Exception $e) {
+                            pb_replace_with("main", "Error: ETANGENT");
+                            $failed = TRUE;
+                        }
+
+                        if (!$failed) {
+                            // TODO: Send Email with TANs
+                        }
+                    }
+
+                    if (!$failed)
+                        header("Location: index.php?page=ehome");
+
+                }
+                catch (Exception $e) {
+                    pb_replace_with("main", "We have some serious problems. Please contact the webmaster.");
+                    // echo $e->getMessage();
+                }
             }
             else {
                 db_queryWith("DELETE FROM users WHERE userid = :userid", array("userid" => $_POST["userid"]));
                 db_queryWith("DELETE FROM accounts WHERE userid = :userid", array("userid" => $_POST["userid"]));
+                header("Location: index.php?page=ehome");
             }
         }
-        header("Location: index.php?page=ehome");
         break;
     case "eapprovetransaction":
         // Verify transaction UI

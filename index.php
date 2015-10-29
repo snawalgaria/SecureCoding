@@ -121,9 +121,11 @@ switch ($page) {
         //var_dump($_POST);
         if (!$input_complete || !$input_valid) {
             //TODO... exchange registration failed against ui info to user
+	    echo '<script type="text/javascript"> alert("Registration Failed Against the Information provided. Please Check all fields have valid info");</script>';
         }
         else if($input_complete && !$valid_password){
             //TODO... inform user that something went wrong with the password
+	    echo'<script type="text/javascript">alert("Please Check the password entered");</script>';
             pb_replace_all("main", "register.html");
         }
         else {

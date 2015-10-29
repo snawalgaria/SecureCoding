@@ -47,6 +47,10 @@ function display_userstate($userid) {
         return;
     }
     $userData = $userData->fetch();
+    if ($userData["isEmployee"]) {
+        pb_replace_with("main", "<p>This ($userData[name]) is an employee, you can't take it over.</p>");
+        return;
+    }
     pb_replace_all("main", "display_userstate.html");
     pb_replace_with("name", $userData["name"]);
     pb_replace_with("email", $userData["email"]);

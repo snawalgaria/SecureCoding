@@ -47,28 +47,25 @@ function display_userstate($userid) {
         return;
     }
     $userData = $userData->fetch();
+    if ($userData["isEmployee"]) {
+        pb_replace_with("main", "<p>This ($userData[name]) is an employee, you can't take it over.</p>");
+        return;
+    }
     pb_replace_all("main", "display_userstate.html");
     pb_replace_with("name", $userData["name"]);
     pb_replace_with("email", $userData["email"]);
-    //echo "<p>Customer Details: " . $userData["name"] . ", " . ($userData["email"]) . "</p>";
     $users = db_queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
     $balance = $users->fetch(PDO::FETCH_ASSOC);
     $balance = $balance["balance"] / 100.0;
-    //echo "<hr><p>Account balance: $balance €</p>";
     pb_replace_with("balance", $balance);
     if ($userid === login_userid())
         pb_replace_with("utransaction", "<p><a href='?page=utransaction'>New transaction</a></p>");
     else pb_replace_with("utransaction", "");
-    //echo "<p><a href='?page=utransaction'>New transaction</a></p>";
     for ($verified = 1; $verified >= 0; $verified--) {
         $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
-        //echo "<hr><h3>" . ($verified ? "Performed Transactions" : "Unverified Transactions") . "</h3>";
         pb_replace_with("transactions", str_repeat("%%transaction%%\n", $transactions->rowCount()));
         pb_replace_all("transaction", "transaction.html");
-        //if ($transactions->rowCount() !== 0) {
-        //echo "<table class='transactions'><thead><tr><th>Date</th><th>Description</th><th>Other Party</th><th>Volume</th></tr></thead><tbody>";
         foreach ($transactions as $t) {
-            //echo "<tr><td>" . date("Y-m-d H:i", $t["unixtime"]) . "</td><td>$t[description]</td>";
             pb_replace_with("time", date("Y-m-d H:i", $t["unixtime"]));
             pb_replace_with("description", $t[description]);
             $volume = $t["volume"] / 100.0;
@@ -84,12 +81,22 @@ function display_userstate($userid) {
             }
             pb_replace_with("other", $other);
             pb_replace_with("volume", $volume);
-            //echo "<td>$other</td><td>$volume €</td></tr>";
         }
-        //echo "</tbody></table>";
-        //}
     }
-    // TODO: Offer Download as PDF according to latest specification.
+
+    // TODO: PDF export button!!
+}
+
+function performTransaction($tid) {
+    // TODO: Implement logic.
+    //  1. Get data from database via queryWith(..., array("tid" => $tid))
+    //  2. Load accounts from participants
+    //  3. Fail gracefully, if that didn't work (i.e. we don't have exactly one unverified transaction, excactly one account for each participants, etc.)
+    //  4. Perform account balance change
+    //  5. Mark as transaction as verified
+    //  6. Store updated data
+    //
+    // One potential problem: ensure database atomicity.
 }
 
 switch ($page) {
@@ -120,11 +127,12 @@ switch ($page) {
 
         //var_dump($_POST);
         if (!$input_complete || !$input_valid) {
-            //TODO... exchange registration failed against ui info to user
+			pb_replace_all("main", "doregister_fail.html");
+            pb_replace_with("ERRORCODE", "Please make sure that you enter values into all fields!");
         }
-        else if($input_complete && !$valid_password){
-            //TODO... inform user that something went wrong with the password
-            pb_replace_all("main", "register.html");
+        else if(!$valid_password){
+            pb_replace_all("main", "doregister_fail.html");
+            pb_replace_with("ERRORCODE", "Please make sure that your password is at least 8 signs long and identical to the confirmation field!");
         }
         else {
             $employee = isset($_POST["isEmployee"]) ? 1 : 0;
@@ -141,12 +149,9 @@ switch ($page) {
                     $accountData = array("userid" => $userid, "balance" => "10000"); // We are generous and are giving everyone so much money!
                     db_insert("accounts", $accountData);
                 }
-                //echo "<h1>Registration successful.</h1>Your account has to be approved, before you can login. We will send you an e-mail when we verified your account.";
                 pb_replace_all("main", "doregister_success.html");
             }
         }
-        // only happens if failed, since otherwise '%%main%%' is already removed from the html
-        pb_replace_all("main", "doregister_fail.html");
         break;
     case "_dologin":
         $getUsersForName = function($email) {
@@ -164,7 +169,6 @@ switch ($page) {
         }
         break;
     case "uhome":
-        //echo "<h1>Welcome, client</h1>";
         $userid = login_userid();
         display_userstate($userid);
         pb_replace_with("headline", "<h1>Welcome, client</h1>");
@@ -174,7 +178,7 @@ switch ($page) {
         break;
     case "udotransaction":
         var_dump($_POST); // Debugging.
-        // Perform transaction. if volume < 10000€ change account balances.
+        // TODO: Insert transaction into db and call performTransaction.
         break;
     case "utransactionupload":
         pb_replace_all("main", "utransactionupload.html");
@@ -185,7 +189,7 @@ switch ($page) {
             $read = fread($handle, 3000);
             $status = pclose($handle);
             if ($status === 0) {
-                // TODO: Perform transaction.
+                // TODO: Insert transaction into db and call performTransaction.
                 pb_replace_with("main", $read);
             }
         }
@@ -193,7 +197,7 @@ switch ($page) {
         break;
     case "ehome":
         pb_replace_all("main", "ehome.html");
-        $users = db_queryWith("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
+        $users = db_query("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
         if ($users->rowCount() === 0) {
             pb_replace_with("element", "<li>No users to verify.</li>");
         }
@@ -217,26 +221,109 @@ switch ($page) {
         }
         else {
             $success = $_POST["success"] === "true";
+            $failed = FALSE;
             if ($success) {
-                db_queryWith("UPDATE users SET isVerified = 1 WHERE userid = :userid", array("userid" => $_POST["userid"]));
-                // TODO: Send Email with TAN if it is not an employee.
+                try {
+                    $verified_user = db_queryWith("SELECT name, email, isEmployee FROM users WHERE userid = :userid AND isVerified = 0", array("userid" => $_POST["userid"]));
+
+                    if ($verified_user->rowCount() !== 1) {
+                        pb_replace_all("main", "edoverify_fail.html");
+                        $failed = TRUE;
+                    }
+                    else {
+                        $user = $verified_user->fetch();
+                        db_queryWith("UPDATE users SET isVerified = 1 WHERE userid = :userid", array("userid" => $_POST["userid"]));
+                    }
+
+                    if (!$failed && !$user["isEmployee"]) {
+                        $tans = array();
+
+                        $iterCount = 0;
+                        while (count($tans) < 100 && $iterCount < 10) {
+                            $iterCount++;
+                            $tanQuery = "SELECT tan FROM tans WHERE ";
+                            // TODO: Is the query really complete?
+                            // We have some TANs from the last iteration. Ensure that this works.
+                            for ($i = count($tans); $i < 110; $i++) {
+                                $tan = substr(base64_encode(openssl_random_pseudo_bytes(12)), 0, 15);
+                                $tans[] = $tan;
+                                if ($i !== 0) $tanQuery .= " OR ";
+                                $tanQuery .= "tan = '$tan'"; // No need for placeholder unless base64 is hijacked.
+                            }
+
+                            array_unique($tans);
+
+                            // Small overhead for database query.
+                            if (count($tans) < 105) continue; // Don't spam the database.
+
+                            $existingTans = db_query($tanQuery);
+
+                            foreach ($existingTans as $etan) {
+                                if (($index = array_search($etan["tan"], $tans)) !== FALSE) {
+                                    array_splice($tans, $index, 1);
+                                }
+                            }
+                        }
+
+                        if (count($tans) < 100) {
+                            pb_replace_with("main", "Error: ETANGENT");
+                            $failed = TRUE;
+                        }
+                        else {
+                            // We found 100 tans.
+                            $tans = array_slice($tans, 0, 100);
+                            $tanQueryPart = array();
+                            foreach ($tans as $tan) {
+                                $tanQueryPart[] = "('$tan',:userid)";
+                            }
+
+                            $tanQueryPart = join(",", $tanQueryPart);
+                            $tanQuery = "INSERT INTO tans (`tan`, `userid`) VALUES $tanQueryPart";
+
+                            try {
+                                db_queryWith($tanQuery, array("userid" => $_POST["userid"]));
+                            } catch (Exception $e) {
+                                pb_replace_with("main", "Error: ETANGENT");
+                                $failed = TRUE;
+                            }
+
+                            if (!$failed) {
+                                // TODO: Send Email with TANs
+                            }
+                        }
+                    }
+
+                    if (!$failed)
+                        header("Location: index.php?page=ehome");
+
+                }
+                catch (Exception $e) {
+                    pb_replace_with("main", "We have some serious problems. Please contact the webmaster.");
+                    // echo $e->getMessage();
+                }
             }
             else {
                 db_queryWith("DELETE FROM users WHERE userid = :userid", array("userid" => $_POST["userid"]));
                 db_queryWith("DELETE FROM accounts WHERE userid = :userid", array("userid" => $_POST["userid"]));
+                header("Location: index.php?page=ehome");
             }
         }
-        header("Location: index.php?page=ehome");
-        break;
-    case "eapprovetransaction":
-        // Verify transaction UI
         break;
     case "edoapprovetransaction":
-        // Perform transaction, if not verified yet and change account balances.
+        if (!isset($_POST["tid"]) || !isset($_POST["success"])) {
+            pb_replace_all("main", "edoverify_fail.html");
+        } else {
+            $success = $_POST["success"] === "true";
+            if ($success) {
+                performTransaction($_POST["tid"]);
+            } else {
+                db_queryWith("DELETE FROM transactions WHERE tid = :tid", array("tid" => $_POST["tid"]));
+                header("Location: index.php?page=ehome");
+            }
+        }
         break;
     case "etakeover":
         pb_replace_all("main", "etakeover.html");
-        // PVUL: Check existence.
         display_userstate($_POST["userid"]);
         pb_replace_with("headline", "");
         break;
@@ -256,10 +343,10 @@ switch ($page) {
 }
 
 if (login_privileges() !== 0) {
-    pb_replace_with("logout", "<hr><p><a href='?page=logout'>Logout</a></p>");
+    pb_replace_with("logout", "<a href='?page=logout'>Logout</a>");
 }
 else {
-    pb_replace_with("logout", "");
+    pb_replace_with("logout", "<a href='?page=register'>Register</a><a href='?page=login'>Login</a>");
 }
 
 db_close();

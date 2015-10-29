@@ -2,21 +2,51 @@ html, body {
     margin: 0;
     padding: 0;
     min-height: 100%;
-    font-family: Tahoma, Arial, sans-serif;
+    font-family: Cantarell, Arial, sans-serif;
 }
 body {
-    background: #eee;
+    background: #e2e2e2;
 }
 .container {
-    width: 920px;
-    padding: 20px;
+    width: 960px;
     background: #fff;
     min-height: 100%;
     margin: 0 auto;
+    box-shadow: 0 2px 6px rgba(100, 100, 100, 0.3);
+}
+.header {
+    width: 920px;
+    height: 1.44em;
+    padding: 8px 20px;
+    background: #0a0;
+    color: #fff;
+}
+.header .title {
+    float: left;
+    font-size: 120%;
+}
+.header .logout {
+    float: right;
+}
+.header .logout a {
+    display: inline-block;
+    color: #fff;
+    text-decoration: none;
+    padding-left: 20px;
+}
+.header .logout a:hover {
+    text-decoration: underline;
+}
+.content {
+    padding: 20px;
 }
 .transactions {
     width: 100%;
 }
 .transactions td:nth-child(2) {
     width: 60%;
+}
+hr {
+    border: none;
+    border-top: 1px solid #aaa;
 }

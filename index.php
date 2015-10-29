@@ -97,8 +97,46 @@ function performTransaction($tid) {
     //  6. Store updated data
     //
     // One potential problem: ensure database atomicity.
+   
+$transaction= db_queryWith("SELECT * FROM transactions WHERE tid = :tid", array("tid" => $tid));
+$srcAccount = $transaction->sourceAccount;
+$targAccount = $transaction->targetAccount;
+$srcArray=db_queryWith("Select * from accounts where userid =:userid",array("userid" =>$srcAccount));
+$targArray=db_queryWith("Select * from accounts where userid=:userid",array("userid" =>$targAccount));
+$srcBalance=$srcArray->balance-$transaction->volume;
+$targBalance = $targArray->balance + $transaction->volume;
+if(srcBalance >=0 && targBalance >=0)
+{
+$firstTxn=db_queryWith("update accounts set balance =:srcBalance where userid=:userid",array("srcBalance" =>$srcBalance,"userid"=>$srcAccount));
+if($firstTxn)
+{
+$secondTxn=db_queryWith("update accounts set balance=:targBalance where userid=:userid",array("targBalance" =>$targBalance,"userid"=>$targAccount));
+if($secondTxn)
+{
+$verify=db_queryWith("update transactions set isVerified=1 where tid=:tid",array("tid" =>$tid);
+if($verify)
+{
+echo "Transaction is Successful";
 }
+}
+else
+{
+//Reverting Back the changes in DB since secondTxn failed
 
+db_queryWith("update accounts set balance =:balance where userid=:userid",array("balance"=>$srcArray->balance,"userid"=>$srcAccount));
+echo "Transaction failed";
+}
+}
+else
+{
+echo "Transaction Failed";
+}
+}
+else
+{
+echo "Transaction failed due to insufficient balance";
+}
+}
 switch ($page) {
     case "_home":
         pb_replace_all("main", "entry_page.html");//"home.html");
@@ -127,10 +165,12 @@ switch ($page) {
 
         //var_dump($_POST);
         if (!$input_complete || !$input_valid) {
+           	  
 			pb_replace_all("main", "doregister_fail.html");
             pb_replace_with("ERRORCODE", "Please make sure that you enter values into all fields!");
         }
         else if(!$valid_password){
+
             pb_replace_all("main", "doregister_fail.html");
             pb_replace_with("ERRORCODE", "Please make sure that your password is at least 8 signs long and identical to the confirmation field!");
         }

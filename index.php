@@ -254,7 +254,7 @@ if (login_privileges() !== 0) {
     pb_replace_with("logout", "<a href='?page=logout'>Logout</a>");
 }
 else {
-    pb_replace_with("logout", "");
+    pb_replace_with("logout", "<a href='?page=register'>Register</a><a href='?page=login'>Login</a>");
 }
 
 db_close();

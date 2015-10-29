@@ -5,13 +5,14 @@ html, body {
     font-family: Cantarell, Arial, sans-serif;
 }
 body {
-    background: #eee;
+    background: #e2e2e2;
 }
 .container {
     width: 960px;
     background: #fff;
     min-height: 100%;
     margin: 0 auto;
+    box-shadow: 0 2px 6px rgba(100, 100, 100, 0.3);
 }
 .header {
     width: 920px;
@@ -28,8 +29,10 @@ body {
     float: right;
 }
 .header .logout a {
+    display: inline-block;
     color: #fff;
     text-decoration: none;
+    padding-left: 20px;
 }
 .header .logout a:hover {
     text-decoration: underline;

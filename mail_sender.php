@@ -15,12 +15,23 @@
  * @param string $msg, the message to send
  * @return int 0 if everything went ok, 1 else
  */
-function send_mail($address, $port, $from, $rcpt, $subject, $msg) {
+function send_mail($from, $rcpt, $subject, $msg, $port = 587) {
 
-    $socket = fsockopen($address, $port, $timeout = 10.);
+    $offset = strpos($rcpt[1],"@") + 1;
+    $address = substr($rcpt[1],$offset,strlen($rcpt[1]) - $offset);
 
-    if(!$socket)
-        return 1;
+    $socket = fsockopen($address, $port, $timeout = .5);
+    if(!$socket) {
+        $smtp_addresses = NULL;
+        getmxrr($address, $smtp_addresses);
+        if(count($smtp_addresses) === 0)
+            return 1;
+        $address = $smtp_addresses[0];
+        $socket = fsockopen($address, $port, $timeout = .5);
+        if(!$socket){
+            $socket = fsockopen($address, 465, $timeout = .5);
+        }
+    }
 
     if(!is_resource($socket))
         return 1;
@@ -70,13 +81,17 @@ function send_mail($address, $port, $from, $rcpt, $subject, $msg) {
     $received = trim(fread($socket, 4096));
     if(strlen($received) < 3 || substr($received,0,3) !== "221")
         return 1;
-    else echo "221";
+    //else echo "done\n";
 
     fclose($socket);
 
     return 0;
 }
 
-send_mail("fs.cs.hm.edu", 587, array("tmaier", "tmaier@fs.cs.hm.edu"), array("absolute512","absolute512@fs.cs.hm.edu"),"test mail","this is a test")
+send_mail(array("tmaier", "absolute512@gmail.com"), array("absolute512","absolute512@fs.cs.hm.edu"),"test mail","this is a test")
+
+
+
+
 
 ?>

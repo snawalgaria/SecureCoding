@@ -6,6 +6,7 @@ function db_open() {
     try {
         $dbconfig = array("host"=>"localhost","name"=>"scbanking","user"=>"scbanking","password"=>"thisisasupersecurepassword");
         $_ENV["DBPdo"] = new PDO('mysql:host=' . $dbconfig["host"] . ';dbname=' . $dbconfig["name"], $dbconfig["user"], $dbconfig["password"]);
+        $_ENV["DBPdo"]->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // We could use foreign keys here, if we are sure that we use InnoDB.
 
@@ -20,7 +21,6 @@ function db_open() {
         return TRUE;
     } catch (Exception $e) {
         $_ENV["DBError"] = $e;
-	echo $e->getMessage();
         return FALSE;
     }
 }

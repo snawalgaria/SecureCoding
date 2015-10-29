@@ -239,7 +239,9 @@ switch ($page) {
                     if (!$failed && !$user["isEmployee"]) {
                         $tans = array();
 
-                        while (count($tans) < 100) {
+                        $iterCount = 0;
+                        while (count($tans) < 100 && $iterCount < 10) {
+                            $iterCount++;
                             $tanQuery = "SELECT tan FROM tans WHERE ";
                             // TODO: Is the query really complete?
                             // We have some TANs from the last iteration. Ensure that this works.
@@ -264,25 +266,31 @@ switch ($page) {
                             }
                         }
 
-                        // We found 100 tans.
-                        $tans = array_slice($tans, 0, 100);
-                        $tanQueryPart = array();
-                        foreach ($tans as $tan) {
-                            $tanQueryPart[] = "('$tan',:userid)";
-                        }
-
-                        $tanQueryPart = join(",", $tanQueryPart);
-                        $tanQuery = "INSERT INTO tans (`tan`, `userid`) VALUES $tanQueryPart";
-
-                        try {
-                            db_queryWith($tanQuery, array("userid" => $_POST["userid"]));
-                        } catch (Exception $e) {
+                        if (count($tans) < 100) {
                             pb_replace_with("main", "Error: ETANGENT");
                             $failed = TRUE;
                         }
+                        else {
+                            // We found 100 tans.
+                            $tans = array_slice($tans, 0, 100);
+                            $tanQueryPart = array();
+                            foreach ($tans as $tan) {
+                                $tanQueryPart[] = "('$tan',:userid)";
+                            }
 
-                        if (!$failed) {
-                            // TODO: Send Email with TANs
+                            $tanQueryPart = join(",", $tanQueryPart);
+                            $tanQuery = "INSERT INTO tans (`tan`, `userid`) VALUES $tanQueryPart";
+
+                            try {
+                                db_queryWith($tanQuery, array("userid" => $_POST["userid"]));
+                            } catch (Exception $e) {
+                                pb_replace_with("main", "Error: ETANGENT");
+                                $failed = TRUE;
+                            }
+
+                            if (!$failed) {
+                                // TODO: Send Email with TANs
+                            }
                         }
                     }
 
@@ -311,6 +319,7 @@ switch ($page) {
                 performTransaction($_POST["tid"]);
             } else {
                 db_queryWith("DELETE FROM transactions WHERE tid = :tid", array("tid" => $_POST["tid"]));
+                header("Location: index.php?page=ehome");
             }
         }
         break;

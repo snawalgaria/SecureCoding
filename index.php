@@ -222,6 +222,8 @@ switch ($page) {
         pb_replace_all("main", "utransaction.html");
         break;
     case "udotransaction":
+        // if (!isset($_POST["target"]) || !isset($_POST["volume"]) || !isset($_POST["tan"]) || !isset($_POST["desc"])) {
+        // }
         var_dump($_POST); // Debugging.
         // TODO: Insert transaction into db and call performTransaction.
         break;
@@ -230,7 +232,7 @@ switch ($page) {
         break;
     case "udotransactionupload":
         if (isset($_FILES["transactionfile"]) && $_FILES["transactionfile"]["size"] <= 3000 && $_FILES["transactionfile"]["error"] === UPLOAD_ERR_OK) {
-            $handle = popen("./parser/parser " . $_FILES["transactionfile"]["tmp_name"], "r");
+            $handle = popen("./parser/parser " . login_userid() . " " . $_FILES["transactionfile"]["tmp_name"], "r");
             $read = fread($handle, 3000);
             $status = pclose($handle);
             if ($status === 0) {

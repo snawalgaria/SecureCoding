@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <mysql.h>
 
 const char * target = "TOACCOUNT:";
 const int target_size = 10;
@@ -13,7 +14,7 @@ const char * amount = "AMOUNT:";
 const int amount_size = 7;
 const char * subject = "SUBJECT:";
 const int subject_size = 8;
-const char * tan = "TAN:";
+const char * tancode = "TAN:";
 const int tan_size = 4;
 
 
@@ -48,6 +49,11 @@ int validate_amount(char* value) {
 
         // If we have a dot, ensure that we have only one
         if (strchr(dot, '.')) return 0;
+
+        // Remove dot
+        memmove(dot - 1, dot, 2); // We hopefully ensured that strlen(dot) = 2.
+    } else {
+        strcat(value, "00"); // We have that buffer.
     }
 
     return 1;
@@ -55,8 +61,14 @@ int validate_amount(char* value) {
 
 #define DEBUG 1
 
+static void
+perform_transaction(int source, int target, int amount, char* tanstr, char* subject)
+{
+    printf("Perform transaction from %d to %d with %d euro-cents, tan %s: %s\n", source, target, amount, tanstr, subject);
+}
+
 __attribute__((noreturn)) void
-process(char * buffer, size_t size) {
+process(char* userid, char * buffer, size_t size) {
     char* target_val = NULL;
     char* amount_val = NULL;
     char* subject_val = NULL;
@@ -78,14 +90,17 @@ process(char * buffer, size_t size) {
             size_t consumed = parse(rbuf + amount_size, remaining - amount_size);
             rbuf += consumed + amount_size;
             remaining -= consumed + amount_size;
+            char* newamount = malloc(sizeof(char) * (strlen(amount_val) + 3));
+            strcpy(newamount, amount_val);
+            amount_val = newamount;
             if (!validate(amount_val, "0123456789.") || !validate_amount(amount_val)) exit(2);
         }
-        else if (remaining >= tan_size && !strncmp(rbuf, tan, tan_size)) {
+        else if (remaining >= tan_size && !strncmp(rbuf, tancode, tan_size)) {
             tan_val = rbuf + tan_size;
             size_t consumed = parse(rbuf + tan_size, remaining - tan_size);
             rbuf += consumed + tan_size;
             remaining -= consumed + tan_size;
-            if (strlen(tan_val) != 15 || !validate(tan_val, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNONPQRSTUVWXYZ.,;:°!§$&/()=?*'_-#+")) exit(2);
+            if (strlen(tan_val) != 15 || !validate(tan_val, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNONPQRSTUVWXYZ.,;:!/()=?*_-#+")) exit(2);
         }
         else if (remaining >= subject_size && !strncmp(rbuf, subject, subject_size)) {
             subject_val = rbuf + subject_size;
@@ -107,28 +122,41 @@ process(char * buffer, size_t size) {
         exit(2);
     }
 
-    printf("%s;%s;%s;%s\n", target_val, tan_val, amount_val, subject_val);
+    int target = atoi(target_val);
+    int source = atoi(userid);
+    int amount = atoi(amount_val);
+
+    if (target == 0 || source == 0 || amount == 0) {
+        exit(2);
+    }
+
+    perform_transaction(source, target, amount, tan_val, subject_val);
+    // printf("%s;%s;%s;%s\n", target_val, tan_val, amount_val, subject_val);
     exit(0);
 }
 
 int main(int argc, char * argv[]) {
 
     FILE *file_handle;
+    char* filename;
 
     //check parameters
-    if (argc != 2) {
+    if (argc != 3) {
         exit(4);
     }
+
+    filename = argv[2];
+
     //check file exists
-    if (access(argv[1],F_OK) == -1) {
+    if (access(filename,F_OK) == -1) {
         exit(4);
     }
     //check file readable
-    if (access(argv[1],R_OK) == -1) {
+    if (access(filename,R_OK) == -1) {
         exit(4);
     }
     //open file
-    if ((file_handle = fopen(argv[1], "r"))) {
+    if ((file_handle = fopen(filename, "r"))) {
         //get the file size
         fseek(file_handle, 0, SEEK_END);
         size_t size = (size_t) ftell(file_handle);
@@ -139,7 +167,7 @@ int main(int argc, char * argv[]) {
             buffer[size] = 0;
             fread(buffer, size, 1, file_handle);
             fclose(file_handle);
-            process(buffer,size);
+            process(argv[1], buffer,size);
             // We never get here.
         } else fclose(file_handle);
     }

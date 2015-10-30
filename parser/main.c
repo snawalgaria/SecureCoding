@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 #include <mysql.h>
 
 const char * target = "TOACCOUNT:";
@@ -59,12 +60,107 @@ int validate_amount(char* value) {
     return 1;
 }
 
+const char* outputStrings[] = {
+    "",
+    "",
+    "<h1>File error</h1><p>Your file does not match the specification.</p>",
+    "",
+    "<h1>Internal error</h1><p>Please inform the bank about uploading issues.</p>",
+    "",
+    "<h1>Internal error</h1><p>Please inform the bank about database issues.</p>",
+    "<h1>Fools!</h1><p>You just tried to spend more money than you have!</p>",
+    "<h1>Invalid data</h1><p>Some data in your file is not valid.</p>"
+};
+__attribute__((noreturn)) void __exitout(int code) {
+    if (code <= 8 && code >= 0) printf("%s", outputStrings[code]);
+    else printf("<h1>Unknown error</h1><p>Exit Code %d</p>", code);
+    printf("\n");
+    exit(code);
+}
+
 #define DEBUG 1
+
+#define checksqlerror() do {if (my == NULL || mysql_errno(my) != 0){if (my != NULL) mysql_close(my);__exitout(6);}}while(0)
+#define doerror() do {if (my != NULL) mysql_close(my);__exitout(8);}while(0)
+
+static void
+fetch_column(MYSQL* my, const char* query, const char* column, MYSQL_FIELD** out_field, char** outdata) {
+    mysql_real_query(my, query, strlen(query));
+    checksqlerror();
+
+    MYSQL_RES* res = mysql_store_result(my);
+    checksqlerror();
+
+    int fieldindex;
+
+    MYSQL_FIELD* field;
+    for (fieldindex = 0; fieldindex < mysql_num_fields(res); fieldindex++) {
+        field = mysql_fetch_field(res);
+        if (strcmp(column, (field)->name) == 0) {
+            break;
+        }
+    }
+    if (fieldindex == mysql_num_fields(res)) doerror();
+
+    int rowcount = 0;
+    MYSQL_ROW row;
+
+    while ((row = mysql_fetch_row(res)) != NULL) {
+        rowcount++;
+        if (rowcount > 1) doerror();
+        *outdata = row[fieldindex];
+    }
+
+    if (rowcount == 0) doerror(); 
+
+    if (out_field != NULL) *out_field = field;
+    // printf("HERE %x %x %s\n", my, mysql_errno(my), mysql_error(my));
+}
 
 static void
 perform_transaction(int source, int target, int amount, char* tanstr, char* subject)
 {
-    printf("Perform transaction from %d to %d with %d euro-cents, tan %s: %s\n", source, target, amount, tanstr, subject);
+    char query[512];
+
+    MYSQL* my = mysql_init(NULL);
+    checksqlerror();
+
+    mysql_real_connect(my, "localhost", "scbanking", "thisisasupersecurepassword", "scbanking", 0, NULL, 0);
+    checksqlerror();
+
+    char* resbuf;
+    int sourceBalance;
+    int targetBalance;
+
+    sprintf(query, "SELECT balance FROM accounts WHERE userid = %d;", source);
+    fetch_column(my, query, "balance", NULL, &resbuf);
+    sourceBalance = atoi(resbuf);
+
+    sprintf(query, "SELECT balance FROM accounts WHERE userid = %d;", target);
+    fetch_column(my, query, "balance", NULL, &resbuf);
+    targetBalance = atoi(resbuf);
+
+    sprintf(query, "SELECT tan FROM tans WHERE tan = '%s' AND userid = %d AND used = 0;", tanstr, source);
+    fetch_column(my, query, "tan", NULL, &resbuf);
+
+    if (sourceBalance - amount < 0) {
+        __exitout(7);
+    }
+
+    sprintf(query, "INSERT INTO transactions (sourceAccount,targetAccount,volume,description,unixtime,isVerified) VALUES (%d, %d, %d, '%s', %d, %d);", source, target, amount, subject, (int)time(NULL), amount < 1000000 ? 1 : 0);
+    mysql_query(my, query);
+    checksqlerror();
+    sprintf(query, "UPDATE tans SET used = 1 WHERE tan = '%s';", tanstr);
+    mysql_query(my, query);
+    checksqlerror();
+    if (amount < 1000000) {
+        sprintf(query, "UPDATE accounts SET balance = balance - %d WHERE userid = %d", amount, source);
+        mysql_query(my, query);
+        checksqlerror();
+        sprintf(query, "UPDATE accounts SET balance = balance + %d WHERE userid = %d", amount, target);
+        mysql_query(my, query);
+        checksqlerror();
+    }
 }
 
 __attribute__((noreturn)) void
@@ -83,43 +179,43 @@ process(char* userid, char * buffer, size_t size) {
             size_t consumed = parse(rbuf + target_size, remaining - target_size);
             rbuf += consumed + target_size;
             remaining -= consumed + target_size;
-            if (!validate(target_val, "0123456789")) exit(2);
+            if (!validate(target_val, "0123456789")) __exitout(2);
         }
         else if (remaining >= amount_size && !strncmp(rbuf, amount, amount_size)) {
             amount_val = rbuf + amount_size;
             size_t consumed = parse(rbuf + amount_size, remaining - amount_size);
             rbuf += consumed + amount_size;
             remaining -= consumed + amount_size;
-            char* newamount = malloc(sizeof(char) * (strlen(amount_val) + 3));
+            char* newamount = (char*) malloc(sizeof(char) * (strlen(amount_val) + 3));
             strcpy(newamount, amount_val);
             amount_val = newamount;
-            if (!validate(amount_val, "0123456789.") || !validate_amount(amount_val)) exit(2);
+            if (!validate(amount_val, "0123456789.") || !validate_amount(amount_val)) __exitout(2);
         }
         else if (remaining >= tan_size && !strncmp(rbuf, tancode, tan_size)) {
             tan_val = rbuf + tan_size;
             size_t consumed = parse(rbuf + tan_size, remaining - tan_size);
             rbuf += consumed + tan_size;
             remaining -= consumed + tan_size;
-            if (strlen(tan_val) != 15 || !validate(tan_val, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNONPQRSTUVWXYZ.,;:!/()=?*_-#+")) exit(2);
+            if (strlen(tan_val) != 15 || !validate(tan_val, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNONPQRSTUVWXYZ.,;:!/()=?*_-#+")) __exitout(2);
         }
         else if (remaining >= subject_size && !strncmp(rbuf, subject, subject_size)) {
             subject_val = rbuf + subject_size;
             size_t consumed = parse(rbuf + subject_size, remaining - subject_size);
             rbuf += consumed + subject_size;
             remaining -= consumed + subject_size;
-            if (strlen(subject_val) > 160 || !validate(subject_val, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNONPQRSTUVWXYZ.,;:/() ")) exit(2);
+            if (strlen(subject_val) > 160 || !validate(subject_val, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNONPQRSTUVWXYZ.,;:/() ")) __exitout(2);
         }
         else if (rbuf[0] == '\n') {
             rbuf++;
             remaining--;
         }
         else {
-            exit(2);
+            __exitout(2);
         }
     }
 
     if (target_val == NULL || tan_val == NULL || amount_val == NULL || subject_val == NULL) {
-        exit(2);
+        __exitout(2);
     }
 
     int target = atoi(target_val);
@@ -127,12 +223,12 @@ process(char* userid, char * buffer, size_t size) {
     int amount = atoi(amount_val);
 
     if (target == 0 || source == 0 || amount == 0) {
-        exit(2);
+        __exitout(2);
     }
 
     perform_transaction(source, target, amount, tan_val, subject_val);
-    // printf("%s;%s;%s;%s\n", target_val, tan_val, amount_val, subject_val);
-    exit(0);
+    printf("<h1>Success!</h1>Performed transaction to %d with %d euro-cents.", target, amount);
+    __exitout(0);
 }
 
 int main(int argc, char * argv[]) {
@@ -142,18 +238,18 @@ int main(int argc, char * argv[]) {
 
     //check parameters
     if (argc != 3) {
-        exit(4);
+        __exitout(4);
     }
 
     filename = argv[2];
 
     //check file exists
     if (access(filename,F_OK) == -1) {
-        exit(4);
+        __exitout(4);
     }
     //check file readable
     if (access(filename,R_OK) == -1) {
-        exit(4);
+        __exitout(4);
     }
     //open file
     if ((file_handle = fopen(filename, "r"))) {

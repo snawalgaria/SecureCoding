@@ -250,10 +250,7 @@ switch ($page) {
             $handle = popen("./parser/parser " . login_userid() . " " . $_FILES["transactionfile"]["tmp_name"], "r");
             $read = fread($handle, 3000);
             $status = pclose($handle);
-            if ($status === 0) {
-                // TODO: Insert transaction into db and call performTransaction.
-                pb_replace_with("main", $read);
-            }
+            pb_replace_with("main", $read);
         }
         pb_replace_all("main", "udotransactionupload_fail.html");
         break;

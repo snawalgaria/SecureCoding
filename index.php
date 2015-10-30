@@ -97,7 +97,8 @@ function performTransaction($tid) {
     //  6. Store updated data
     //
     // One potential problem: ensure database atomicity.
-   
+   try{
+
     $transaction = db_queryWith("SELECT * FROM transactions WHERE tid = :tid", array("tid" => $tid));
     if ($transaction->rowCount() !== 1) {
         return "Transaction does not exist.";
@@ -106,9 +107,19 @@ function performTransaction($tid) {
     $srcAccount = $transaction["sourceAccount"];
     $targAccount = $transaction["targetAccount"];
     $srcArray =db_queryWith("SELECT * FROM accounts WHERE userid =:userid", array("userid" => $srcAccount));
+    if($srcArray->rowCount()!==1)
+    {
+    return "User does not exist";
+    }
+    $srcArray = $srcArray->fetch();
     $targArray =db_queryWith("SELECT * FROM accounts WHERE userid= :userid", array("userid" => $targAccount));
-    $srcBalance =$srcArray->balance-$transaction->volume;
-    $targBalance = $targArray->balance + $transaction->volume;
+    if($targArray->rowCount()!==1)
+    {
+    return "User does not exist";
+    }
+    $targArray = $targArray->fetch();
+    $srcBalance =$srcArray["balance"]-$transaction["volume"];
+    $targBalance = $targArray["balance"] + $transaction["volume"];
     if($srcBalance >= 0 && $targBalance >=0)
     {
         $firstTxn=db_queryWith("update accounts set balance =:srcBalance where userid=:userid",array("srcBalance" =>$srcBalance,"userid"=>$srcAccount));
@@ -140,6 +151,11 @@ function performTransaction($tid) {
     {
         echo "Transaction failed due to insufficient balance";
     }
+  }
+  catch(Exception $exe)
+  {
+ 	return "Transaction failed to perform"; 
+  }
 }
 
 switch ($page) {

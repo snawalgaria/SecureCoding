@@ -97,7 +97,8 @@ function performTransaction($tid) {
     //  6. Store updated data
     //
     // One potential problem: ensure database atomicity.
-   
+   try{
+
     $transaction = db_queryWith("SELECT * FROM transactions WHERE tid = :tid", array("tid" => $tid));
     if ($transaction->rowCount() !== 1) {
         return "Transaction does not exist.";
@@ -106,9 +107,19 @@ function performTransaction($tid) {
     $srcAccount = $transaction["sourceAccount"];
     $targAccount = $transaction["targetAccount"];
     $srcArray =db_queryWith("SELECT * FROM accounts WHERE userid =:userid", array("userid" => $srcAccount));
+    if($srcArray->rowCount()!==1)
+    {
+    return "User does not exist";
+    }
+    $srcArray = $srcArray->fetch();
     $targArray =db_queryWith("SELECT * FROM accounts WHERE userid= :userid", array("userid" => $targAccount));
-    $srcBalance =$srcArray->balance-$transaction->volume;
-    $targBalance = $targArray->balance + $transaction->volume;
+    if($targArray->rowCount()!==1)
+    {
+    return "User does not exist";
+    }
+    $targArray = $targArray->fetch();
+    $srcBalance =$srcArray["balance"]-$transaction["volume"];
+    $targBalance = $targArray["balance"] + $transaction["volume"];
     if($srcBalance >= 0 && $targBalance >=0)
     {
         $firstTxn=db_queryWith("update accounts set balance =:srcBalance where userid=:userid",array("srcBalance" =>$srcBalance,"userid"=>$srcAccount));
@@ -140,6 +151,11 @@ function performTransaction($tid) {
     {
         echo "Transaction failed due to insufficient balance";
     }
+  }
+  catch(Exception $exe)
+  {
+ 	return "Transaction failed to perform"; 
+  }
 }
 
 switch ($page) {
@@ -170,8 +186,7 @@ switch ($page) {
 
         //var_dump($_POST);
         if (!$input_complete || !$input_valid) {
-           	  
-			pb_replace_all("main", "doregister_fail.html");
+            pb_replace_all("main", "doregister_fail.html");
             pb_replace_with("ERRORCODE", "Please make sure that you enter values into all fields!");
         }
         else if(!$valid_password){
@@ -241,6 +256,38 @@ switch ($page) {
             }
         }
         pb_replace_all("main", "udotransactionupload_fail.html");
+        break;
+    case "utransactionpdf":
+    case "etransactionpdf":
+        // Find out for which user the transaction history needs to be shown
+        $userid = login_userid();
+        if (substr($page, 0, 1) == 'e')
+        {
+            if(isset($_POST["userid"]))
+                $userid = $_POST["userid"];
+            else
+                pb_replace_all("main", "etransactionpdf_fail.html");
+        }
+        
+        require_once("transactionpdf.php");
+        // column titles
+        $header = array('Date', 'Description', 'Other Party', 'Volume');
+        
+        $data = array();
+        // TODO: fill array with the user's actual transactions
+        $data[] = array('28.10.2015', 'Test Transaction', 'Hans Dampf', (1000 / 100.0) . " €");
+        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
+        $data[] = array('30.10.2015', 'Test Transaction', 'Hans Dampf', (1000 / 100.0) . " €");
+        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
+        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
+        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
+        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
+        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
+
+        $pdf = TransactionPDF::create($header, $data);
+
+        $pdf->Output('Transaction History.pdf', 'I');
+        exit(0);
         break;
     case "ehome":
         pb_replace_all("main", "ehome.html");

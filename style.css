@@ -55,9 +55,16 @@ hr {
     border-top: 1px solid #aaa;
 }
 input {
+    width: 200px;
     padding: 9px;
     border: 1px solid #aaa;
     border-radius: 0;
+}
+textarea {
+    padding: 9px;
+    border: 1px solid #aaa;
+    border-radius: 0;
+    
 }
 input[type="submit"] {
     margin: 0 auto;

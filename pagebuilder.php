@@ -46,6 +46,43 @@ function pb_replace_with($target, $with)
 }
 
 /**
+ * Replaces the first occurence of %%$target%% in the current output string with $with
+ 
+ * e.g. pb_replace("date", "1.1.98")
+ * transforms "_______%%date%%_______%%date%%"
+ * to         "_______1.1.98_______%%date%%"
+ 
+ * returns true iff the substring was found
+ */
+function pb_replace_with_file($target, $file = "")
+{
+    global $pb_string;
+    global $pb_error;
+
+    // %% signifies special strings
+    $target = "%%" . $target . "%%";
+    
+    // First get the target file's content if it exists
+    if ($file == "")
+    $file = $target;
+    $file = "html/" . $file;
+    if (!file_exists($file))
+    {
+        $pb_error .= "ERROR: " . $file . " doesn't exist!\n";
+        return;
+    }
+    $with = file_get_contents($file);
+
+    // There's no simple function to replace the first occurence of a substring
+    $pos = strpos($pb_string,$target);
+    if ($pos !== false) {
+        $pb_string = substr_replace($pb_string,$with,$pos,strlen($target));
+        return true;
+    }
+    return false;
+}
+
+/**
  * Replaces ALL occurences of %%$target%% in the current output string with the file associated with it
  * e.g. pb_replace("date")
  * transforms "_______%%date%%_______%%date%%"

@@ -64,6 +64,11 @@ function display_userstate($userid) {
     else pb_replace_with("utransaction", "");
     for ($verified = 1; $verified >= 0; $verified--) {
         $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
+        if ($transactions->rowCount() === 0) {
+            pb_replace_with("table", "<p>No transaction in this category.</p>");
+        } else {
+            pb_replace_with_file("table", "display_userstate_table.html");
+        }
         pb_replace_with("transactions", str_repeat("%%transaction%%\n", $transactions->rowCount()));
         pb_replace_all("transaction", "transaction.html");
         foreach ($transactions as $t) {

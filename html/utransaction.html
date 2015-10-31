@@ -1,22 +1,22 @@
 <h1>New transaction</h1>
-You can enter the information of the transaction here, our you can <a href='?page=utransactionupload'>upload a transaction file</a>.<hr>
+You can enter the information of the transaction here, or you can <a href='?page=utransactionupload'>upload a transaction file</a>.<hr>
 <h3>Transaction data</h3>
 <form action='?page=udotransaction' method='POST'>
 	<p>
+		Target account<br>
 		<input name='target'>
-		Target account
 	</p>
 	<p>
+		Transaction volume<br>
 		<input name='volume'> 
-		Transaction volume
 	</p>
 	<p>
-		Description
+		Description<br>
+		<textarea cols='80' rows='3' name='desc'></textarea>
 	</p>
-	<textarea cols='80' rows='3' name='desc'></textarea>
 	<p>
+		Enter a TAN here.<br>
 		<input name='tan'>
-		Enter a TAN here.
 	</p>
 	<p>
 		<input type='submit' value='Perform Transaction'>

@@ -1,12 +1,12 @@
-<li>%%type%% '%%name%%' with e-mail '%%email%%' registered.
+<li>%%type%% '%%name%%' with e-mail '%%email%%' registered.<br>
 	<form style='display: inline-block;' action='?page=edoverify' method='post'>
 		<input type='hidden' name='userid' value='%%userid%%'>
 		<input type='hidden' name='success' value='true'>
-		<input type='submit' value='Verify'>
+		<input type='submit' value='Verify' class='verify'>
 	</form>
 	<form style='display: inline-block;' action='?page=edoverify' method='post'>
 		<input type='hidden' name='userid' value='%%userid%%'>
 		<input type='hidden' name='success' value='not true'>
-		<input type='submit' value='Drop'>
+		<input type='submit' value='Drop' class='decline'>
 	</form>
 </li>

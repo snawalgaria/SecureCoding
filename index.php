@@ -131,7 +131,7 @@ function performTransaction($tid) {
                 $verify=db_queryWith("update transactions set isVerified=1 where tid=:tid",array("tid" =>$tid));
                 if($verify)
                 {
-                    echo "Transaction is Successful";
+                    return "Transaction is Successful";
                 }
             }
             else
@@ -139,17 +139,17 @@ function performTransaction($tid) {
                 //Reverting Back the changes in DB since secondTxn failed
 
                 db_queryWith("update accounts set balance =:balance where userid=:userid",array("balance"=>$srcArray->balance,"userid"=>$srcAccount));
-                echo "Transaction failed";
+                return "Transaction failed";
             }
         }
         else
         {
-            echo "Transaction Failed";
+            return "Transaction Failed";
         }
     }
     else
     {
-        echo "Transaction failed due to insufficient balance";
+        return "Transaction failed due to insufficient balance";
     }
   }
   catch(Exception $exe)

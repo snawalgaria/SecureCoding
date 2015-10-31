@@ -5,7 +5,6 @@ session_start();
 require_once "database.php";
 require_once "login.php";
 require_once "pagebuilder.php";
-require_once "captcha_functions.php";
 
 login_init(600); // Auto logout after ten minutes inactivity
 
@@ -169,73 +168,38 @@ switch ($page) {
         pb_replace_all("main", "entry_page.html");//"home.html");
         break;
     case "_register":
-        $captcha_values = generate_captcha();
-        $amount_tries = isset($_POST["verify_captcha"])? intval($_POST["verify_captcha"]) % 10:0;
-        $to_replace = str_replace("%%captcha%%", $captcha_values["value"], file_get_contents("html/register.html"));
-        $to_replace = str_replace("%%input_not_set%%", "", $to_replace);
-        $to_replace = str_replace("%%name_or_mail_not_set%%", "", $to_replace);
-        $to_replace = str_replace("%%no_name_or_mail%%", "", $to_replace);
-        $to_replace = str_replace("%%captcha_input_failure%%", "", $to_replace);
-        $to_replace = str_replace("%%password_not_valid_or_matching%%", "", $to_replace);
-        $to_replace = str_replace("%%verify%%", $captcha_values["xsum"] . "" . $amount_tries, $to_replace);
-        $pb_string = str_replace("%%main%%", $to_replace, $pb_string);
+        pb_replace_all("main", "register.html");
         break;
     case "_login":
         pb_replace_all("main", "login.html");
         break;
     case "_doregister":
 
-        $to_replace = file_get_contents("html/register.html");
 
         $input_complete =
             isset($_POST["name"]) &&
             isset($_POST["email"]) &&
             isset($_POST["password"]) &&
-            isset($_POST["confirm_password"]) &&
-            isset($_POST["captcha"]);
+            isset($_POST["confirm_password"]);
 
-        $input_valid = strlen($_POST["name"]) !== 0 && strlen($_POST["email"]) !== 0;
-
-        if(!$input_valid){
-            $to_replace = str_replace("%%no_name_or_mail%%", "<p class='error_msg' > Name or eMail not set </p><br>", $to_replace);
-        } else $to_replace = str_replace("%%no_name_or_mail%%", "", $to_replace);
+        $input_valid = strlen($_POST["name"]) != 0 && strlen($_POST["email"]) != 0;
 
         //could do other checks... or some type of policy maybe
         $valid_password =
             strlen($_POST["password"]) >= 8 &&
             strcmp($_POST["confirm_password"], $_POST["password"]) === 0;
 
-        if(!$valid_password){
-            $to_replace = str_replace("%%password_not_valid_or_matching%%", "<p class='error_msg' > passwords have to be at least 8 characters long, must match</p><br>", $to_replace);
-        } else $to_replace = str_replace("%%password_not_valid_or_matching%%", "", $to_replace);
-
-        $valid_captcha = isset($_POST["captcha"]);
-        $amount_tries = 0;
-        if($valid_captcha){
-            $hidden_values = $_POST["verify_captcha"];
-            $amount_tries = intval($hidden_values) % 10;
-            $tmp = floor((intval($hidden_values) / 10));
-            $xsum = checksum(floor(intval($_POST["captcha"])));
-            $valid_captcha = intval($tmp) === intval($xsum) && intval($amount_tries) < 2;
+        //var_dump($_POST);
+        if (!$input_complete || !$input_valid) {
+            pb_replace_all("main", "doregister_fail.html");
+            pb_replace_with("ERRORCODE", "Please make sure that you enter values into all fields!");
         }
+        else if(!$valid_password){
 
-        if(!$valid_captcha){
-            if($amount_tries < 2)
-                $to_replace = str_replace("%%captcha_input_failure%%", "<p class='error_msg' >Captcha incorrect, are you a bot?</p><br>", $to_replace);
-            else {
-                pb_replace_all("main", "doregister_fail.html");
-                //TODO enforce with cookie or s'thing
-                pb_replace_with("ERRORCODE", "Registration failed after 3 unsuccessful attempts, please try again later");
-                return;
-            }
-        } else $to_replace = str_replace("%%captcha_input_failure%%", "", $to_replace);
-
-        if(!$input_complete || !$input_valid || !$valid_password || !$valid_captcha) {
-            $captcha_values = generate_captcha();
-            $to_replace = str_replace("%%captcha%%", $captcha_values["value"], $to_replace);
-            $to_replace = str_replace("%%verify%%", $captcha_values["xsum"] . "" . (intval($_POST["verify_captcha"]) % 10 + 1), $to_replace);
-            $pb_string = str_replace("%%main%%", $to_replace, $pb_string);
-        } else {
+            pb_replace_all("main", "doregister_fail.html");
+            pb_replace_with("ERRORCODE", "Please make sure that your password is at least 8 signs long and identical to the confirmation field!");
+        }
+        else {
             $employee = isset($_POST["isEmployee"]) ? 1 : 0;
             $email = htmlspecialchars($_POST["email"]);
             $name = htmlspecialchars($_POST["name"]);
@@ -250,7 +214,6 @@ switch ($page) {
                     $accountData = array("userid" => $userid, "balance" => "10000"); // We are generous and are giving everyone so much money!
                     db_insert("accounts", $accountData);
                 }
-                pb_replace_all("main", "root.html");
                 pb_replace_all("main", "doregister_success.html");
             }
         }

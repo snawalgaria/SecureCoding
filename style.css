@@ -47,9 +47,6 @@ body {
 .transactions td:nth-child(2) {
     width: 60%;
 }
-.error_msg {
-    color: red;
-}
 hr {
     border: none;
     border-top: 1px solid #aaa;

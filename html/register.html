@@ -1,31 +1,21 @@
 <h1>Register at the SecureBank</h1>
 <form action="?page=doregister" method="post">
-
-    %%no_name_or_mail%%
-
     Name<br>
     <input name="name"><br><br>
-
+    
     E-Mail<br>
     <input type="email" name="email"><br><br>
-
-    %%password_not_valid_or_matching%%
-
+    
     Password<br>
     <input type="password" name="password"><br><br>
 
     Confirm Password<br>
     <input type="password" name="confirm_password"><br><br>
 
-    %%captcha_input_failure%%
-
-    Can u help me out?<br>
-    %%captcha%% = <input type="number" name="captcha"><br><br>
-    <input type="hidden" name="verify_captcha" value="%%verify%%">
-
     <label for="employee">
-        <input type="checkbox" name="isEmployee" value="employee" id="employee">
-        You are an employee? (be honest!)
+    <input type="checkbox" name="isEmployee" value="employee" id="employee">
+    
+    You are an employee? (be honest!)
     </label><br><br>
     <input type="submit" value="Register">
 </form>

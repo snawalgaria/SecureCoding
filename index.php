@@ -211,13 +211,18 @@ switch ($page) {
             $amount_tries = intval($hidden_values) % 10;
             $tmp = floor((intval($hidden_values) / 10));
             $xsum = checksum(floor(intval($_POST["captcha"])));
-            $valid_captcha = intval($tmp) === intval($xsum) && $amount_tries < 3;
+            $valid_captcha = intval($tmp) === intval($xsum) && intval($amount_tries) < 2;
         }
 
         if(!$valid_captcha){
-            if($amount_tries < 3)
+            if($amount_tries < 2)
                 $to_replace = str_replace("%%captcha_input_failure%%", "<p class='error_msg' >Captcha incorrect, are you a bot?</p><br>", $to_replace);
-            else pb_replace_with("ERRORCODE", "Please make sure that your password is at least 8 signs long and identical to the confirmation field!");
+            else {
+                pb_replace_all("main", "doregister_fail.html");
+                //TODO enforce with cookie or s'thing
+                pb_replace_with("ERRORCODE", "Registration failed after 3 unsuccessful attempts, please try again later");
+                return;
+            }
         } else $to_replace = str_replace("%%captcha_input_failure%%", "", $to_replace);
 
         if(!$input_complete || !$input_valid || !$valid_password || !$valid_captcha) {

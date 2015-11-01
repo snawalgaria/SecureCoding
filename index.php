@@ -485,7 +485,7 @@ switch ($page) {
                             }
 
                             if (!$failed) {
-                                //message can be anything, as long as
+                                //message can be anything, as long as it does not contain \r or \n, content type is utf8
                                 $msg =
                                     "Hello dear Sir/Mam,\n" .
                                     "These are the TAN numbers for your transactions:\n\n";
@@ -505,7 +505,6 @@ switch ($page) {
                                         "Your tan numbers have arrived!!!",
                                         //mail coding is utf8
                                         $msg
-
                                     ) != 0;
                             }
                         }

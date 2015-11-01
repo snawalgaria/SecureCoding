@@ -339,8 +339,9 @@ switch ($page) {
         if ($volume < 1000000) {
             db_queryWith("UPDATE accounts SET balance = balance - :volume WHERE userid = :userid", array("userid" => $userid, "volume" => $volume));
             db_queryWith("UPDATE accounts SET balance = balance + :volume WHERE userid = :userid", array("userid" => $_POST["target"], "volume" => $volume));
-        }
-        pb_replace_with("main", "<p>Transaction enqueued successfully.</p>");
+            pb_replace_with("main", "<p>Transaction performed successfully.</p>");
+        } else
+            pb_replace_with("main", "<p>Transaction has to be approved by the bank.</p>");
         break;
     case "utransactionupload":
         pb_replace_all("main", "utransactionupload.html");

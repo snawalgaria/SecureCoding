@@ -53,7 +53,11 @@ function makepdf($userid) {
         return;
     }
 
-    $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
+    $transactions = db_queryWith("SELECT tran.unixtime, sour.userId as sourceID, sour.name as source, targ.name as target, tran.volume as volume, tran.description as description ".
+    "FROM transactions as tran, users as sour, users as targ ".
+    "WHERE (tran.sourceAccount = :userid OR tran.targetAccount = :userid) AND tran.isVerified ".
+    "AND sour.userId = tran.sourceAccount AND targ.userId = tran.targetAccount ".
+    "ORDER BY tran.unixtime DESC ", array("userid" => $userid));
     if ($transactions->rowCount() === 0) {
         pb_replace_with("main", "<p>No transactions.</p>");
         return;
@@ -62,30 +66,29 @@ function makepdf($userid) {
     require_once("transactionpdf.php");
     // column titles
     $header = array('Date', 'Description', 'Other Party', 'Volume');
-
+    
     // date, taken from the database
     $data = array();
     foreach ($transactions as $t) {
         $volume = $t["volume"] / 100.0;
-        $other = $t["sourceAccount"];
-        if ($t["sourceAccount"] === $userid) {
-            if ($t["targetAccount"] === $userid) {
-                $volume = 0;
-            }
-            else {
-                $volume = -$volume;
-            }
-            $other = $t["targetAccount"];
+        if ($t["source"] === $t["target"]) {
+            $volume = 0;
+        }
+        $other = $t["target"];
+        if ($t["sourceID"] === $userid) {
+            $volume = -$volume;
+        }
+        else {
+            $other = $t["source"];
         }
         $data[] = array(date("Y-m-d H:i", $t["unixtime"]),
-            $t["description"], $other, $volume);
-        // $data[] = array($t['unixtime'], $t['description'], $t['targetAccount'], $t['sourceAccount']);
+                      $t["description"], $other, $volume);
     }
-
+    
     // Create the PDF and print it
     $pdf = TransactionPDF::create($header, $data);
     $pdf->Output('transaction-hstory.pdf', 'I');
-
+    
     // After printing the pdf we don't want to end with an HTML file, so exit immediately
     exit(0);
 }
@@ -106,8 +109,18 @@ function display_userstate($userid) {
         return;
     }
     pb_replace_all("main", "display_userstate.html");
-    pb_replace_with("name", $userData["name"]);
-    pb_replace_with("email", $userData["email"]);
+    if (login_privileges() == 2) {
+        pb_replace_with("details", "Customer Details: %%name%%, %%userid%%, %%email%%");
+        pb_replace_with("name", $userData["name"]);
+        pb_replace_with("email", $userData["email"]);
+        pb_replace_with("userid", $userid);
+        pb_replace_with("pdflink", '<a href="?page=etransactionpdf&userid='.$userid.'">Print PDF</a>');
+    }
+    else {
+        pb_replace_with("details", "Your account ID is '%%userid%%'");
+        pb_replace_with("userid", $userid);
+        pb_replace_with("pdflink", '<a href="?page=utransactionpdf">Print PDF</a>');
+    }
     $users = db_queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
     $balance = $users->fetch(PDO::FETCH_ASSOC);
     $balance = $balance["balance"] / 100.0;
@@ -116,7 +129,11 @@ function display_userstate($userid) {
         pb_replace_with("utransaction", "<p><a href='?page=utransaction'>New transaction</a></p>");
     else pb_replace_with("utransaction", "");
     for ($verified = 1; $verified >= 0; $verified--) {
-        $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
+        $transactions = db_queryWith("SELECT tran.unixtime, sour.userId as sourceID, sour.name as source, targ.name as target, tran.volume as volume, tran.description as description ".
+        "FROM transactions as tran, users as sour, users as targ ".
+        "WHERE (tran.sourceAccount = :userid OR tran.targetAccount = :userid) AND tran.isVerified = :verified ".
+        "AND sour.userId = tran.sourceAccount AND targ.userId = tran.targetAccount ".
+        "ORDER BY tran.unixtime DESC ", array("userid" => $userid, "verified" => $verified));
         if ($transactions->rowCount() === 0) {
             pb_replace_with("table", "<p>No transaction in this category.</p>");
         } else {
@@ -126,17 +143,17 @@ function display_userstate($userid) {
         pb_replace_all("transaction", "transaction.html");
         foreach ($transactions as $t) {
             pb_replace_with("time", date("Y-m-d H:i", $t["unixtime"]));
-            pb_replace_with("description", $t[description]);
+            pb_replace_with("description", $t["description"]);
             $volume = $t["volume"] / 100.0;
-            $other = $t["sourceAccount"];
-            if ($t["sourceAccount"] === $userid) {
-                if ($t["targetAccount"] === $userid) {
-                    $volume = 0;
-                }
-                else {
-                    $volume = -$volume;
-                }
-                $other = $t["targetAccount"];
+            if ($t["source"] === $t["target"]) {
+                $volume = 0;
+            }
+            $other = $t["target"];
+            if ($t["sourceID"] === $userid) {
+                $volume = -$volume;
+            }
+            else {
+                $other = $t["source"];
             }
             pb_replace_with("other", $other);
             pb_replace_with("volume", $volume);
@@ -154,65 +171,65 @@ function performTransaction($tid) {
     //  6. Store updated data
     //
     // One potential problem: ensure database atomicity.
-    try{
+   try{
 
-        $transaction = db_queryWith("SELECT * FROM transactions WHERE tid = :tid", array("tid" => $tid));
-        if ($transaction->rowCount() !== 1) {
-            return "Transaction does not exist.";
-        }
-        $transaction = $transaction->fetch();
-        $srcAccount = $transaction["sourceAccount"];
-        $targAccount = $transaction["targetAccount"];
-        $srcArray =db_queryWith("SELECT * FROM accounts WHERE userid =:userid", array("userid" => $srcAccount));
-        if($srcArray->rowCount()!==1)
+    $transaction = db_queryWith("SELECT * FROM transactions WHERE tid = :tid", array("tid" => $tid));
+    if ($transaction->rowCount() !== 1) {
+        return "Transaction does not exist.";
+    }
+    $transaction = $transaction->fetch();
+    $srcAccount = $transaction["sourceAccount"];
+    $targAccount = $transaction["targetAccount"];
+    $srcArray =db_queryWith("SELECT * FROM accounts WHERE userid =:userid", array("userid" => $srcAccount));
+    if($srcArray->rowCount()!==1)
+    {
+    return "User does not exist";
+    }
+    $srcArray = $srcArray->fetch();
+    $targArray =db_queryWith("SELECT * FROM accounts WHERE userid= :userid", array("userid" => $targAccount));
+    if($targArray->rowCount()!==1)
+    {
+    return "User does not exist";
+    }
+    $targArray = $targArray->fetch();
+    $srcBalance =$srcArray["balance"]-$transaction["volume"];
+    $targBalance = $targArray["balance"] + $transaction["volume"];
+    if($srcBalance >= 0 && $targBalance >=0)
+    {
+        $firstTxn=db_queryWith("update accounts set balance =:srcBalance where userid=:userid",array("srcBalance" =>$srcBalance,"userid"=>$srcAccount));
+        if($firstTxn)
         {
-            return "User does not exist";
-        }
-        $srcArray = $srcArray->fetch();
-        $targArray =db_queryWith("SELECT * FROM accounts WHERE userid= :userid", array("userid" => $targAccount));
-        if($targArray->rowCount()!==1)
-        {
-            return "User does not exist";
-        }
-        $targArray = $targArray->fetch();
-        $srcBalance =$srcArray["balance"]-$transaction["volume"];
-        $targBalance = $targArray["balance"] + $transaction["volume"];
-        if($srcBalance >= 0 && $targBalance >=0)
-        {
-            $firstTxn=db_queryWith("update accounts set balance =:srcBalance where userid=:userid",array("srcBalance" =>$srcBalance,"userid"=>$srcAccount));
-            if($firstTxn)
+            $secondTxn=db_queryWith("update accounts set balance=:targBalance where userid=:userid",array("targBalance" =>$targBalance,"userid"=>$targAccount));
+            if($secondTxn)
             {
-                $secondTxn=db_queryWith("update accounts set balance=:targBalance where userid=:userid",array("targBalance" =>$targBalance,"userid"=>$targAccount));
-                if($secondTxn)
+                $verify=db_queryWith("update transactions set isVerified=1 where tid=:tid",array("tid" =>$tid));
+                if($verify)
                 {
-                    $verify=db_queryWith("update transactions set isVerified=1 where tid=:tid",array("tid" =>$tid));
-                    if($verify)
-                    {
-                        return "Transaction is Successful";
-                    }
-                }
-                else
-                {
-                    //Reverting Back the changes in DB since secondTxn failed
-
-                    db_queryWith("update accounts set balance =:balance where userid=:userid",array("balance"=>$srcArray->balance,"userid"=>$srcAccount));
-                    return "Transaction failed";
+                    return "Transaction is Successful";
                 }
             }
             else
             {
-                return "Transaction Failed";
+                //Reverting Back the changes in DB since secondTxn failed
+
+                db_queryWith("update accounts set balance =:balance where userid=:userid",array("balance"=>$srcArray->balance,"userid"=>$srcAccount));
+                return "Transaction failed";
             }
         }
         else
         {
-            return "Transaction failed due to insufficient balance";
+            return "Transaction Failed";
         }
     }
-    catch(Exception $exe)
+    else
     {
-        return "Transaction failed to perform";
+        return "Transaction failed due to insufficient balance";
     }
+  }
+  catch(Exception $exe)
+  {
+ 	return "Transaction failed to perform"; 
+  }
 }
 
 switch ($page) {
@@ -328,14 +345,14 @@ switch ($page) {
             break;
         }
         db_queryWith("INSERT INTO transactions (sourceAccount,targetAccount,volume,description,unixtime,isVerified)".
-            " VALUES (:userid, :target, :volume, :description, :time, :verified)", array(
-            "userid" => $userid,
-            "target" => $_POST["target"],
-            "volume" => $volume,
-            "description" => $_POST["desc"],
-            "time" => time(),
-            "verified" => $volume < 1000000 ? 1 : 0
-        ));
+                        " VALUES (:userid, :target, :volume, :description, :time, :verified)", array(
+                            "userid" => $userid,
+                            "target" => $_POST["target"],
+                            "volume" => $volume,
+                            "description" => $_POST["desc"],
+                            "time" => time(),
+                            "verified" => $volume < 1000000 ? 1 : 0
+                        ));
         db_queryWith("UPDATE tans SET used = 1 WHERE tan = :tan", array("tan" => $_POST["tan"]));
         if ($volume < 1000000) {
             db_queryWith("UPDATE accounts SET balance = balance - :volume WHERE userid = :userid", array("userid" => $userid, "volume" => $volume));
@@ -466,31 +483,9 @@ switch ($page) {
                                 pb_replace_with("main", "Error: ETANGENT");
                                 $failed = TRUE;
                             }
+
                             if (!$failed) {
-                                //message can be anything, as long as
-                                $msg =
-                                    "Hello dear Sir/Mam,\n" .
-                                    "These are the TAN numbers for your transactions:\n\n";
-                                //5 * 20 columns of numbers
-                                for($i = 0; $i < count($tans);++$i){
-                                    $msg .= $tans[$i];
-                                    if($i % 5 === 0) $msg .= "\n";
-                                    else $msg .= "\t";
-                                }
-                                $msg .= "\n\nPlease print out these numbers and keep them at a secure place.\n" .
-                                    "Thank you very much,\nYour SecureBanking-Team";
-                                &mail_log;
-                                $failed = send_mail(
-                                    //not all mail servers will accept any address... some do actually verify
-                                    array("The SecureBank","absolute512@0x1e.de"),
-                                    //assuming that $user is an array and 1st, 2nd vals are name and email
-                                    array($user[0],$user[1]),
-                                    "Your tan numbers have arrived!!!",
-                                    //mail coding is utf8
-                                    $msg
-
-                                ) != 0;
-
+                                // TODO: Send Email with TANs
                             }
                         }
                     }

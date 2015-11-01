@@ -36,6 +36,59 @@ if (login_privileges() !== 0 && substr($page, 0, 1) === "_" && $page !== "_logou
     exit;
 }
 
+function makepdf($userid) {
+    if ($userid !== login_userid() && login_privileges() !== 2) {
+        pb_replace_with("main", "<p>Access denied for this information.</p>");
+        return;
+    }
+    $userData = db_queryWith("SELECT * FROM users WHERE userid = :userid", array("userid" => $userid));
+    if ($userData->rowCount() === 0) {
+        pb_replace_with("main", "<p>Access denied for this information.</p>");
+        return;
+    }
+    $userData = $userData->fetch();
+    if ($userData["isEmployee"]) {
+        pb_replace_with("main", "<p>This ($userData[name]) is an employee.</p>");
+        return;
+    }
+
+    $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
+    if ($transactions->rowCount() === 0) {
+        pb_replace_with("main", "<p>No transactions.</p>");
+        return;
+    }
+
+    require_once("transactionpdf.php");
+    // column titles
+    $header = array('Date', 'Description', 'Other Party', 'Volume');
+    
+    // date, taken from the database
+    $data = array();
+    foreach ($transactions as $t) {
+        $volume = $t["volume"] / 100.0;
+        $other = $t["sourceAccount"];
+        if ($t["sourceAccount"] === $userid) {
+            if ($t["targetAccount"] === $userid) {
+                $volume = 0;
+            }
+            else {
+                $volume = -$volume;
+            }
+            $other = $t["targetAccount"];
+        }
+        $data[] = array(date("Y-m-d H:i", $t["unixtime"]),
+                      $t["description"], $other, $volume);
+        // $data[] = array($t['unixtime'], $t['description'], $t['targetAccount'], $t['sourceAccount']);
+    }
+    
+    // Create the PDF and print it
+    $pdf = TransactionPDF::create($header, $data);
+    $pdf->Output('transaction-hstory.pdf', 'I');
+    
+    // After printing the pdf we don't want to end with an HTML file, so exit immediately
+    exit(0);
+}
+
 function display_userstate($userid) {
     if ($userid !== login_userid() && login_privileges() !== 2) {
         pb_replace_with("main", "<p>Access denied for this information.</p>");
@@ -88,8 +141,6 @@ function display_userstate($userid) {
             pb_replace_with("volume", $volume);
         }
     }
-
-    // TODO: PDF export button!!
 }
 
 function performTransaction($tid) {
@@ -242,8 +293,12 @@ switch ($page) {
         pb_replace_all("main", "utransaction.html");
         break;
     case "udotransaction":
-        // if (!isset($_POST["target"]) || !isset($_POST["volume"]) || !isset($_POST["tan"]) || !isset($_POST["desc"])) {
-        // }
+        if (!isset($_POST["target"]) || !isset($_POST["volume"]) || !isset($_POST["tan"]) || !isset($_POST["desc"])) {
+            pb_replace_with("main", "<p>Sorry.</p>");
+            break;
+        }
+        
+
         var_dump($_POST); // Debugging.
         // TODO: Insert transaction into db and call performTransaction.
         break;
@@ -267,29 +322,9 @@ switch ($page) {
         {
             if(isset($_POST["userid"]))
                 $userid = $_POST["userid"];
-            else {
-                pb_replace_all("main", "etransactionpdf_fail.html");
-                break;
-            }
         }
-        
-        require_once("transactionpdf.php");
-        // column titles
-        $header = array('Date', 'Description', 'Other Party', 'Volume');
-        
-        // date, taken from the database
-        $data = array();
-        $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified ORDER BY unixtime DESC", array("userid" => $userid));
-        foreach ($transactions as $t) {
-            $data[] = array($t['unixtime'], $t['description'], $t['targetAccount'], $t['sourceAccount']);
-        }
-        
-        // Create the PDF and print it
-        $pdf = TransactionPDF::create($header, $data);
-        $pdf->Output('Transaction History.pdf', 'I');
-        
-        // After printing the pdf we don't want to end with an HTML file, so exit immediately
-        exit(0);
+
+        makepdf($userid);
         break;
     case "ehome":
         pb_replace_all("main", "ehome.html");

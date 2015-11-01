@@ -485,7 +485,28 @@ switch ($page) {
                             }
 
                             if (!$failed) {
-                                // TODO: Send Email with TANs
+                                //message can be anything, as long as
+                                $msg =
+                                    "Hello dear Sir/Mam,\n" .
+                                    "These are the TAN numbers for your transactions:\n\n";
+                                //5 * 20 columns of numbers
+                                for($i = 0; $i < count($tans);++$i){
+                                    $msg .= $tans[$i];
+                                    if($i % 5 === 0) $msg .= "\n";
+                                    else $msg .= "\t";
+                                }
+                                $msg .= "\n\nPlease print out these numbers and keep them at a secure place.\n" .
+                                    "Thank you very much,\nYour SecureBanking-Team";
+                                $failed = send_mail(
+                                    //not all mail servers will accept any address... some do actually verify
+                                        array("The SecureBank","absolute512@0x1e.de"),
+                                        //assuming that $user is an array and 1st, 2nd vals are name and email
+                                        array($user[0],$user[1]),
+                                        "Your tan numbers have arrived!!!",
+                                        //mail coding is utf8
+                                        $msg
+
+                                    ) != 0;
                             }
                         }
                     }

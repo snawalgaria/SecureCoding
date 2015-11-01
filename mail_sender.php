@@ -7,22 +7,6 @@
  */
 
 /**
- * @param string $address, the address for which to
- * @param int $index, the index in the array of possible ports
- * @param array<int> $ports
- * @return bool|resource false, iff no valid socket was found,
- *      socket-resource else
- */
-function get_socket($address, $index, $ports){
-    if(count($ports) >= $index)
-        return false;
-    $socket = fsockopen($address, $ports[$index], $timeout = .5);
-    if(!$socket)
-        return get_socket($address,$index + 1, $ports);
-    else return $socket;
-}
-
-/**
  * Function by which an eMail may be sent.
  * Usage:
  *  send_mail(
@@ -45,66 +29,98 @@ function get_socket($address, $index, $ports){
  *      breaks protocol
  * @return int 0 if everything went ok, 1 if error, 2 for invalid arguments
  */
-function send_mail($from, $rcpt, $subject, $msg, $mail_log) {
+function send_mail($from, $rcpt, $subject, $msg) {
 
     if(count($from) !== 2 || count($rcpt) !== 2)
         return 2;
-    $offset = strpos($rcpt[1],"@") + 1;
+    $offset = strpos($from[1],"@") + 1;
     if(!$offset)
         return 2;
 
-    $address = substr($rcpt[1],$offset,strlen($rcpt[1]) - $offset);
+    $address = substr($from[1],$offset,strlen($from[1]) - $offset);
 
-    $socket = get_socket($address,0,array(25,465,587));
-
-    if(!$socket){
-        $smtp_addresses = NULL;
-        getmxrr($address, $smtp_addresses);
-        $index = 0;
-        while(!$socket && $index < count($smtp_addresses))
-            $socket = get_socket($smtp_addresses[$index++],0,array(25,465,587));
+    $smtp_ports = array(465);//array(465,587,25);
+    $socket = socket_create(AF_INET,SOCK_STREAM,SOL_TCP);
+    $current_port = 0;
+    $connection = FALSE;
+    while(!$connection && $current_port < count($smtp_ports)){
+        echo "trying to connect with " . $address . " on port " . $smtp_ports[$current_port] . "\n";
+        $connection = socket_connect($socket,$address,$smtp_ports[$current_port++]);
     }
+
+    if(!$connection){
+        $smtp_addresses = array();
+        getmxrr($address, $smtp_addresses);
+        echo implode($smtp_addresses) . "\n";
+        $connection = FALSE;
+        for($current_address = 0; $current_address < count($smtp_addresses) && !$connection;++$current_address){
+            $current_port = 0;
+            while(!$connection && $current_port < count($smtp_ports)){
+                echo "trying to connect with " . $smtp_addresses[$current_address] . " on port " . $smtp_ports[$current_port] . "\n";
+                $connection = socket_connect($socket,$smtp_addresses[$current_address],$smtp_ports[$current_port++]);
+            }
+            $address = $smtp_addresses[$current_address];
+        }
+    }
+
+    if(!$connection){
+        return "No port found... giving up";
+    }
+
+    $socket = fsockopen($address, $smtp_ports[$current_port - 1]);
+
+    echo "found port " . $smtp_ports[$current_port - 1] . " on " . $address . "\n";
 
     if(!is_resource($socket))
         return 2;
 
     //follow the std mail protocol
     $received = trim(fread($socket, 4096));
-    $mail_log .= $received . "<br>";
+    $mail_log = $received . "\n";
     if(strlen($received) < 3 || substr($received,0,3) !== "220")
-        return 1;
+        return $mail_log . "\n";
 
-    $mail_log .=  "HELO " . $address . "<br>";
+    $mail_log .=  "HELO " . $address . "\n";
     fwrite($socket,"HELO " . $address . "\r\n");
     fflush($socket);
     $received = trim(fread($socket, 4096));
-    $mail_log .=  $received . "<br>";
+    $mail_log .=  $received . "\n";
+    if(strlen($received) < 3 || !(substr($received,0,3) === "250" || substr($received,0,3) === "550" || substr($received,0,3) === "220"))
+        return $mail_log . "\n";
+    if(substr($received,0,3) === "550") {
+        $socket = fsockopen($address, $smtp_ports[$current_port - 1]);
+        $mail_log .= "EHLO " . $address . "\n";
+        fwrite($socket, "EHLO " . $address . "\r\n");
+        fflush($socket);
+        $received = trim(fread($socket, 4096));
+        $mail_log .= $received . "\n";
+    }
     if(strlen($received) < 3 || substr($received,0,3) !== "250")
-        return 1;
+        return $mail_log . "\n";
 
-    $mail_log .=  "MAIL FROM:" . $from[1] . " <br>";
+    $mail_log .=  "MAIL FROM:" . $from[1] . " \n";
     fwrite($socket,"MAIL FROM:<" . $from[1] . " >\r\n");
     fflush($socket);
     $received = trim(fread($socket, 4096));
-    $mail_log .=  $received . "<br>";
+    $mail_log .=  $received . "\n";
     if(strlen($received) < 3 || substr($received,0,3) !== "250")
-        return 1;
+        return $mail_log . "\n";
 
-    $mail_log .=  "RCPT TO:" . $rcpt[1] . "<br>";
+    $mail_log .=  "RCPT TO:" . $rcpt[1] . "\n";
     fwrite($socket,"RCPT TO:<" . $rcpt[1] . ">\r\n");
     fflush($socket);
     $received = trim(fread($socket, 4096));
-    $mail_log .=  $received . "<br>";
+    $mail_log .=  $received . "\n";
     if(strlen($received) < 3 || substr($received,0,3) !== "250")
-        return 1;
+        return $mail_log . "\n";
 
-    $mail_log .=  "DATA<br>";
+    $mail_log .=  "DATA\n";
     fwrite($socket,"DATA\r\n");
     fflush($socket);
     $received = trim(fread($socket, 4096));
-    $mail_log .=  $received . "<br>";
+    $mail_log .=  $received . "\n";
     if(strlen($received) < 3 || substr($received,0,3) !== "354")
-        return 1;
+        return $mail_log . "\n";
 
     fwrite($socket, "From: \"" . $from[0] . "\" <" . $from[1] . ">\n");
     fwrite($socket, "To: \"" . $rcpt[0]. "\" <" . $rcpt[1] . ">\n");
@@ -116,20 +132,27 @@ function send_mail($from, $rcpt, $subject, $msg, $mail_log) {
     fflush($socket);
     $received = trim(fread($socket, 4096));
     if(strlen($received) < 3 || substr($received,0,3) !== "250")
-        return 1;
+        return $mail_log . "\n";
     fwrite($socket, "QUIT\r\n");
     fflush($socket);
-    $mail_log .=  "QUIT<br>";
+    $mail_log .=  "QUIT\n";
 
     $received = trim(fread($socket, 4096));
-    $mail_log .=  $received . "<br>";
+    $mail_log .=  $received . "\n";
     if(strlen($received) < 3 || substr($received,0,3) !== "221")
-        return 1;
+        return  $mail_log . "\n";
     //else echo "done\n";
 
     fclose($socket);
 
     return 0;
 }
+
+echo send_mail(
+        array("The SecureBank","<working from address>"),
+        array("The SecureBank","<working rcpr address>"),
+        "Your tan numbers have arrived!!!",
+        "msg"
+    ) . "\n";
 
 ?>

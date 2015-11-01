@@ -313,6 +313,11 @@ switch ($page) {
         //     pb_replace_with("main", "<p>Invalid volume.</p>");
         //     break;
         // }
+        if($volume <= 0) {
+            pb_replace_with("main", "<p>Please select a positive amount of money.</p>");
+            break;
+        }
+        
         $userid = login_userid();
         $eigenAccount = db_queryWith("SELECT * FROM accounts WHERE userid = :userid", array("userid" => $userid));
         if($eigenAccount->rowCount() !== 1) {
@@ -324,11 +329,12 @@ switch ($page) {
             pb_replace_with("main", "<p>You don't have enough money.</p>");
             break;
         }
-        $other = db_queryWith("SELECT * FROM accounts WHERE userid = :userid", array("userid" => $_POST["target"]));
+        $other = db_queryWith("SELECT userId FROM users WHERE name = :name", array("name" => $_POST["target"]));
         if($other->rowCount() !== 1) {
             pb_replace_with("main", "<p>You want to send money to nobody?!</p>");
             break;
         }
+        $targetId = $other->fetchColumn();
         $tan = db_queryWith("SELECT * FROM tans WHERE userid = :userid AND tan = :tan AND used = 0", array("userid" => $userid, "tan" => $_POST["tan"]));
         if ($tan->rowCount() !== 1) {
             pb_replace_with("main", "<p>The TAN you entered does not exist or is already used.</p>");
@@ -337,7 +343,7 @@ switch ($page) {
         db_queryWith("INSERT INTO transactions (sourceAccount,targetAccount,volume,description,unixtime,isVerified)".
                         " VALUES (:userid, :target, :volume, :description, :time, :verified)", array(
                             "userid" => $userid,
-                            "target" => $_POST["target"],
+                            "target" => $targetId,
                             "volume" => $volume,
                             "description" => $_POST["desc"],
                             "time" => time(),
@@ -346,7 +352,7 @@ switch ($page) {
         db_queryWith("UPDATE tans SET used = 1 WHERE tan = :tan", array("tan" => $_POST["tan"]));
         if ($volume < 1000000) {
             db_queryWith("UPDATE accounts SET balance = balance - :volume WHERE userid = :userid", array("userid" => $userid, "volume" => $volume));
-            db_queryWith("UPDATE accounts SET balance = balance + :volume WHERE userid = :userid", array("userid" => $_POST["target"], "volume" => $volume));
+            db_queryWith("UPDATE accounts SET balance = balance + :volume WHERE userid = :userid", array("userid" => $targetId, "volume" => $volume));
             pb_replace_with("main", "<p>Transaction performed successfully.</p>");
         } else
             pb_replace_with("main", "<p>Transaction has to be approved by the bank.</p>");

@@ -304,28 +304,28 @@ switch ($page) {
         {
             if(isset($_POST["userid"]))
                 $userid = $_POST["userid"];
-            else
+            else {
                 pb_replace_all("main", "etransactionpdf_fail.html");
+                break;
+            }
         }
         
         require_once("transactionpdf.php");
         // column titles
         $header = array('Date', 'Description', 'Other Party', 'Volume');
         
+        // date, taken from the database
         $data = array();
-        // TODO: fill array with the user's actual transactions
-        $data[] = array('28.10.2015', 'Test Transaction', 'Hans Dampf', (1000 / 100.0) . " €");
-        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
-        $data[] = array('30.10.2015', 'Test Transaction', 'Hans Dampf', (1000 / 100.0) . " €");
-        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
-        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
-        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
-        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
-        $data[] = array('29.10.2015', "Test Transaction\nmultiline\nAnd way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long, way too long.\no", 'Hans Dampf', (-200 / 100.0) . " €");
-
+        $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified ORDER BY unixtime DESC", array("userid" => $userid));
+        foreach ($transactions as $t) {
+            $data[] = array($t['unixtime'], $t['description'], $t['targetAccount'], $t['sourceAccount']);
+        }
+        
+        // Create the PDF and print it
         $pdf = TransactionPDF::create($header, $data);
-
         $pdf->Output('Transaction History.pdf', 'I');
+        
+        // After printing the pdf we don't want to end with an HTML file, so exit immediately
         exit(0);
         break;
     case "ehome":

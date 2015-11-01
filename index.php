@@ -301,10 +301,51 @@ switch ($page) {
             pb_replace_with("main", "<p>Sorry.</p>");
             break;
         }
-        
 
-        var_dump($_POST); // Debugging.
-        // TODO: Insert transaction into db and call performTransaction.
+        $volume = intval(floatval($_POST["volume"])*100);
+        // This is too bad. Eventually TODO: Fix this.
+        // Example case: 53.40 € => 5340 => 53.4
+        // if (strval($volume / 100.0) !== $_POST["volume"]) {
+        //     pb_replace_with("main", "<p>Invalid volume.</p>");
+        //     break;
+        // }
+        $userid = login_userid();
+        $eigenAccount = db_queryWith("SELECT * FROM accounts WHERE userid = :userid", array("userid" => $userid));
+        if($eigenAccount->rowCount() !== 1) {
+            pb_replace_with("main", "<p>You don't exist.</p>");
+            break;
+        }
+        $eigenAccount = $eigenAccount->fetch();
+        if ($eigenAccount["balance"] - $volume < 0) {
+            pb_replace_with("main", "<p>You don't have enough money.</p>");
+            break;
+        }
+        $other = db_queryWith("SELECT * FROM accounts WHERE userid = :userid", array("userid" => $_POST["target"]));
+        if($other->rowCount() !== 1) {
+            pb_replace_with("main", "<p>You want to send money to nobody?!</p>");
+            break;
+        }
+        $tan = db_queryWith("SELECT * FROM tans WHERE userid = :userid AND tan = :tan AND used = 0", array("userid" => $userid, "tan" => $_POST["tan"]));
+        if ($tan->rowCount() !== 1) {
+            pb_replace_with("main", "<p>The TAN you entered does not exist or is already used.</p>");
+            break;
+        }
+        db_queryWith("INSERT INTO transactions (sourceAccount,targetAccount,volume,description,unixtime,isVerified)".
+                        " VALUES (:userid, :target, :volume, :description, :time, :verified)", array(
+                            "userid" => $userid,
+                            "target" => $_POST["target"],
+                            "volume" => $volume,
+                            "description" => $_POST["desc"],
+                            "time" => time(),
+                            "verified" => $volume < 1000000 ? 1 : 0
+                        ));
+        db_queryWith("UPDATE tans SET used = 1 WHERE tan = :tan", array("tan" => $_POST["tan"]));
+        if ($volume < 1000000) {
+            db_queryWith("UPDATE accounts SET balance = balance - :volume WHERE userid = :userid", array("userid" => $userid, "volume" => $volume));
+            db_queryWith("UPDATE accounts SET balance = balance + :volume WHERE userid = :userid", array("userid" => $_POST["target"], "volume" => $volume));
+            pb_replace_with("main", "<p>Transaction performed successfully.</p>");
+        } else
+            pb_replace_with("main", "<p>Transaction has to be approved by the bank.</p>");
         break;
     case "utransactionupload":
         pb_replace_all("main", "utransactionupload.html");
@@ -333,18 +374,25 @@ switch ($page) {
     case "ehome":
         pb_replace_all("main", "ehome.html");
         $users = db_query("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
-        if ($users->rowCount() === 0) {
-            pb_replace_with("element", "<li>No users to verify.</li>");
+        $transactions = db_query("SELECT * FROM transactions WHERE isVerified = 0");
+        if ($transactions->rowCount() === 0 && $users->rowCount() === 0) {
+            pb_replace_with("element", "<li>Nothing to do.</li>");
         }
         else {
-            pb_replace_with("element", str_repeat("%%element%%\n", $users->rowCount()));
-            pb_replace_all("element", "ehome_user.html");
+            pb_replace_with("element", str_repeat("%%element%%\n", $users->rowCount() + $transactions->rowCount()));
             foreach ($users as $user) {
+                pb_replace_with_file("element", "ehome_user.html");
                 pb_replace_with("type", $user["isEmployee"] ? "Employee" : "New customer");
                 pb_replace_with("name", $user["name"]);
                 pb_replace_with("email", $user["email"]);
                 pb_replace_with("userid", $user["userid"]);
                 pb_replace_with("userid", $user["userid"]);
+            }
+            foreach ($transactions as $t) {
+                pb_replace_with_file("element", "ehome_transaction.html");
+                pb_replace_with("type", "Transaction to verify about " . $t["volume"] / 100.0 . " &euro;");
+                pb_replace_with("tid", $t["tid"]);
+                pb_replace_with("tid", $t["tid"]);
             }
         }
 
@@ -450,14 +498,20 @@ switch ($page) {
         } else {
             $success = $_POST["success"] === "true";
             if ($success) {
-                $error = performTransaction($_POST["tid"]);
-                if ($error === FALSE) {
-                    header("Location: index.php?page=ehome");
-                } else {
-                    pb_replace_with("main", $error);
+                $transaction = db_queryWith("SELECT * FROM transactions WHERE tid = :tid AND isVerified = 0", array("tid" => $tid));
+                if ($transaction->rowCount() !== 1) {
+                    pb_replace_with("main", "Transaction does not exist.");
                 }
+                $transaction = $transaction->fetch();
+
+                $volume  = $transaction["volume"];
+                $source = $transaction["sourceAccount"];
+                $target = $transaction["targetAccount"];
+                db_queryWith("UPDATE accounts SET balance = balance - :volume WHERE userid = :userid", array("userid" => $sourceAccount, "volume" => $volume));
+                db_queryWith("UPDATE accounts SET balance = balance + :volume WHERE userid = :userid", array("userid" => $targetAccount, "volume" => $volume));
+                header("Location: index.php?page=ehome");
             } else {
-                db_queryWith("DELETE FROM transactions WHERE tid = :tid", array("tid" => $_POST["tid"]));
+                db_queryWith("DELETE FROM transactions WHERE tid = :tid AND isVerified = 0", array("tid" => $_POST["tid"]));
                 header("Location: index.php?page=ehome");
             }
         }

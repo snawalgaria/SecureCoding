@@ -487,14 +487,20 @@ switch ($page) {
         } else {
             $success = $_POST["success"] === "true";
             if ($success) {
-                $error = performTransaction($_POST["tid"]);
-                if ($error === FALSE) {
-                    header("Location: index.php?page=ehome");
-                } else {
-                    pb_replace_with("main", $error);
+                $transaction = db_queryWith("SELECT * FROM transactions WHERE tid = :tid AND isVerified = 0", array("tid" => $tid));
+                if ($transaction->rowCount() !== 1) {
+                    pb_replace_with("main", "Transaction does not exist.");
                 }
+                $transaction = $transaction->fetch();
+
+                $volume  = $transaction["volume"];
+                $source = $transaction["sourceAccount"];
+                $target = $transaction["targetAccount"];
+                db_queryWith("UPDATE accounts SET balance = balance - :volume WHERE userid = :userid", array("userid" => $sourceAccount, "volume" => $volume));
+                db_queryWith("UPDATE accounts SET balance = balance + :volume WHERE userid = :userid", array("userid" => $targetAccount, "volume" => $volume));
+                header("Location: index.php?page=ehome");
             } else {
-                db_queryWith("DELETE FROM transactions WHERE tid = :tid", array("tid" => $_POST["tid"]));
+                db_queryWith("DELETE FROM transactions WHERE tid = :tid AND isVerified = 0", array("tid" => $_POST["tid"]));
                 header("Location: index.php?page=ehome");
             }
         }

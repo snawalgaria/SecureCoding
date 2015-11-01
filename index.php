@@ -370,18 +370,25 @@ switch ($page) {
     case "ehome":
         pb_replace_all("main", "ehome.html");
         $users = db_query("SELECT userid,name,email,isEmployee FROM users WHERE isVerified = 0");
-        if ($users->rowCount() === 0) {
-            pb_replace_with("element", "<li>No users to verify.</li>");
+        $transactions = db_query("SELECT * FROM transactions WHERE isVerified = 0");
+        if ($transactions->rowCount() === 0 && $users->rowCount() === 0) {
+            pb_replace_with("element", "<li>Nothing to do.</li>");
         }
         else {
-            pb_replace_with("element", str_repeat("%%element%%\n", $users->rowCount()));
-            pb_replace_all("element", "ehome_user.html");
+            pb_replace_with("element", str_repeat("%%element%%\n", $users->rowCount() + $transactions->rowCount()));
             foreach ($users as $user) {
+                pb_replace_with_file("element", "ehome_user.html");
                 pb_replace_with("type", $user["isEmployee"] ? "Employee" : "New customer");
                 pb_replace_with("name", $user["name"]);
                 pb_replace_with("email", $user["email"]);
                 pb_replace_with("userid", $user["userid"]);
                 pb_replace_with("userid", $user["userid"]);
+            }
+            foreach ($transactions as $t) {
+                pb_replace_with_file("element", "ehome_transaction.html");
+                pb_replace_with("type", "Transaction to verify about " . $t["volume"] / 100.0 . " &euro;");
+                pb_replace_with("tid", $t["tid"]);
+                pb_replace_with("tid", $t["tid"]);
             }
         }
 

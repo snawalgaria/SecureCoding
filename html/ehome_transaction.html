@@ -1,0 +1,12 @@
+<li>%%type%%<br>
+	<form style='display: inline-block;' action='?page=edoapprovetransaction' method='post'>
+		<input type='hidden' name='tid' value='%%tid%%'>
+		<input type='hidden' name='success' value='true'>
+		<input type='submit' value='Verify' class='verify'>
+	</form>
+	<form style='display: inline-block;' action='?page=edoapprovetransaction' method='post'>
+		<input type='hidden' name='tid' value='%%tid%%'>
+		<input type='hidden' name='success' value='not true'>
+		<input type='submit' value='Drop' class='decline'>
+	</form>
+</li>

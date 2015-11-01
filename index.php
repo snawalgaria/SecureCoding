@@ -52,7 +52,11 @@ function makepdf($userid) {
         return;
     }
 
-    $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
+    $transactions = db_queryWith("SELECT tran.unixtime, sour.userId as sourceID, sour.name as source, targ.name as target, tran.volume ".
+    "FROM transactions as tran, users as sour, users as targ ".
+    "WHERE (tran.sourceAccount = :userid OR tran.targetAccount = :userid) AND tran.isVerified ".
+    "AND sour.userId = tran.sourceAccount AND targ.userId = tran.targetAccount ".
+    "ORDER BY tran.unixtime DESC ", array("userid" => $userid));
     if ($transactions->rowCount() === 0) {
         pb_replace_with("main", "<p>No transactions.</p>");
         return;
@@ -65,20 +69,19 @@ function makepdf($userid) {
     // date, taken from the database
     $data = array();
     foreach ($transactions as $t) {
-        $volume = $t["volume"] / 100.0;
-        $other = $t["sourceAccount"];
-        if ($t["sourceAccount"] === $userid) {
-            if ($t["targetAccount"] === $userid) {
-                $volume = 0;
-            }
-            else {
-                $volume = -$volume;
-            }
-            $other = $t["targetAccount"];
+        $volume = $t["tran.volume"] / 100.0;
+        if ($t["source"] === $t["target"]) {
+            $volume = 0;
+        }
+        $other = $t["target"];
+        if ($t["sourceID"] === $userid) {
+            $volume = -$volume;
+        }
+        else {
+            $other = $t["source"];
         }
         $data[] = array(date("Y-m-d H:i", $t["unixtime"]),
                       $t["description"], $other, $volume);
-        // $data[] = array($t['unixtime'], $t['description'], $t['targetAccount'], $t['sourceAccount']);
     }
     
     // Create the PDF and print it
@@ -107,6 +110,7 @@ function display_userstate($userid) {
     pb_replace_all("main", "display_userstate.html");
     pb_replace_with("name", $userData["name"]);
     pb_replace_with("email", $userData["email"]);
+    pb_replace_with("userid", $userid);
     $users = db_queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
     $balance = $users->fetch(PDO::FETCH_ASSOC);
     $balance = $balance["balance"] / 100.0;
@@ -125,7 +129,7 @@ function display_userstate($userid) {
         pb_replace_all("transaction", "transaction.html");
         foreach ($transactions as $t) {
             pb_replace_with("time", date("Y-m-d H:i", $t["unixtime"]));
-            pb_replace_with("description", $t[description]);
+            pb_replace_with("description", $t["description"]);
             $volume = $t["volume"] / 100.0;
             $other = $t["sourceAccount"];
             if ($t["sourceAccount"] === $userid) {

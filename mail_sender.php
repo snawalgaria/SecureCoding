@@ -45,7 +45,7 @@ function get_socket($address, $index, $ports){
  *      breaks protocol
  * @return int 0 if everything went ok, 1 if error, 2 for invalid arguments
  */
-function send_mail($from, $rcpt, $subject, $msg) {
+function send_mail($from, $rcpt, $subject, $msg, $mail_log) {
 
     if(count($from) !== 2 || count($rcpt) !== 2)
         return 2;
@@ -70,36 +70,46 @@ function send_mail($from, $rcpt, $subject, $msg) {
 
     //follow the std mail protocol
     $received = trim(fread($socket, 4096));
+    $mail_log .= $received . "<br>";
     if(strlen($received) < 3 || substr($received,0,3) !== "220")
         return 1;
 
+    $mail_log .=  "HELO " . $address . "<br>";
     fwrite($socket,"HELO " . $address . "\r\n");
     fflush($socket);
     $received = trim(fread($socket, 4096));
+    $mail_log .=  $received . "<br>";
     if(strlen($received) < 3 || substr($received,0,3) !== "250")
         return 1;
 
+    $mail_log .=  "MAIL FROM:" . $from[1] . " <br>";
     fwrite($socket,"MAIL FROM:<" . $from[1] . " >\r\n");
     fflush($socket);
     $received = trim(fread($socket, 4096));
+    $mail_log .=  $received . "<br>";
     if(strlen($received) < 3 || substr($received,0,3) !== "250")
         return 1;
 
+    $mail_log .=  "RCPT TO:" . $rcpt[1] . "<br>";
     fwrite($socket,"RCPT TO:<" . $rcpt[1] . ">\r\n");
     fflush($socket);
     $received = trim(fread($socket, 4096));
+    $mail_log .=  $received . "<br>";
     if(strlen($received) < 3 || substr($received,0,3) !== "250")
         return 1;
 
+    $mail_log .=  "DATA<br>";
     fwrite($socket,"DATA\r\n");
     fflush($socket);
     $received = trim(fread($socket, 4096));
+    $mail_log .=  $received . "<br>";
     if(strlen($received) < 3 || substr($received,0,3) !== "354")
         return 1;
 
     fwrite($socket, "From: \"" . $from[0] . "\" <" . $from[1] . ">\n");
     fwrite($socket, "To: \"" . $rcpt[0]. "\" <" . $rcpt[1] . ">\n");
     fwrite($socket, "Date: " . date('D, d F Y h:i:s a O', time()) . "\n");
+    fwrite($socket, "Content-Type: text/html; charset=\"UTF-8\"");
     fwrite($socket, "Subject:" . $subject . "\n\n");
     fwrite($socket, $msg . "\n");
     fwrite($socket, "\r\n.\r\n");
@@ -109,8 +119,10 @@ function send_mail($from, $rcpt, $subject, $msg) {
         return 1;
     fwrite($socket, "QUIT\r\n");
     fflush($socket);
+    $mail_log .=  "QUIT<br>";
 
     $received = trim(fread($socket, 4096));
+    $mail_log .=  $received . "<br>";
     if(strlen($received) < 3 || substr($received,0,3) !== "221")
         return 1;
     //else echo "done\n";

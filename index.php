@@ -297,10 +297,49 @@ switch ($page) {
             pb_replace_with("main", "<p>Sorry.</p>");
             break;
         }
-        
 
-        var_dump($_POST); // Debugging.
-        // TODO: Insert transaction into db and call performTransaction.
+        $volume = intval(floatval($_POST["volume"])*100);
+        // This is too bad. Eventually TODO: Fix this.
+        // Example case: 53.40 € => 5340 => 53.4
+        // if (strval($volume / 100.0) !== $_POST["volume"]) {
+        //     pb_replace_with("main", "<p>Invalid volume.</p>");
+        //     break;
+        // }
+        $userid = login_userid();
+        $eigenAccount = db_queryWith("SELECT * FROM accounts WHERE userid = :userid", array("userid" => $userid));
+        if($eigenAccount->rowCount() !== 1) {
+            pb_replace_with("main", "<p>You don't exist.</p>");
+            break;
+        }
+        $eigenAccount = $eigenAccount->fetch();
+        if ($eigenAccount["balance"] - $volume < 0) {
+            pb_replace_with("main", "<p>You don't have enough money.</p>");
+            break;
+        }
+        $other = db_queryWith("SELECT * FROM accounts WHERE userid = :userid", array("userid" => $_POST["target"]));
+        if($other->rowCount() !== 1) {
+            pb_replace_with("main", "<p>You want to send money to nobody?!</p>");
+            break;
+        }
+        $tan = db_queryWith("SELECT * FROM tans WHERE userid = :userid AND tan = :tan AND used = 0", array("userid" => $userid, "tan" => $_POST["tan"]));
+        if ($tan->rowCount() !== 1) {
+            pb_replace_with("main", "<p>The TAN you entered does not exist or is already used.</p>");
+            break;
+        }
+        db_queryWith("INSERT INTO transactions (sourceAccount,targetAccount,volume,description,unixtime,isVerified)".
+                        " VALUES (:userid, :target, :volume, :description, :time, :verified)", array(
+                            "userid" => $userid,
+                            "target" => $_POST["target"],
+                            "volume" => $volume,
+                            "description" => $_POST["desc"],
+                            "time" => time(),
+                            "verified" => $volume < 1000000 ? 1 : 0
+                        ));
+        db_queryWith("UPDATE tans SET used = 1 WHERE tan = :tan", array("tan" => $_POST["tan"]));
+        if ($volume < 1000000) {
+            db_queryWith("UPDATE accounts SET balance = balance - :volume WHERE userid = :userid", array("userid" => $userid, "volume" => $volume));
+            db_queryWith("UPDATE accounts SET balance = balance + :volume WHERE userid = :userid", array("userid" => $_POST["target"], "volume" => $volume));
+        }
         break;
     case "utransactionupload":
         pb_replace_all("main", "utransactionupload.html");

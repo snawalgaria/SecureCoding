@@ -512,6 +512,7 @@ switch ($page) {
         if (!isset($_POST["tid"]) || !isset($_POST["success"])) {
             pb_replace_all("main", "edoverify_fail.html");
         } else {
+            $tid = intval($_POST["tid"]);
             $success = $_POST["success"] === "true";
             if ($success) {
                 $transaction = db_queryWith("SELECT * FROM transactions WHERE tid = :tid AND isVerified = 0", array("tid" => $tid));
@@ -523,11 +524,12 @@ switch ($page) {
                 $volume  = $transaction["volume"];
                 $source = $transaction["sourceAccount"];
                 $target = $transaction["targetAccount"];
-                db_queryWith("UPDATE accounts SET balance = balance - :volume WHERE userid = :userid", array("userid" => $sourceAccount, "volume" => $volume));
-                db_queryWith("UPDATE accounts SET balance = balance + :volume WHERE userid = :userid", array("userid" => $targetAccount, "volume" => $volume));
+                db_queryWith("UPDATE transactions SET isVerified = 1 WHERE tid = :tid", array("tid" => $tid));
+                db_queryWith("UPDATE accounts SET balance = balance - :volume WHERE userid = :userid", array("userid" => $source, "volume" => $volume));
+                db_queryWith("UPDATE accounts SET balance = balance + :volume WHERE userid = :userid", array("userid" => $target, "volume" => $volume));
                 header("Location: index.php?page=ehome");
             } else {
-                db_queryWith("DELETE FROM transactions WHERE tid = :tid AND isVerified = 0", array("tid" => $_POST["tid"]));
+                db_queryWith("DELETE FROM transactions WHERE tid = :tid AND isVerified = 0", array("tid" => $tid));
                 header("Location: index.php?page=ehome");
             }
         }

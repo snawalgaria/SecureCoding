@@ -108,9 +108,18 @@ function display_userstate($userid) {
         return;
     }
     pb_replace_all("main", "display_userstate.html");
-    pb_replace_with("name", $userData["name"]);
-    pb_replace_with("email", $userData["email"]);
-    pb_replace_with("userid", $userid);
+    if (login_privileges() == 2) {
+        pb_replace_with("details", "Customer Details: %%name%%, %%userid%%, %%email%%");
+        pb_replace_with("name", $userData["name"]);
+        pb_replace_with("email", $userData["email"]);
+        pb_replace_with("userid", $userid);
+        pb_replace_with("pdflink", '<a href="?page=etransactionpdf&userid='.$userid.'">Print PDF</a>');
+    }
+    else {
+        pb_replace_with("details", "Your account ID is '%%userid%%'");
+        pb_replace_with("userid", $userid);
+        pb_replace_with("pdflink", '<a href="?page=utransactionpdf">Print PDF</a>');
+    }
     $users = db_queryWith("SELECT balance FROM accounts WHERE userid = :userid", array("userid" => $userid));
     $balance = $users->fetch(PDO::FETCH_ASSOC);
     $balance = $balance["balance"] / 100.0;
@@ -295,7 +304,7 @@ switch ($page) {
     case "uhome":
         $userid = login_userid();
         display_userstate($userid);
-        pb_replace_with("headline", "<h1>Welcome, client</h1>");
+        pb_replace_with("headline", "<h1>Welcome, ". login_username() ."</h1>");
         break;
     case "utransaction":
         pb_replace_all("main", "utransaction.html");
@@ -329,12 +338,11 @@ switch ($page) {
             pb_replace_with("main", "<p>You don't have enough money.</p>");
             break;
         }
-        $other = db_queryWith("SELECT userId FROM users WHERE name = :name", array("name" => $_POST["target"]));
+        $other = db_queryWith("SELECT * FROM accounts WHERE userid = :userid", array("userid" => $_POST["target"]));
         if($other->rowCount() !== 1) {
             pb_replace_with("main", "<p>You want to send money to nobody?!</p>");
             break;
         }
-        $targetId = $other->fetchColumn();
         $tan = db_queryWith("SELECT * FROM tans WHERE userid = :userid AND tan = :tan AND used = 0", array("userid" => $userid, "tan" => $_POST["tan"]));
         if ($tan->rowCount() !== 1) {
             pb_replace_with("main", "<p>The TAN you entered does not exist or is already used.</p>");
@@ -343,7 +351,7 @@ switch ($page) {
         db_queryWith("INSERT INTO transactions (sourceAccount,targetAccount,volume,description,unixtime,isVerified)".
                         " VALUES (:userid, :target, :volume, :description, :time, :verified)", array(
                             "userid" => $userid,
-                            "target" => $targetId,
+                            "target" => $_POST["target"],
                             "volume" => $volume,
                             "description" => $_POST["desc"],
                             "time" => time(),
@@ -352,7 +360,7 @@ switch ($page) {
         db_queryWith("UPDATE tans SET used = 1 WHERE tan = :tan", array("tan" => $_POST["tan"]));
         if ($volume < 1000000) {
             db_queryWith("UPDATE accounts SET balance = balance - :volume WHERE userid = :userid", array("userid" => $userid, "volume" => $volume));
-            db_queryWith("UPDATE accounts SET balance = balance + :volume WHERE userid = :userid", array("userid" => $targetId, "volume" => $volume));
+            db_queryWith("UPDATE accounts SET balance = balance + :volume WHERE userid = :userid", array("userid" => $_POST["target"], "volume" => $volume));
             pb_replace_with("main", "<p>Transaction performed successfully.</p>");
         } else
             pb_replace_with("main", "<p>Transaction has to be approved by the bank.</p>");
@@ -375,8 +383,8 @@ switch ($page) {
         $userid = login_userid();
         if (substr($page, 0, 1) == 'e')
         {
-            if(isset($_POST["userid"]))
-                $userid = $_POST["userid"];
+            if(isset($_GET["userid"]))
+                $userid = $_GET["userid"];
         }
 
         makepdf($userid);
@@ -400,13 +408,11 @@ switch ($page) {
             }
             foreach ($transactions as $t) {
                 pb_replace_with_file("element", "ehome_transaction.html");
-                pb_replace_with("type", "Transaction to verify about " . $t["volume"] / 100.0 . " &euro;");
+                pb_replace_with("type", "Transaction to verify about " . $t["volume"] / 100.0 . " &euro; from accounts "  . $t["sourceAccount"] . " to " . $t["targetAccount"] . "<br>Desc: " . $t["description"]);
                 pb_replace_with("tid", $t["tid"]);
                 pb_replace_with("tid", $t["tid"]);
             }
         }
-
-        // TODO: Find and display unverified transactions
         break;
     case "edoverify":
         if (!isset($_POST["userid"]) || !isset($_POST["success"])) {

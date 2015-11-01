@@ -28,6 +28,10 @@ function login_userid() {
     return $_SESSION["Login"]["id"];
 }
 
+function login_username() {
+    return $_SESSION["Login"]["username"];
+}
+
 function login_reset() {
     $_SESSION["Login"] = array(
         "login" => 0,

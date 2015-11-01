@@ -52,7 +52,7 @@ function makepdf($userid) {
         return;
     }
 
-    $transactions = db_queryWith("SELECT tran.unixtime, sour.userId as sourceID, sour.name as source, targ.name as target, tran.volume ".
+    $transactions = db_queryWith("SELECT tran.unixtime, sour.userId as sourceID, sour.name as source, targ.name as target, tran.volume as volume, tran.description as description ".
     "FROM transactions as tran, users as sour, users as targ ".
     "WHERE (tran.sourceAccount = :userid OR tran.targetAccount = :userid) AND tran.isVerified ".
     "AND sour.userId = tran.sourceAccount AND targ.userId = tran.targetAccount ".
@@ -69,7 +69,7 @@ function makepdf($userid) {
     // date, taken from the database
     $data = array();
     foreach ($transactions as $t) {
-        $volume = $t["tran.volume"] / 100.0;
+        $volume = $t["volume"] / 100.0;
         if ($t["source"] === $t["target"]) {
             $volume = 0;
         }
@@ -119,7 +119,11 @@ function display_userstate($userid) {
         pb_replace_with("utransaction", "<p><a href='?page=utransaction'>New transaction</a></p>");
     else pb_replace_with("utransaction", "");
     for ($verified = 1; $verified >= 0; $verified--) {
-        $transactions = db_queryWith("SELECT * FROM transactions WHERE (sourceAccount = :userid OR targetAccount = :userid) AND isVerified = $verified ORDER BY unixtime DESC", array("userid" => $userid));
+        $transactions = db_queryWith("SELECT tran.unixtime, sour.userId as sourceID, sour.name as source, targ.name as target, tran.volume as volume, tran.description as description ".
+        "FROM transactions as tran, users as sour, users as targ ".
+        "WHERE (tran.sourceAccount = :userid OR tran.targetAccount = :userid) AND tran.isVerified = :verified ".
+        "AND sour.userId = tran.sourceAccount AND targ.userId = tran.targetAccount ".
+        "ORDER BY tran.unixtime DESC ", array("userid" => $userid, "verified" => $verified));
         if ($transactions->rowCount() === 0) {
             pb_replace_with("table", "<p>No transaction in this category.</p>");
         } else {
@@ -131,15 +135,15 @@ function display_userstate($userid) {
             pb_replace_with("time", date("Y-m-d H:i", $t["unixtime"]));
             pb_replace_with("description", $t["description"]);
             $volume = $t["volume"] / 100.0;
-            $other = $t["sourceAccount"];
-            if ($t["sourceAccount"] === $userid) {
-                if ($t["targetAccount"] === $userid) {
-                    $volume = 0;
-                }
-                else {
-                    $volume = -$volume;
-                }
-                $other = $t["targetAccount"];
+            if ($t["source"] === $t["target"]) {
+                $volume = 0;
+            }
+            $other = $t["target"];
+            if ($t["sourceID"] === $userid) {
+                $volume = -$volume;
+            }
+            else {
+                $other = $t["source"];
             }
             pb_replace_with("other", $other);
             pb_replace_with("volume", $volume);

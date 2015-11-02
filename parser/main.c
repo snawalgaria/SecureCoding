@@ -71,6 +71,7 @@ const char* outputStrings[] = {
     "<h1>Fools!</h1><p>You just tried to spend more money than you have!</p>",
     "<h1>Invalid data</h1><p>Some data in your file is not valid.</p>"
 };
+
 __attribute__((noreturn)) void __exitout(int code) {
     if (code <= 8 && code >= 0) printf("%s", outputStrings[code]);
     else printf("<h1>Unknown error</h1><p>Exit Code %d</p>", code);
@@ -205,29 +206,54 @@ process(char* userid, char * buffer, size_t size) {
             remaining -= consumed + subject_size;
             if (strlen(subject_val) > 160 || !validate(subject_val, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNONPQRSTUVWXYZ.,;:/() ")) __exitout(2);
         }
-        else if (rbuf[0] == '\n') {
-            rbuf++;
-            remaining--;
-        }
         else {
-            __exitout(2);
+            while (rbuf[0] != '\n' && rbuf[0] != 0 && remaining > 0) {
+                rbuf++;
+                remaining--;
+            }
+            if (remaining > 0) {
+                rbuf++;
+                remaining--;
+            }
         }
+
+        if (!(target_val == NULL || tan_val == NULL || amount_val == NULL || subject_val == NULL)) {
+
+            int target = atoi(target_val);
+            int source = atoi(userid);
+            int amount = atoi(amount_val);
+
+            if (target == 0 || source == 0 || amount == 0) {
+                __exitout(2);
+            }
+
+            perform_transaction(source, target, amount, tan_val, subject_val);
+            printf("Performed transaction to %d with %d euro-cents.<br>", target, amount);
+
+            target_val = NULL;
+            tan_val = NULL;
+            amount_val = NULL;
+            subject_val = NULL;
+        }
+        // else {
+        //     __exitout(2);
+        // }
     }
 
-    if (target_val == NULL || tan_val == NULL || amount_val == NULL || subject_val == NULL) {
-        __exitout(2);
-    }
+    // if (target_val == NULL || tan_val == NULL || amount_val == NULL || subject_val == NULL) {
+    //     __exitout(2);
+    // }
 
-    int target = atoi(target_val);
-    int source = atoi(userid);
-    int amount = atoi(amount_val);
+    // int target = atoi(target_val);
+    // int source = atoi(userid);
+    // int amount = atoi(amount_val);
 
-    if (target == 0 || source == 0 || amount == 0) {
-        __exitout(2);
-    }
+    // if (target == 0 || source == 0 || amount == 0) {
+    //     __exitout(2);
+    // }
 
-    perform_transaction(source, target, amount, tan_val, subject_val);
-    printf("<h1>Success!</h1>Performed transaction to %d with %d euro-cents.", target, amount);
+    // perform_transaction(source, target, amount, tan_val, subject_val);
+    // printf("<h1>Success!</h1>Performed transaction to %d with %d euro-cents.", target, amount);
     __exitout(0);
 }
 

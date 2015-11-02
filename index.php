@@ -487,7 +487,8 @@ switch ($page) {
                             if (!$failed) {
                                 //message can be anything, as long as it does not contain \r or \n, content type is utf8
                                 $msg =
-                                    "Hello dear Sir/Mam,\n" .
+                                    "Hello dear Sir/Mam,<br><br>" .
+                                    "You are now registered at SCBanking with the account ID " . $_POST["userid"] . "<br>" .
                                     "These are the TAN numbers for your transactions:<br><br>";
                                 //5 * 20 columns of numbers
                                 for($i = 0; $i < count($tans);++$i){
@@ -495,8 +496,9 @@ switch ($page) {
                                     if(($i + 1) % 5 === 0) $msg .= "<br>";
                                     else $msg .= " &nbsp; ";
                                 }
-                                $msg .= "\n\nPlease print out these numbers and keep them at a secure place.\n" .
-                                    "Thank you very much,\nYour SecureBanking-Team";
+                                $msg .= "<br><br>Please print out these numbers and keep them at a secure place.<br>" .
+                                    "They are needed to make transactions from your account<br><br>" .
+                                    "Thank you very much,<br>Your SecureBanking-Team";
                                 $mail_ret = send_mail(
                                 //not all mail servers will accept any address... some do actually verify
                                     array("The SecureBank","scbanking@roschaumann.com"),

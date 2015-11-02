@@ -44,7 +44,7 @@ function send_mail($from, $rcpt, $subject, $msg) {
     stream_context_set_option($socket, 'ssl', 'verify_peer', true);
     stream_context_set_option($socket, 'ssl', 'verify_host', true);
     stream_context_set_option($socket, 'ssl', 'allow_self_signed', false);
-    stream_context_set_option($socket, 'ssl', 'cafile', __DIR__ . "/project/ca.crt");
+    stream_context_set_option($socket, 'ssl', 'cafile', __DIR__ . "/ca.crt");
 //    stream_context_set_option($socket, 'ssl', 'cafile', __DIR__ . "/ca.crt");
 
     if(!is_resource($socket))

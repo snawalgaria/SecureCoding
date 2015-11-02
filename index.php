@@ -379,8 +379,8 @@ switch ($page) {
         $userid = login_userid();
         if (substr($page, 0, 1) == 'e')
         {
-            if(isset($_POST["userid"]))
-                $userid = $_POST["userid"];
+            if(isset($_GET["userid"]))
+                $userid = $_GET["userid"];
         }
 
         makepdf($userid);

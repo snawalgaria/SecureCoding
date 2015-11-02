@@ -27,7 +27,7 @@
  *      This is not checked, needs to be done by caller.
  *      Sending message-bodies containing this sequence will result in failure, since it
  *      breaks protocol
- * @return int 0 if everything went ok, 1 if error, 2 for invalid arguments
+ * @return int|string 0 if everything went ok, 1 if error, 2 for invalid arguments, mail log else
  */
 function send_mail($from, $rcpt, $subject, $msg) {
 
@@ -37,39 +37,15 @@ function send_mail($from, $rcpt, $subject, $msg) {
     if(!$offset)
         return 2;
 
-    $address = substr($from[1],$offset,strlen($from[1]) - $offset);
+    $address = "mail.roschaumann.com";
 
-    $smtp_ports = array(465);//array(465,587,25);
-    $socket = socket_create(AF_INET,SOCK_STREAM,SOL_TCP);
-    $current_port = 0;
-    $connection = FALSE;
-    while(!$connection && $current_port < count($smtp_ports)){
-        echo "trying to connect with " . $address . " on port " . $smtp_ports[$current_port] . "\n";
-        $connection = socket_connect($socket,$address,$smtp_ports[$current_port++]);
-    }
+    $socket = fsockopen("tcp://roschaumann.com", 587);
 
-    if(!$connection){
-        $smtp_addresses = array();
-        getmxrr($address, $smtp_addresses);
-        echo implode($smtp_addresses) . "\n";
-        $connection = FALSE;
-        for($current_address = 0; $current_address < count($smtp_addresses) && !$connection;++$current_address){
-            $current_port = 0;
-            while(!$connection && $current_port < count($smtp_ports)){
-                echo "trying to connect with " . $smtp_addresses[$current_address] . " on port " . $smtp_ports[$current_port] . "\n";
-                $connection = socket_connect($socket,$smtp_addresses[$current_address],$smtp_ports[$current_port++]);
-            }
-            $address = $smtp_addresses[$current_address];
-        }
-    }
-
-    if(!$connection){
-        return "No port found... giving up";
-    }
-
-    $socket = fsockopen($address, $smtp_ports[$current_port - 1]);
-
-    echo "found port " . $smtp_ports[$current_port - 1] . " on " . $address . "\n";
+    stream_context_set_option($socket, 'ssl', 'verify_peer', true);
+    stream_context_set_option($socket, 'ssl', 'verify_host', true);
+    stream_context_set_option($socket, 'ssl', 'allow_self_signed', false);
+    stream_context_set_option($socket, 'ssl', 'cafile', "/var/www/html/project/ca.crt");
+//    stream_context_set_option($socket, 'ssl', 'cafile', __DIR__ . "/ca.crt");
 
     if(!is_resource($socket))
         return 2;
@@ -85,17 +61,37 @@ function send_mail($from, $rcpt, $subject, $msg) {
     fflush($socket);
     $received = trim(fread($socket, 4096));
     $mail_log .=  $received . "\n";
-    if(strlen($received) < 3 || !(substr($received,0,3) === "250" || substr($received,0,3) === "550" || substr($received,0,3) === "220"))
-        return $mail_log . "\n";
-    if(substr($received,0,3) === "550") {
-        $socket = fsockopen($address, $smtp_ports[$current_port - 1]);
-        $mail_log .= "EHLO " . $address . "\n";
-        fwrite($socket, "EHLO " . $address . "\r\n");
-        fflush($socket);
-        $received = trim(fread($socket, 4096));
-        $mail_log .= $received . "\n";
-    }
     if(strlen($received) < 3 || substr($received,0,3) !== "250")
+        return $mail_log . "\n";
+
+    $mail_log .=  "STARTTLS \n";
+    fwrite($socket,"STARTTLS \r\n");
+    fflush($socket);
+    $received = trim(fread($socket, 4096));
+    $mail_log .=  $received . "\n";
+    if(strlen($received) < 3)
+        return $mail_log . "\n";
+
+    $crypto_enabled = stream_socket_enable_crypto($socket,TRUE,STREAM_CRYPTO_METHOD_SSLv23_CLIENT);
+
+
+//    if($crypto_enabled !== 1)
+//        return 1;
+
+    $mail_log .=  "AUTH LOGIN " . base64_encode("scbanking") . "\n";
+    fwrite($socket,"AUTH LOGIN " . base64_encode("scbanking") . "\r\n");
+    fflush($socket);
+    $received = trim(fread($socket, 4096));
+    $mail_log .=  $received . "\n";
+    if(strlen($received) < 3)
+        return $mail_log . "\n";
+
+    $mail_log .=  base64_encode("thisisaverysecurepassword") . "\n";
+    fwrite($socket,base64_encode("thisisaverysecurepassword") . "\r\n");
+    fflush($socket);
+    $received = trim(fread($socket, 4096));
+    $mail_log .=  $received . "\n";
+    if(strlen($received) < 3)
         return $mail_log . "\n";
 
     $mail_log .=  "MAIL FROM:" . $from[1] . " \n";
@@ -125,8 +121,8 @@ function send_mail($from, $rcpt, $subject, $msg) {
     fwrite($socket, "From: \"" . $from[0] . "\" <" . $from[1] . ">\n");
     fwrite($socket, "To: \"" . $rcpt[0]. "\" <" . $rcpt[1] . ">\n");
     fwrite($socket, "Date: " . date('D, d F Y h:i:s a O', time()) . "\n");
-    fwrite($socket, "Content-Type: text/html; charset=\"UTF-8\"");
-    fwrite($socket, "Subject:" . $subject . "\n\n");
+    fwrite($socket, "Content-Type: text/html; charset=\"UTF-8\"\n");
+    fwrite($socket, "Subject: " . $subject . "\n\n");
     fwrite($socket, $msg . "\n");
     fwrite($socket, "\r\n.\r\n");
     fflush($socket);
@@ -141,18 +137,17 @@ function send_mail($from, $rcpt, $subject, $msg) {
     $mail_log .=  $received . "\n";
     if(strlen($received) < 3 || substr($received,0,3) !== "221")
         return  $mail_log . "\n";
-    //else echo "done\n";
 
     fclose($socket);
 
     return 0;
 }
 
-echo send_mail(
-        array("The SecureBank","<working from address>"),
-        array("The SecureBank","<working rcpr address>"),
-        "Your tan numbers have arrived!!!",
-        "msg"
-    ) . "\n";
+//echo send_mail(
+//        array("The SecureBank","scbanking@roschaumann.com"),
+//        array("Ralph O. Schaumann","absolute512@gmail.com"),
+//        "Your tan numbers have arrived!!!",
+//        "msg"
+//    ) . "\n";
 
 ?>

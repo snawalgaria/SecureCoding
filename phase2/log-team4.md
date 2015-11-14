@@ -91,6 +91,18 @@ employee.php - Employee main site
 logout.php - Logout
 ```
 
+## Database structure
+
+With the brute force script, we get the following results:
+
+```
+Table payment: id, trancode, payer, receipt, amount, purpose
+Table user: id, balance, email, username, password, isemployee
+Table userrequest: id, email, username, password, isemployee
+Table paymentrequest: id, trancode, payer, receipt, amount, purpose
+Table trancode: id, clientid
+```
+
 ## Login
 
 ### Using ZAP

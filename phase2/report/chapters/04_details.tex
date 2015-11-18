@@ -186,3 +186,125 @@ The SecureBank web application does not offer a possibility for an employee to c
 \clearpage
 
 
+\subsection{Test User Registration Process}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & For registration, a username, an e-mail address, a password and whether the registrant is a client or an employee are needed. Anyone can register for access. The registration has to be approved by an employee before the registrant can use the account. A person can register only one time with the same e-mail address. However, a person can register many times with the same username. (The activation of such an account fails with a database error.) We could not find out, whether the registrants are verified personally before the approval. \\
+\textbf{Discovery} & We tried to register several accounts with the same e-mail address and/or username using the web application. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & For registration, the full name, an e-mail address, a password and whether the registrant is a client or an employee are needed. Anyone can register for access. The registration has to be approved by an employee before the registrant can use the account. A person can register only one time with the same e-mail address. We could not find out, whether the registrants are verified personally before the approval. \\
+\textbf{Discovery} & We tried to register several accounts with the same e-mail address and/or names using the web application. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+The Online Banking web application allows the double-registration of the same username at first, it only fails at the activation. This behaviour is confusing. Also, the application should ask for the full name be able to verify the name. Otherwise, there are no significant differences between both applications.
+
+\clearpage
+
+
+
+\subsection{Test Account Provisioning Process}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & There is no way to change the role of a user. Account requests (both, client and employee) must be approved by an employee.  \\
+\textbf{Discovery} & We followed the links in the user interface and tried to login as a non-verified user. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & There is no way to change the role of a user. Account requests (both, client and employee) must be approved by an employee.  \\
+\textbf{Discovery} & We followed the links in the user interface and tried to login as a non-verified user. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+There are no significant differences between both applications.
+
+\clearpage
+
+
+
+
+
+\subsection{Testing for Account Enumeration and Guessable User Account}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & There are no differences in the servers response for not activated accounts, valid usernames and invalid usernames.  \\
+\textbf{Discovery} & We tested the login for activated and non-activated accounts, existing and not-existing usernames and valid or invalid passwords. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & There are no differences in the servers response for not activated accounts, valid usernames and invalid usernames.  \\
+\textbf{Discovery} & We tested the login for activated and non-activated accounts, existing and not-existing usernames and valid or invalid passwords. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+There are no significant differences between both applications.
+
+\clearpage
+
+
+\subsection{Testing for Weak or unenforced username policy}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were not able to find a username policy.  \\
+\textbf{Discovery} & We tested various usernames. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & The username has to be a valid e-mail address of the client/employee. There is no policy regarding the e-mail address.  \\
+\textbf{Discovery} & We tested valid and invalid e-mail addresses. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+The only difference between the applications is that the Online Banking application uses usernames, which might have less correlation to the user than the e-mail address.
+
+\clearpage

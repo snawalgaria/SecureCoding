@@ -1,1 +1,27 @@
 \chapter{Detailed Report}\label{chapter:details}
+
+\section{Configuration and Deploy Management Testing}
+
+\subsection{Test File Extensions Handling for Sensitive Information}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We found various files which are served as plain text but are PHP source files. One of these files contains the credentials of the mail server. We were also able to download the compiled executable as well as the source code of the batch file parser. \\
+\textbf{Discovery} & Using the OWASP ZAP tool, we used the forced browse functionality on \texttt{/InternetBanking/}. We received a list of files which were found using this tool, see below. \\
+\textbf{Likelihood} & This can be tested by anyone who enters specific strings into the address bar of a browser. However, the likelihood of this vulnerability is much higher if the attacker uses specific tools which test specific paths systematically. \\
+\textbf{Impact} & The attacker can get sensitive information, e.g. credentials to the mail server or the database. He can analyze the source of the parser and find vulnerabilies there. \\
+\textbf{Access Vector} & Network \\ 
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Intigrity} & No Impact \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+TODO: Forced browsing results.
+
+TODO: SecureBank and comparison

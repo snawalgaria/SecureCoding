@@ -12,7 +12,7 @@
 \textbf{Discovery} & Using the OWASP ZAP tool, we used the forced browse functionality on \texttt{/InternetBanking/}. We received a list of files which were found using this tool, see below. \\
 \textbf{Likelihood} & This can be tested by anyone who enters specific strings into the address bar of a browser. However, the likelihood of this vulnerability is much higher if the attacker uses specific tools which test specific paths systematically. \\
 \textbf{Impact} & The attacker can get sensitive information, e.g. credentials to the mail server or the database. He can analyze the source of the parser and find vulnerabilies there. \\
-\textbf{Access Vector} & Network \\ 
+\textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low \\
 \textbf{Privileges Required} & None \\
 \textbf{User Interaction} & None \\
@@ -24,4 +24,111 @@
 
 TODO: Forced browsing results.
 
-TODO: SecureBank and comparison
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We found some HTML snippets, which do not contain any sensitive information, and the compiled executable of the transaction file parser. \\
+\textbf{Discovery} & Using the OWASP ZAP tool, we used the forced browse functionality on \texttt{/seccoding-2015/}. We received a list of files which were found using this tool, see below. \\
+\textbf{Likelihood} & This can be tested by anyone who enters specific strings into the address bar of a browser. However, the likelihood of this vulnerability is much higher if the attacker uses specific tools which test specific paths systematically. \\
+\textbf{Impact} & The attacker only has access to the parser executable, which might contain information about the database connection. He can analyze the parser and find vulnerabilies there. \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & No Impact \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+TODO: Forced browsing results.
+
+\subsubsection*{Comparison}
+The web application of the SecureBank discloses less sensitive information. However, both applications disclose information which should not be available to unauthorized persons.
+
+\clearpage
+
+\subsection{Test HTTP Methods}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & The server responded that the method \texttt{POST}, \texttt{GET}, \texttt{OPTIONS} and \texttt{HEAD} are supported.  \\
+\textbf{Discovery} & We submitted the request \texttt{OPTIONS / HTTP/1.1} to the server via NetCat on port 80. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & The server responded that the method \texttt{POST}, \texttt{GET}, \texttt{OPTIONS} and \texttt{HEAD} are supported.  \\
+\textbf{Discovery} & We submitted the request \texttt{OPTIONS / HTTP/1.1} to the server via NetCat on port 80. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+There are no significant differences between both applications.
+
+
+\subsection{Test HTTP Strict Transport Security}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & The server did not send any \texttt{Strict-Transport-Security} header.  \\
+\textbf{Discovery} & Executing the command \texttt{curl -s -D- http://vm/InternetBanking/ | grep Strict} resulted in no results. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & The server did not send any \texttt{Strict-Transport-Security} header.  \\
+\textbf{Discovery} & Executing the command \texttt{curl -s -D- http://vm/InternetBanking/ | grep Strict} resulted in no results. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+There are no significant differences between both applications.
+
+\subsection{Test RIA cross domain policy}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & No cross domain policy files were found.  \\
+\textbf{Discovery} & We scanned the traffic using ZAP. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & No cross domain policy files were found.  \\
+\textbf{Discovery} & We scanned the traffic using ZAP. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+There are no significant differences between both applications.

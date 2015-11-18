@@ -135,5 +135,54 @@ There are no significant differences between both applications.
 \subsubsection*{Comparison}
 There are no significant differences between both applications.
 
+\clearpage
+
+\section{Identity Management Testing}
+
+\subsection{Test Role Definitions}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We found the following functionality for the different roles: \begin{tabular}{p{7cm}|c|c}
+& \textbf{Client} & \textbf{Employee} \\\hline
+View own account & $\times$ & $\times$ \\
+View own transaction history & $\times$ & -- \\
+Create new transactions & $\times$ & -- \\
+View account and transaction history of clients and employees & -- & $\times$ \\
+Change account details and balance of clients and employees & -- & $\times$ \\
+Approve transactions & -- & $\times$ \\
+Approve registrations of clients and employees & -- & $\times$ \\
+\end{tabular}  We noticed that there are links to view the transaction history and change the account balance of employees, too. \\
+\textbf{Discovery} & We gathered the information by exploring the web application interface manually. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We found the following functionality for the different roles: \begin{tabular}{p{7cm}|c|c}
+& \textbf{Client} & \textbf{Employee} \\\hline
+View own account & $\times$ & -- \\
+View own transaction history & $\times$ & -- \\
+Create new transactions & $\times$ & -- \\
+View account and transaction history of clients & -- & $\times$ \\
+Approve transactions & -- & $\times$ \\
+Approve registrations of clients and employees & -- & $\times$ \\
+\end{tabular}  \\
+\textbf{Discovery} & We gathered the information by exploring the web application interface manually. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+The SecureBank web application does not offer a possibility for an employee to change the account balance of a client. However, the Online Banking application allows to view the transaction history and change the account balance also for employees, which have no account. This behaviour might be confusing.
+
+\clearpage
 
 

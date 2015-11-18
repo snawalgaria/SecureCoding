@@ -3,6 +3,33 @@
 Through our testing, we identified the following vulnerabilities as the most critical for the Online Banking application and the SecureBank:
 
 \section{Online Banking}
+\subsection{Stored XSS in Registration and Transaction Description}
+\begin{itemize}
+	\item Likelihood: high
+	\item Implication: high
+	\item Risk: high
+\end{itemize}
+
+With stored cross site scripting attacks it is possible to inject JavaScript code, which is run whenever an employee logs in and opens the list of unapproved accounts or transactions. It is also possible to inject script from other sites.
+
+\subsection{Missing check for amount in transactions from batch file}
+\begin{itemize}
+	\item Likelihood: medium
+	\item Implication: high
+	\item Risk: high
+\end{itemize}
+
+It is possible to get money from another client of the bank by filling in a negative number in the amount field of a transaction batch file. Therefore, one client can generate an infinite amount of money, while reducing the amount of money of other clients.
+
+\subsection{SQL injection in transaction batch file}
+\begin{itemize}
+	\item Likelihood: medium
+	\item Implication: high
+	\item Risk: high
+\end{itemize}
+
+The application is vulnerable to SQL injections in the transaction batch files. Therefore, it is possible to perform transactions while using any unused TAN in the system, which is not known to the attacker and might come from another client.
+
 \subsection{Some critical vulnerability}
 \begin{itemize}
 	\item Likelihood: high

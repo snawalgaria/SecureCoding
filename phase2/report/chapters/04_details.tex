@@ -308,3 +308,127 @@ There are no significant differences between both applications.
 The only difference between the applications is that the Online Banking application uses usernames, which might have less correlation to the user than the e-mail address.
 
 \clearpage
+
+
+
+\section{Authentcation Testing}
+
+\subsection{Testing for Credentials Transported over Encrypted Channel}
+
+TODO!
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} &   \\
+\textbf{Discovery} &  \\
+\textbf{Impact} &  \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} &  \\
+\textbf{Discovery} & \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+
+\clearpage
+
+
+\subsection{Testing for default credentials}
+We decided to not test for default credentials, because we are working with custom software and therefore assume that all users and administrators choose secure passwords.
+
+\clearpage
+
+
+\subsection{Testing for Weak lock out mechanism}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were not able to find any lock out mechanism. Therefore, brute force attacks on passwords are possible. \\
+\textbf{Discovery} & We entered a valid username and incorrect passwords 10 times, and always got the error message about an incorrect password. Afterwards, we were able to log in with a correct password. \\
+\textbf{Impact} & An attacker can brute-force the password of any user and therefore take the user over. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & Low \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were not able to find any lock out mechanism. Therefore, brute force attacks on passwords are possible. \\
+\textbf{Discovery} & We entered a valid username and incorrect passwords 10 times, and always got the error message about the failed login. Afterwards, we were able to log in with a correct password. \\
+\textbf{Impact} & An attacker can brute-force the password of any user and therefore take the user over. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & Low \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications do not provide any lock out mechanism.
+
+\clearpage
+
+
+
+
+\subsection{Testing for bypassing authentication schema}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were able to bypass the authentication schema via a SQL injection. This gave us the ability to login as any user without knowing the password. \\
+\textbf{Discovery} & Using the fuzzer \texttt{jbrofuzz / SQL Injection} of ZAP on the username field of the login page, we were able to login as \texttt{admin} or another user without knowing the password. We had no success with direct page requests, modifiying the session ID and parameter modification. \\
+\textbf{Impact} & An attacker can take over a user without knowing the valid access credentials. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & Low \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were not able to bypass the authentication schema. \\
+\textbf{Discovery} & Using the fuzzer \texttt{jbrofuzz / SQL Injection} of ZAP and SQLmap on the username field of the login page, we were not able to find SQL injection vulnerabilities to bypass the authentication schema. We also had no success with direct page requests, modifiying the session ID and parameter modification.   \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+The Online Banking web application provides a way to bypass the authentication schema via SQL injection. The SecureBank application does not offer such vulnerabilities.
+
+\clearpage
+

@@ -1,1 +1,7 @@
 \chapter{Tools}\label{chapter:tools}
+
+\section{Zed Attack Proxy (ZAP)}
+Using the Zed Attack Proxy (ZAP), we were able to reveal significant parts of the directory structure in both web applications. In the \textit{Online Banking} web application, we found a stored XSS vulnerability in the registration and the transaction description as well as a SQL injection vulnerability in the login form using the fuzzer. We were also be able to find a buffer overflow vulnerability for the transaction description in the transaction batch files.
+
+\section{SQLmap}
+Using SQLmap, we found the SQL injection vulnerability in the login form, which we found using ZAP earlier. SQLmap did not reveal further SQL injection possibilities.

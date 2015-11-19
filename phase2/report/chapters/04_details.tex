@@ -432,3 +432,79 @@ The Online Banking web application provides a way to bypass the authentication s
 
 \clearpage
 
+\subsection{Testing for Vulnerable Remember Password}
+We did not found a remember password functionality, so we decided to not further test on this.
+
+\clearpage
+
+\subsection{Testing for Browser Cache Weakness}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & Clicking the back button in the browser does not cause a re-login. All sites have the header \texttt{Cache-Control: no-store, no-cache, must-revaildate, post-check=0, pre-check=0} and the \texttt{Pragma: no-cache} as well as an \texttt{Expires: <date in the past>} header set. \\
+\textbf{Discovery} & Using ZAP, we analyzed the response header for different pages which are only available when a user is logged in.\\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & Clicking the back button in the browser does not cause a re-login. All sites have the header \texttt{Cache-Control: no-store, no-cache, must-revaildate, post-check=0, pre-check=0} and the \texttt{Pragma: no-cache} as well as an \texttt{Expires: <date in the past>} header set. \\
+\textbf{Discovery} & Using ZAP, we analyzed the response header for different pages which are only available when a user is logged in.\\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+There is no significant difference between both applications.
+
+\clearpage
+
+
+\subsection{Testing for Weak password policy}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & There is a password policy enforced, which states that a password has have a length $\geq6$ and has to include at least one number, one lowercase character, one uppercase character and one symbol. There is no way to change the password. The password does not expire. \\
+\textbf{Discovery} & We tested various passwords, like \texttt{123456}. If a password does not match the policy, an error message is shown which informs the user about the policy. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & The password has to have a length $\geq 6$. There is no way to change the password. The password does not expire. \\
+\textbf{Discovery} &  We tested various passwords, like \texttt{123456}. If a password does not match the policy, an error message is shown which informs the user about the policy.  \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+The Online Banking application enforces a more strict password policy than the SecureBank application. This reduces the risk of brute force attacks.
+
+\clearpage
+
+\subsection{Testing for Weak security question/answer}
+We could not find such functionality in both application. Therefore, we decidede to not proceed testing on this.
+
+\subsection{Testing for Weak password change or reset functionalities}
+We could not find such functionality in both application. Therefore, we decidede to not proceed testing on this.
+
+\subsection{Testing for Weaker authentication in alternative channel}
+We could not find an alternative channel for authentication. Therefore, we decidede to not proceed testing on this.
+
+\clearpage
+
+\section{Authorization Testing}

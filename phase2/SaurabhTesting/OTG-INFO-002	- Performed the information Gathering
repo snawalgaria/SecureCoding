@@ -1,0 +1,13 @@
+
+OTG-INFO-002	- Performed the information Gathering Test to get information about the server(ScreenShot attached)	Success
+OTG-INFO-006	- Identified Application Entry points by noting all the GET and POST requests as well as new cookies.	Success
+OTG-INFO-008	- Identified Appliation framework(By looking at the powered by Header name in the server response)	Success
+OTG-CONFIG-006	 Tested HTTP Methods											Success
+OTG-AUTHN-001	- Tested Credentials transported over http instead https						Bug found
+OTG-AUTHN-002	- Tested for default credentials									NA
+OTG-AUTHN-004	  Tested bypassing authentication schema-(Couldnt find any hidden parameters) 				No bug found
+OTG-AUTHN-006	Tested Browser Cache Weakness with no success. Since No Cache deployed and back button doesnt lead to sensitive information
+OTG-INPVAL-005	 SQL INJECTION done successfully to login as admin by giving username as admin';#. screenshot attached
+User able to transfer money to his own account - error should be shown, however it shows transaction successful.
+
+While performing transactions, I could intercept the request and transfer the money to some other account, thus highly insecure

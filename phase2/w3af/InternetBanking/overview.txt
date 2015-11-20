@@ -1,0 +1,9 @@
+overview
+
+6	xss
+	path disclosure
+	csrf
+4	sql injection
+2	eval
+3	unhandled errors
+all	Click-Jacking

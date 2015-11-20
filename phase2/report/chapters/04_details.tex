@@ -508,3 +508,90 @@ We could not find an alternative channel for authentication. Therefore, we decid
 \clearpage
 
 \section{Authorization Testing}
+
+\subsection{Testing Directory traversal/file include}
+TODO!
+\subsection{Testing for bypassing authorization schema}
+TODO!
+\subsection{Testing for Privilege Escalation}
+TODO!
+\subsection{Testing for Insecure Direct Object References}
+TODO!
+
+\section{Session Management Testing}
+TODO!
+
+\section{Data Validation Testing}
+
+TODO!
+\subsection{Testing for SQL injection}
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were able to log into the application as any user without knowing the passwordand to perform transactions with any unused TAN of any user when uploading a transaction batch file. \\
+\textbf{Discovery} & We used the fuzzer of ZAP on the username field of the login form, with the query parameters \texttt{username=admin\&password=123}, where the fuzzing point was at the end of the username. We compared the answers of the server and found that in one case we got redirected to the employee page. We analyzed the login page also using SQLmap, which delivered a similar result. Additionally, we ran SQLmap on the fields of the perform transaction form, it returned that none of the four inputs where exploitable for SQL injection.
+
+We tested the fields of the transaction batch form manually by trying some standard SQL injection parts (e.g. \texttt{';--} and \texttt{";--}). We noted that the application gives no usual feedback when uploading a transaction file where the username or the comment contains strings that apparantly results in a syntactically erroneous SQL query. We continued to determine the table structure using a brute force script which tests for some expectable table and column names, the results can be found below. Finally, we were able to exploit the SQL injection vulnerability in the TAN field to use any unused TAN from any user. \\
+\textbf{Impact} & An attacker can log into any account, of which he knows the username, and perform transactions without knowing valid TANs for that account by uploading a transaction batch file. Furthermore, as an attacker can take over an administrator account, if he knows the username, he has access to all accounts and can change the account balances at will. Also, an attacker can analyze the structure of a database. \\
+\textbf{Likelihood} & High \\
+\end{tabular}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Intigrity} & High \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\paragraph{Results of the brute-force script}
+
+\begin{verbatim}
+Table payment: id, trancode, payer, receipt, amount, purpose
+Table user: id, balance, email, username, password, isemployee
+Table userrequest: id, email, username, password, isemployee
+Table paymentrequest: id, trancode, payer, receipt, amount, purpose
+Table trancode: id, clientid
+\end{verbatim}
+
+\subsubsection*{SecureBank}
+TODO!
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} &  \\
+\textbf{Discovery} &  \\
+\textbf{Impact} & \\
+\textbf{Likelihood} & Low \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & Low \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+TODO!
+
+\clearpage
+
+
+
+\section{Error Handling}
+TODO!
+
+\section{Testing for weak Cryptography}
+TODO!
+
+\section{Business Logic Testing}
+TODO!
+
+\section{Client Side Testing}
+TODO!
+

@@ -524,6 +524,14 @@ TODO!
 \section{Data Validation Testing}
 
 TODO!
+
+\subsection{Testing for LDAP Injection}
+\subsection{Testing for ORM Injection}
+\subsection{Testing for XML Injection}
+\subsection{Testing for SSI Injection}
+\subsection{Testing for XPath Injection}
+We did not test any of these injection types as it appears that these techniques are not used in any of the two applications. Therefore, we decided to not further investigate in these types of injection.
+
 \subsection{Testing for SQL injection}
 \subsubsection*{Online Banking}
 
@@ -584,7 +592,47 @@ TODO!
 
 
 \section{Error Handling}
-TODO!
+
+\subsection{Analysis of Error Codes}
+\subsubsection*{Online Banking}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were not able to get reveal any information about the database, but we were able to get usual error codes of an apache server. The error pages also revealed information about the version, which is 2.2.22 on an Ubuntu server. \\
+\textbf{Discovery} & By using the fuzzer \texttt{jbrofuzz / SQL Injection / MySQL Injection 101} of ZAP on the purpose field of the online transaction form, we got one response which simply stated \texttt{Database error}, but gave no further information. Using a browser, we requested the page \texttt{/InternetBanking/foobar/}, which returned a 404 error, with further information about the server operating system and the Apache version. \\
+\textbf{Impact} & Using the apache version, an attacker can run known exploits for this specific version. \\
+\textbf{Likelihood} & Medium \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & No Impact \\
+\textbf{Intigrity} & No Impact \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were not able to get reveal any information about the database, but we were able to get usual error codes of an apache server. The error pages also revealed information about the version, which is 2.2.22 on an Ubuntu server. On the login page, we found an error code if the login was unsuccessful. Apparently, the code is always 1, if the credentials are incorrect. \\
+\textbf{Discovery} & By using the fuzzer \texttt{jbrofuzz / SQL Injection / MySQL Injection 101} of ZAP on the purpose field of the online transaction form, we were not able to produce a databse error. Using a browser, we requested the page \texttt{/seccoding-2015/foobar/}, which returned a 404 error, with further information about the server operating system and the Apache version. \\
+\textbf{Impact} & Using the apache version, an attacker can run known exploits for this specific version. \\
+\textbf{Likelihood} & Medium \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & No Impact \\
+\textbf{Intigrity} & No Impact \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Although the Online Banking application produces an error message about a database error, they provide the similar information in error messages.
+
+\subsection{Testing for Stack Traces}
+We were not able to produce stack traces in both applications using invalid inputs (e.g. negative numbers), or SQL injection.
 
 \section{Testing for weak Cryptography}
 TODO!

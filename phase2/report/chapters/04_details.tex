@@ -649,11 +649,39 @@ TODO!
 
 TODO!
 
-\subsection{Testing for LDAP Injection}
-\subsection{Testing for ORM Injection}
-\subsection{Testing for XML Injection}
-\subsection{Testing for SSI Injection}
-\subsection{Testing for XPath Injection}
+\subsection{Testing for Reflected Cross Site Scripting}
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & In combination with a SQL injection vulnerability, we were able to inject scripts into the users home page. \\
+\textbf{Discovery} & As we know from previous testing, that the login page is vulnerable to SQL injection, we were able to use \texttt{admin' AND '<script>alert("XSS")</script>'='<script>alert("XSS")</script>} as username. We also tried to enter some basic script parts into the fields of the registration form and the transaction form, but they are not reflected. \\
+\textbf{Impact} & An attacker can induce scripts into the users pages and therefore track all entered information and modify them. \\
+\textbf{Likelihood} & Low \\
+\textbf{Access Vector} & Local \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Intigrity} & Low \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were not able to find any reflected XSS vulnerability. \\
+\textbf{Discovery} & We tried to inject basic scripts into the register, login and transaction form as well as into the administration form.\\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+
+
+\subsection{Testing for LDAP/ORM/XML/SSI/XPath Injection}
 We did not test any of these injection types as it appears that these techniques are not used in any of the two applications. Therefore, we decided to not further investigate in these types of injection.
 
 \subsection{Testing for SQL injection}
@@ -669,10 +697,25 @@ We tested the fields of the transaction batch form manually by trying some stand
 \textbf{Likelihood} & High \\
 \end{tabular}
 
+\paragraph{Login vulnerability}
+
 \begin{tabular}{l|p{10cm}}
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low \\
 \textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Intigrity} & High \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\paragraph{TAN vulnerability}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & Low \\
 \textbf{User Interaction} & None \\
 \textbf{Scope} & Unchanged \\
 \textbf{Confidentiality} & High \\

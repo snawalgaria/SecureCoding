@@ -40,3 +40,12 @@ The application is vulnerable to SQL injections in the transaction batch files. 
 The web application is vulnerable.
 
 \section{SecureBank}
+
+\subsection{Stored XSS in transaction description}
+\begin{itemize}
+	\item Likelihood: high
+	\item Implication: high
+	\item Risk: high
+\end{itemize}
+
+With stored cross site scripting attacks it is possible to inject JavaScript code, which is run whenever an employee logs in and opens the list of unapproved accounts or transactions. It is also possible to inject script from other sites.

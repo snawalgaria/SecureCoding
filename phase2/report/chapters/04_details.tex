@@ -654,18 +654,11 @@ TODO!
 
 \begin{tabular}{l|p{10cm}}
 
-\textbf{Observation} & In combination with a SQL injection vulnerability, we were able to inject scripts into the users home page. \\
-\textbf{Discovery} & As we know from previous testing, that the login page is vulnerable to SQL injection, we were able to use \texttt{admin' AND '<script>alert("XSS")</script>'='<script>alert("XSS")</script>} as username. We also tried to enter some basic script parts into the fields of the registration form and the transaction form, but they are not reflected. \\
-\textbf{Impact} & An attacker can induce scripts into the users pages and therefore track all entered information and modify them. \\
-\textbf{Likelihood} & Low \\
-\textbf{Access Vector} & Local \\
-\textbf{Access Complexity} & Low \\
-\textbf{Privileges Required} & None \\
-\textbf{User Interaction} & None \\
-\textbf{Scope} & Unchanged \\
-\textbf{Confidentiality} & High \\
-\textbf{Intigrity} & Low \\
-\textbf{Availability} & No Impact \\
+\textbf{Observation} & We were not able to find any reflected XSS vulnerability in this application. \\
+\textbf{Discovery} & We tried to inject basic scripts into the register, login and transaction form as well as into the administration form. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
 \end{tabular}
 
 \subsubsection*{SecureBank}
@@ -678,6 +671,9 @@ TODO!
 \textbf{Likelihood} & n/a \\
 \textbf{CVSS} & n/a \\
 \end{tabular}
+
+\subsubsection*{Comparison}
+Based on our testing, we found that both applications operate on a similar security level.
 
 
 

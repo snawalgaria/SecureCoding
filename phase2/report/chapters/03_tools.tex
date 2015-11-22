@@ -5,3 +5,12 @@ Using the Zed Attack Proxy (ZAP), we were able to reveal significant parts of th
 
 \section{SQLmap}
 Using SQLmap, we found the SQL injection vulnerability in the login form of the \textit{Online Banking} application, which we found using ZAP earlier. SQLmap did not reveal further SQL injection possibilities in any of the two applications.
+
+\section{W3AF}
+With W3AF, we made a full audit, including file\_upload(looks for uploadable files), eval(insecure eval() usage), un\_ssl(secure content via http), os\_commanding, lfi(local file inclusion), rfi, sqli(injection), preg\_replace(insecure preg\_replace() in PHP), mx\_injection, generic, format\_string, websocket\_hijacking, shell\_shock, ldapi, buffer\_overflow, redos(DOS using slow regex), global\_redirect(any redirecting scripts), xpath, cors\_origin(consistency of HTTP origin header and sender), htaccess\_methods, dav(WebDAV module configuration), ssi(server side inclusion), csrf, xss, ssl\_certificate, xst(cross site tracing), blind\_sqli, phishing\_vector, response\_splitting, rfd(reflected file download), frontpage(tries uploading files using frontpage extensions).
+
+W3AF was able to quite easily find XSS, CSRF and SQL injection points. It also informed about unhandled errors and possible click-jacking on both sites.
+
+However, it also showed a few false positives (showing sql injections as eval vulnerabilities, path disclosure) and missed a few vulnerabilities that our other tools found, like buffer overflows.
+
+Overall, I'd say W3AF is a Jack of all Trades. If the functionality is not enough, however, it's possible to write custom plugins.

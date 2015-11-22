@@ -993,6 +993,42 @@ If we count the SQL injection in the uploaded file to the point about SQL inject
 \subsubsection*{Comparison}
 Both applications allow no command injections (to the OS).
 
+\clearpage
+
+\subsection{Testing for Buffer overflow}
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were able to induce a buffer overflow by putting a string of $258$ \texttt{a}s into the TAN purpose field of the uploaded transaction batch file, although we could not identify whether this a stack or a heap buffer overflow. We were not able to cause a buffer overflow by using formatting characters. \\
+\textbf{Discovery} & Using the fuzzer of ZAP, we used the \texttt{jbrofuzz / Buffer Overflows / Long string's of a's} fuzzing base on the transaction purpose field of the uploaded transaction batch file. For string smaller with a length smaller than 255 bytes, the transaction gets executed, and for very large strings, the application claims that the file is too large. However, in the other cases, the application gives no feedback, as described in Section \ref{sql:injection:online}. We also tried to cause buffer overflows caused by string format function by including strings like \texttt{\%s} into the username or transaction purpose field. \\
+\textbf{Impact} & TODO! \\
+\textbf{Likelihood} & Medium \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & Low \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & No Impact \\
+\textbf{Intigrity} & No Impact \\
+\textbf{Availability} & Low \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were unable to produce a buffer overflow. \\
+\textbf{Discovery} & We tried to use long strings of \texttt{a}s on the username and the description field of the uploaded transaction batch file. However, the file was either rejected with the comment that it does not satisfy the specifications or the transaction was executed. We also tried to cause buffer overflows caused by string format function by including strings like \texttt{\%s} into the username or transaction purpose field. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsection{Testing for incubated vulnerabilities}
+TODO!
+
+\subsection{Testing for HTTP Splitting/Smuggling}
 TODO!
 
 \clearpage

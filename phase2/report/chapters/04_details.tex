@@ -439,31 +439,46 @@ The only difference between the applications is that the Online Banking applicat
 
 \subsection{Testing for Credentials Transported over Encrypted Channel}
 
-TODO!
-
 \subsubsection*{Online Banking}
 
 \begin{tabular}{l|p{10cm}}
 
-\textbf{Observation} &   \\
-\textbf{Discovery} &  \\
-\textbf{Impact} &  \\
-\textbf{Likelihood} & n/a \\
-\textbf{CVSS} & n/a \\
+\textbf{Observation} & We were unable to connect to the application via HTTPS.  \\
+\textbf{Discovery} & We tried to access the application via HTTPS on port 443. \\
+\textbf{Impact} & An attacker can retrieve sensitive information by sniffing the network. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Adjacent Network \\
+\textbf{Access Complexity} & Medium \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Intigrity} & No Impact \\
+\textbf{Availability} & No Impact \\
 \end{tabular}
 
 \subsubsection*{SecureBank}
 
+
 \begin{tabular}{l|p{10cm}}
 
-\textbf{Observation} &  \\
-\textbf{Discovery} & \\
-\textbf{Impact} & n/a \\
-\textbf{Likelihood} & n/a \\
-\textbf{CVSS} & n/a \\
+\textbf{Observation} & We were unable to connect to the application via HTTPS.  \\
+\textbf{Discovery} & We tried to access the application via HTTPS on port 443. \\
+\textbf{Impact} & An attacker can retrieve sensitive information by sniffing the network. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Adjacent Network \\
+\textbf{Access Complexity} & Medium \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Intigrity} & No Impact \\
+\textbf{Availability} & No Impact \\
 \end{tabular}
 
 \subsubsection*{Comparison}
+Both applications transport sensitive information about non-encrypted channels.
+
 
 \clearpage
 

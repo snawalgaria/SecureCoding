@@ -41,23 +41,29 @@
 \BOOKMARK [2][-]{subsection.4.4.3}{Testing for Privilege Escalation}{section.4.4}% 41
 \BOOKMARK [2][-]{subsection.4.4.4}{Testing for Insecure Direct Object References}{section.4.4}% 42
 \BOOKMARK [1][-]{section.4.5}{Session Management Testing}{chapter.4}% 43
-\BOOKMARK [1][-]{section.4.6}{Data Validation Testing}{chapter.4}% 44
-\BOOKMARK [2][-]{subsection.4.6.1}{Testing for Reflected Cross Site Scripting}{section.4.6}% 45
-\BOOKMARK [2][-]{subsection.4.6.2}{Testing for Stored Cross Site Scripting}{section.4.6}% 46
-\BOOKMARK [2][-]{subsection.4.6.3}{Testing for HTTP Verb Tampering}{section.4.6}% 47
-\BOOKMARK [2][-]{subsection.4.6.4}{Testing for HTTP Parameter pollution}{section.4.6}% 48
-\BOOKMARK [2][-]{subsection.4.6.5}{Testing for SQL injection}{section.4.6}% 49
-\BOOKMARK [2][-]{subsection.4.6.6}{Testing for LDAP Injection}{section.4.6}% 50
-\BOOKMARK [2][-]{subsection.4.6.7}{Testing for ORM Injection}{section.4.6}% 51
-\BOOKMARK [2][-]{subsection.4.6.8}{Testing for XML Injection}{section.4.6}% 52
-\BOOKMARK [2][-]{subsection.4.6.9}{Testing for SSI Injection}{section.4.6}% 53
-\BOOKMARK [2][-]{subsection.4.6.10}{Testing for XPath Injection}{section.4.6}% 54
-\BOOKMARK [2][-]{subsection.4.6.11}{IMAP/SMTP Injection}{section.4.6}% 55
-\BOOKMARK [2][-]{subsection.4.6.12}{Testing for Code Injection}{section.4.6}% 56
-\BOOKMARK [2][-]{subsection.4.6.13}{Testing for Command Injection}{section.4.6}% 57
-\BOOKMARK [1][-]{section.4.7}{Error Handling}{chapter.4}% 58
-\BOOKMARK [2][-]{subsection.4.7.1}{Analysis of Error Codes}{section.4.7}% 59
-\BOOKMARK [2][-]{subsection.4.7.2}{Testing for Stack Traces}{section.4.7}% 60
-\BOOKMARK [1][-]{section.4.8}{Testing for weak Cryptography}{chapter.4}% 61
-\BOOKMARK [1][-]{section.4.9}{Business Logic Testing}{chapter.4}% 62
-\BOOKMARK [1][-]{section.4.10}{Client Side Testing}{chapter.4}% 63
+\BOOKMARK [2][-]{subsection.4.5.1}{Testing for Bypassing Session Management Schema}{section.4.5}% 44
+\BOOKMARK [2][-]{subsection.4.5.2}{Testing for Cookies attributes}{section.4.5}% 45
+\BOOKMARK [2][-]{subsection.4.5.3}{Testing for Session Fixation}{section.4.5}% 46
+\BOOKMARK [1][-]{section.4.6}{Data Validation Testing}{chapter.4}% 47
+\BOOKMARK [2][-]{subsection.4.6.1}{Testing for Reflected Cross Site Scripting}{section.4.6}% 48
+\BOOKMARK [2][-]{subsection.4.6.2}{Testing for Stored Cross Site Scripting}{section.4.6}% 49
+\BOOKMARK [2][-]{subsection.4.6.3}{Testing for HTTP Verb Tampering}{section.4.6}% 50
+\BOOKMARK [2][-]{subsection.4.6.4}{Testing for HTTP Parameter pollution}{section.4.6}% 51
+\BOOKMARK [2][-]{subsection.4.6.5}{Testing for SQL injection}{section.4.6}% 52
+\BOOKMARK [2][-]{subsection.4.6.6}{Testing for LDAP Injection}{section.4.6}% 53
+\BOOKMARK [2][-]{subsection.4.6.7}{Testing for ORM Injection}{section.4.6}% 54
+\BOOKMARK [2][-]{subsection.4.6.8}{Testing for XML Injection}{section.4.6}% 55
+\BOOKMARK [2][-]{subsection.4.6.9}{Testing for SSI Injection}{section.4.6}% 56
+\BOOKMARK [2][-]{subsection.4.6.10}{Testing for XPath Injection}{section.4.6}% 57
+\BOOKMARK [2][-]{subsection.4.6.11}{IMAP/SMTP Injection}{section.4.6}% 58
+\BOOKMARK [2][-]{subsection.4.6.12}{Testing for Code Injection}{section.4.6}% 59
+\BOOKMARK [2][-]{subsection.4.6.13}{Testing for Command Injection}{section.4.6}% 60
+\BOOKMARK [1][-]{section.4.7}{Error Handling}{chapter.4}% 61
+\BOOKMARK [2][-]{subsection.4.7.1}{Analysis of Error Codes}{section.4.7}% 62
+\BOOKMARK [2][-]{subsection.4.7.2}{Testing for Stack Traces}{section.4.7}% 63
+\BOOKMARK [1][-]{section.4.8}{Testing for weak Cryptography}{chapter.4}% 64
+\BOOKMARK [2][-]{subsection.4.8.1}{Testing for Weak SSL/TLS Ciphers, Insufficient Transport Layer Protection}{section.4.8}% 65
+\BOOKMARK [2][-]{subsection.4.8.2}{Testing for Padding Oracle}{section.4.8}% 66
+\BOOKMARK [2][-]{subsection.4.8.3}{Testing for Sensitive information sent via unencrypted channels}{section.4.8}% 67
+\BOOKMARK [1][-]{section.4.9}{Business Logic Testing}{chapter.4}% 68
+\BOOKMARK [1][-]{section.4.10}{Client Side Testing}{chapter.4}% 69

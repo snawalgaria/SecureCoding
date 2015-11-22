@@ -614,8 +614,131 @@ TODO!
 \subsection{Testing for Insecure Direct Object References}
 TODO!
 
+
+
+
+
+
+
+
+
 \section{Session Management Testing}
+
+\subsection{Testing for Bypassing Session Management Schema}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. \\
+\textbf{Discovery} & BurpSuite \\
+\textbf{Impact} & By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Adjacent Network \\
+\textbf{Access Complexity} & Low\\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & Yes, the user has to do any action for which the cookie will be transmitted. \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & High\\
+\textbf{Availability} & None \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. \\
+\textbf{Discovery} & BurpSuite \\
+\textbf{Impact} & By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Adjacent Network \\
+\textbf{Access Complexity} & Low\\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & Yes, the user has to do any action for which the cookie will be transmitted. \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & High\\
+\textbf{Availability} & None \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications are equally secure/insecure regarding this.
+
+
+\subsection{Testing for Cookies attributes}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & Since only the PHP session ID is saved as cookie, no attributes are saved in any cookies. Obviously there's no attack to execute  \\
+\textbf{Discovery} & BurpSuite \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. Not attacks are possible at this point. \\
+\textbf{Discovery} & BurpSuite \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications have no attributes other than the Session ID and are thus secure under this aspect.
+
+
+\subsection{Testing for Session Fixation}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & Cookies aren't renewed when logging in. \\
+\textbf{Discovery} & Firefox Developer tools \\
+\textbf{Impact} & An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
+\textbf{Likelihood} & Medium \\
+\textbf{Access Vector} & Adjacent Network \\
+\textbf{Access Complexity} & Low\\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & Yes, the user has to do any action for which the cookie will be transmitted. \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & High\\
+\textbf{Availability} & None \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & Cookies aren't renewed when logging in. \\
+\textbf{Discovery} & Firefox Developer tools \\
+\textbf{Impact} & An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
+\textbf{Likelihood} & Medium \\
+\textbf{Access Vector} & Adjacent Network \\
+\textbf{Access Complexity} & Low\\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & Yes, the user has to do any action for which the cookie will be transmitted. \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & High\\
+\textbf{Availability} & None \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications have no attributes other than the Session ID and are thus secure under this aspect.
+
+
 TODO!
+
+
+
+
+
+
+
+
 
 \section{Data Validation Testing}
 

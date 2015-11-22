@@ -22,13 +22,73 @@
 \textbf{Availability} & No Impact \\
 \end{tabular}
 
-TODO: Forced browsing results.
+\paragraph{Forced Browsing Results:}
+\begin{verbatim}
+http://vm/InternetBanking/
+http://vm/InternetBanking/DataAccess/
+http://vm/InternetBanking/auth/
+http://vm/InternetBanking/client/
+http://vm/InternetBanking/controller/
+http://vm/InternetBanking/controller/clientController.php
+http://vm/InternetBanking/controller/clientFunctions.inc
+http://vm/InternetBanking/controller/employeeController.php
+http://vm/InternetBanking/controller/employeeFunctions.inc
+http://vm/InternetBanking/controller/loginController.php
+http://vm/InternetBanking/controller/logoutController.php
+http://vm/InternetBanking/controller/registrationController.php
+http://vm/InternetBanking/css/
+http://vm/InternetBanking/css/bootstrap-theme.css
+http://vm/InternetBanking/css/bootstrap-theme.css.map
+http://vm/InternetBanking/css/bootstrap-theme.min.css
+http://vm/InternetBanking/css/bootstrap.css
+http://vm/InternetBanking/css/bootstrap.css.map
+http://vm/InternetBanking/css/bootstrap.min.css
+http://vm/InternetBanking/employee/
+http://vm/InternetBanking/fonts/
+http://vm/InternetBanking/fonts/glyphicons-halflings-regular.eot
+http://vm/InternetBanking/fonts/glyphicons-halflings-regular.svg
+http://vm/InternetBanking/fonts/glyphicons-halflings-regular.ttf
+http://vm/InternetBanking/fonts/glyphicons-halflings-regular.woff
+http://vm/InternetBanking/fonts/glyphicons-halflings-regular.woff2
+http://vm/InternetBanking/index/
+http://vm/InternetBanking/js/
+http://vm/InternetBanking/js/bootstrap.js
+http://vm/InternetBanking/js/bootstrap.min.js
+http://vm/InternetBanking/js/npm.js
+http://vm/InternetBanking/login/
+http://vm/InternetBanking/logout/
+http://vm/InternetBanking/model/
+http://vm/InternetBanking/model/Payment.class
+http://vm/InternetBanking/model/PaymentRequest.class
+http://vm/InternetBanking/model/User.class
+http://vm/InternetBanking/model/UserRequest.class
+http://vm/InternetBanking/parser/
+http://vm/InternetBanking/parser/Makefile
+http://vm/InternetBanking/parser/exec
+http://vm/InternetBanking/parser/main.c
+http://vm/InternetBanking/parser/mysql_query_function.c
+http://vm/InternetBanking/parser/mysql_query_function.h
+http://vm/InternetBanking/registration/
+http://vm/InternetBanking/view/
+http://vm/InternetBanking/view/account.inc
+http://vm/InternetBanking/view/accounts.inc
+http://vm/InternetBanking/view/approvepayments.inc
+http://vm/InternetBanking/view/approveregistrations.inc
+http://vm/InternetBanking/view/client.inc
+http://vm/InternetBanking/view/employee.inc
+http://vm/InternetBanking/view/file.inc
+http://vm/InternetBanking/view/history.inc
+http://vm/InternetBanking/view/historypdf.inc
+http://vm/InternetBanking/view/login.inc
+http://vm/InternetBanking/view/online.inc
+http://vm/InternetBanking/view/registration.inc
+\end{verbatim}
 
 \subsubsection*{SecureBank}
 
 \begin{tabular}{l|p{10cm}}
 
-\textbf{Observation} & We found some HTML snippets, which do not contain any sensitive information, and the compiled executable of the transaction file parser. \\
+\textbf{Observation} & We found some HTML snippets, which do not contain any sensitive information, and the compiled executable of the transaction file parser. We also found that the library TCPDF appears to be used. \\
 \textbf{Discovery} & Using the OWASP ZAP tool, we used the forced browse functionality on \texttt{/seccoding-2015/}. We received a list of files which were found using this tool, see below. \\
 \textbf{Likelihood} & This can be tested by anyone who enters specific strings into the address bar of a browser. However, the likelihood of this vulnerability is much higher if the attacker uses specific tools which test specific paths systematically. \\
 \textbf{Impact} & The attacker only has access to the parser executable, which might contain information about the database connection. He can analyze the parser and find vulnerabilies there. \\
@@ -42,7 +102,71 @@ TODO: Forced browsing results.
 \textbf{Availability} & No Impact \\
 \end{tabular}
 
-TODO: Forced browsing results.
+
+\paragraph{Forced Browsing Results:}
+\begin{verbatim}
+http://vm/seccoding-2015/
+http://vm/seccoding-2015/database/
+http://vm/seccoding-2015/html/
+http://vm/seccoding-2015/html/auth.html
+http://vm/seccoding-2015/html/dberror.html
+http://vm/seccoding-2015/html/default.html
+http://vm/seccoding-2015/html/display_userstate.html
+http://vm/seccoding-2015/html/display_userstate_table.html
+http://vm/seccoding-2015/html/dologin_fail.html
+http://vm/seccoding-2015/html/dologin_success.html
+http://vm/seccoding-2015/html/doregister_fail.html
+http://vm/seccoding-2015/html/doregister_success.html
+http://vm/seccoding-2015/html/edoverify_fail.html
+http://vm/seccoding-2015/html/ehome.html
+http://vm/seccoding-2015/html/ehome_transaction.html
+http://vm/seccoding-2015/html/ehome_user.html
+http://vm/seccoding-2015/html/entry_page.html
+http://vm/seccoding-2015/html/etakeover.html
+http://vm/seccoding-2015/html/etransactionpdf_fail.html
+http://vm/seccoding-2015/html/home.html
+http://vm/seccoding-2015/html/login.html
+http://vm/seccoding-2015/html/register.html
+http://vm/seccoding-2015/html/root.html
+http://vm/seccoding-2015/html/simpleRoot.html
+http://vm/seccoding-2015/html/transaction.html
+http://vm/seccoding-2015/html/udotransactionupload_fail.html
+http://vm/seccoding-2015/html/utransaction.html
+http://vm/seccoding-2015/html/utransactionupload.html
+http://vm/seccoding-2015/index/
+http://vm/seccoding-2015/login/
+http://vm/seccoding-2015/parser/
+http://vm/seccoding-2015/parser/parser
+http://vm/seccoding-2015/tcpdf/
+http://vm/seccoding-2015/tcpdf/CHANGELOG.TXT
+http://vm/seccoding-2015/tcpdf/LICENSE.TXT
+http://vm/seccoding-2015/tcpdf/README.TXT
+http://vm/seccoding-2015/tcpdf/composer.json
+http://vm/seccoding-2015/tcpdf/config/
+http://vm/seccoding-2015/tcpdf/config/tcpdf_config.php
+http://vm/seccoding-2015/tcpdf/fonts/
+http://vm/seccoding-2015/tcpdf/include/
+http://vm/seccoding-2015/tcpdf/include/barcodes/
+http://vm/seccoding-2015/tcpdf/include/barcodes/datamatrix.php
+http://vm/seccoding-2015/tcpdf/include/barcodes/pdf417.php
+http://vm/seccoding-2015/tcpdf/include/barcodes/qrcode.php
+http://vm/seccoding-2015/tcpdf/include/sRGB.icc
+http://vm/seccoding-2015/tcpdf/include/tcpdf_colors.php
+http://vm/seccoding-2015/tcpdf/include/tcpdf_filters.php
+http://vm/seccoding-2015/tcpdf/include/tcpdf_font_data.php
+http://vm/seccoding-2015/tcpdf/include/tcpdf_fonts.php
+http://vm/seccoding-2015/tcpdf/include/tcpdf_images.php
+http://vm/seccoding-2015/tcpdf/include/tcpdf_static.php
+http://vm/seccoding-2015/tcpdf/tcpdf.php
+http://vm/seccoding-2015/tcpdf/tcpdf_autoconfig.php
+http://vm/seccoding-2015/tcpdf/tcpdf_barcodes_1d.php
+http://vm/seccoding-2015/tcpdf/tcpdf_barcodes_2d.php
+http://vm/seccoding-2015/tcpdf/tcpdf_import.php
+http://vm/seccoding-2015/tcpdf/tcpdf_parser.php
+http://vm/seccoding-2015/tcpdf/tools/
+http://vm/seccoding-2015/tcpdf/tools/convert_fonts_examples.txt
+http://vm/seccoding-2015/tcpdf/tools/tcpdf_addfont.php
+\end{verbatim}
 
 \subsubsection*{Comparison}
 The web application of the SecureBank discloses less sensitive information. However, both applications disclose information which should not be available to unauthorized persons.
@@ -567,25 +691,17 @@ Table trancode: id, clientid
 \end{verbatim}
 
 \subsubsection*{SecureBank}
-TODO!
 \begin{tabular}{l|p{10cm}}
 
 \textbf{Observation} &  \\
-\textbf{Discovery} &  \\
-\textbf{Impact} & \\
-\textbf{Likelihood} & Low \\
-\textbf{Access Vector} & Network \\
-\textbf{Access Complexity} & Low \\
-\textbf{Privileges Required} & None \\
-\textbf{User Interaction} & None \\
-\textbf{Scope} & Unchanged \\
-\textbf{Confidentiality} & Low \\
-\textbf{Intigrity} & Low \\
-\textbf{Availability} & No Impact \\
+\textbf{Discovery} & We used the fuzzer of ZAP on the username field of the login form, with the query parameters \texttt{username=admin@localhost\&password=123}, where the fuzzing point was at the end of the username. We also analyzed the login page also using SQLmap. Using both methods, we were not able to log in without knowing the password. Additionally, we ran SQLmap on the fields of the registration form and the perform transaction form, it returned that none of the four inputs where exploitable for SQL injection. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
 \end{tabular}
 
 \subsubsection*{Comparison}
-TODO!
+The Online Banking web application is vulnerable to SQL injection at different places, allowing an attacker to take over user accounts and transfer money without knowing any credentials. In the web application of the SecureBank, we were not able to find SQL injection vulnerabilities.
 
 \clearpage
 

@@ -438,50 +438,7 @@ The only difference between the applications is that the Online Banking applicat
 \section{Authentcation Testing}
 
 \subsection{Testing for Credentials Transported over Encrypted Channel}
-
-\subsubsection*{Online Banking}
-
-\begin{tabular}{l|p{10cm}}
-
-\textbf{Observation} & We were unable to connect to the application via HTTPS.  \\
-\textbf{Discovery} & We tried to access the application via HTTPS on port 443. \\
-\textbf{Impact} & An attacker can retrieve sensitive information by sniffing the network. \\
-\textbf{Likelihood} & High \\
-\textbf{Access Vector} & Adjacent Network \\
-\textbf{Access Complexity} & Medium \\
-\textbf{Privileges Required} & None \\
-\textbf{User Interaction} & None \\
-\textbf{Scope} & Unchanged \\
-\textbf{Confidentiality} & High \\
-\textbf{Intigrity} & No Impact \\
-\textbf{Availability} & No Impact \\
-\end{tabular}
-
-\subsubsection*{SecureBank}
-
-
-\begin{tabular}{l|p{10cm}}
-
-\textbf{Observation} & We were unable to connect to the application via HTTPS.  \\
-\textbf{Discovery} & We tried to access the application via HTTPS on port 443. \\
-\textbf{Impact} & An attacker can retrieve sensitive information by sniffing the network. \\
-\textbf{Likelihood} & High \\
-\textbf{Access Vector} & Adjacent Network \\
-\textbf{Access Complexity} & Medium \\
-\textbf{Privileges Required} & None \\
-\textbf{User Interaction} & None \\
-\textbf{Scope} & Unchanged \\
-\textbf{Confidentiality} & High \\
-\textbf{Intigrity} & No Impact \\
-\textbf{Availability} & No Impact \\
-\end{tabular}
-
-\subsubsection*{Comparison}
-Both applications transport sensitive information about non-encrypted channels.
-
-
-\clearpage
-
+See Section \ref{subsec:encryption}.
 
 \subsection{Testing for default credentials}
 We decided to not test for default credentials, because we are working with custom software and therefore assume that all users and administrators choose secure passwords.
@@ -962,8 +919,57 @@ Although the Online Banking application produces an error message about a databa
 \subsection{Testing for Stack Traces}
 We were not able to produce stack traces in both applications using invalid inputs (e.g. negative numbers), or SQL injection.
 
+\clearpage
+
 \section{Testing for weak Cryptography}
-TODO!
+\subsection{Testing for Weak SSL/TLS Ciphers, Insufficient Transport Layer Protection}
+\label{subsec:encryption}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were unable to connect to the application via HTTPS.  \\
+\textbf{Discovery} & We tried to access the application via HTTPS on port 443. \\
+\textbf{Impact} & An attacker can retrieve sensitive information by sniffing the network. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Adjacent Network \\
+\textbf{Access Complexity} & Medium \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Intigrity} & No Impact \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were unable to connect to the application via HTTPS.  \\
+\textbf{Discovery} & We tried to access the application via HTTPS on port 443. \\
+\textbf{Impact} & An attacker can retrieve sensitive information by sniffing the network. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Adjacent Network \\
+\textbf{Access Complexity} & Medium \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Intigrity} & No Impact \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications transport sensitive information about non-encrypted channels.
+
+\subsection{Testing for Padding Oracle}
+As there is no transport layer encryption in any of the two applications, we decided to not test for a padding oracle.
+
+\subsection{Testing for Sensitive information sent via unencrypted channels}
+All information is sent via an unencrypted channel. See Section \ref{subsec:encryption}
 
 \section{Business Logic Testing}
 TODO!

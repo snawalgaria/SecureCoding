@@ -484,7 +484,7 @@ There is no significant difference between both applications.
 
 \begin{tabular}{l|p{10cm}}
 
-\textbf{Observation} & The password has to have a length $\geq 6$. There is no way to change the password. The password does not expire. \\
+\textbf{Observation} & The password has to have a length $\geq 8$. There is no way to change the password. The password does not expire. \\
 \textbf{Discovery} &  We tested various passwords, like \texttt{123456}. If a password does not match the policy, an error message is shown which informs the user about the policy.  \\
 \textbf{Impact} & n/a \\
 \textbf{Likelihood} & n/a \\
@@ -523,17 +523,135 @@ TODO!
 
 \section{Data Validation Testing}
 
-TODO!
+\subsection{Testing for Reflected Cross Site Scripting}
 
-\subsection{Testing for LDAP Injection}
-\subsection{Testing for ORM Injection}
-\subsection{Testing for XML Injection}
-\subsection{Testing for SSI Injection}
-\subsection{Testing for XPath Injection}
-We did not test any of these injection types as it appears that these techniques are not used in any of the two applications. Therefore, we decided to not further investigate in these types of injection.
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & The only GET parameters are "action" and if logged in as employee, "account". When entering an action name that doesn't exist, the fake name is not displayed in any kind of error message. The same happens if the input account doesn't exist. If the account exists and the username is equal to some XSS attack, that should be considered a stored XSS attack instead. Thus, there's no attack vector for Reflected XSS. \\
+\textbf{Discovery} & w3af (XSS plugin) \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & The only GET parameter is "page". When entering a page name that doesn't exist, the fake name is not displayed in any kind of error message. Thus, there's no attack vector for Reflected XSS. \\
+\textbf{Discovery} & w3af (XSS plugin) \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications allowd no reflected XSS.
+
+\subsection{Testing for Stored Cross Site Scripting}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & Stored XSS can be injected via the username when registering and into the purpose field when making transactions. The email used for registration, however, is checked for validity. User names can't be longer than 32 signs. This is just enough to inject something like "$<script src=//bit.ly/1MvAdrm>$". Users who register after this exploit has been used won't be shown, since the end tag is missing. For the transaction's description there is more space, but an account is needed. \\
+\textbf{Discovery} & TODO\\
+\textbf{Impact} & Using this it's possible to e.g. automatically accept payments of over 10000 as soon as an admin opens the "Approve Transfers" page. Given a user's TAN, it's also possible to transfer their money into one's own account by sending them a manipulated transaction. The manipulated transaction just has to include code that creates a transaction in the victim's name. Furthermore, it's possible to steal sessions or, by injecting fake login forms even credentials of admins. By injecting into the username, the attacker can also auto-accept themselves as real user as soon as an admin opens the "Approve Registrations" tab. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low\\
+\textbf{Privileges Required} & N/L: None for the registration XSS, Low user priviledges for XSS in transactions\\
+\textbf{User Interaction} & Yes \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Intigrity} & High\\
+\textbf{Availability} & Low \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & User names are escaped, so XSS is impossible here. Transaction descriptions, however, still allow XSS. It isn't triggered on the page where transactions will be verified by employees, but by opening the recipient's (or the attacker's) transaction history. This way it's just slightly harder to get the admin's credentials. Getting to the recipient's account is as easy as in Online Banking's app. \\
+\textbf{Discovery} & TODO \\
+\textbf{Impact} & Using this it's possible to e.g. automatically accept payments of over 10000 as soon as an admin opens the "Approve Transfers" page. Given a user's TAN, it's also possible to transfer their money into one's own account by sending them a manipulated transaction. The manipulated transaction just has to include code that creates a transaction in the victim's name. Furthermore, it's possible to steal sessions or, by injecting fake login forms even credentials of admins. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low\\
+\textbf{Privileges Required} & normal user priviledges \\
+\textbf{User Interaction} & Yes\\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High\\
+\textbf{Intigrity} & High \\
+\textbf{Availability} & None\\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications allowed for stored XSS, but Online Banking was easier to compromise (no account needed).
+Our application is the better one in this regard.
+
+\subsection{Testing for HTTP Verb Tampering}
+
+\subsubsection*{Online Banking}
+TODO
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & When trying all HTTP methods, CONNECT returns "Bad Request", while OPTIONS returns "OK". Otherwise, all methods except GET and POST are not allowed\\
+\textbf{Discovery} & script http\_tampering.sh in phase2/scripts/ (from OWASP website) \\
+\textbf{Impact} & The web server might respond in unexpected ways to these methods. \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & HTTP request for CONNECT or OPTIONS\\
+\textbf{Access Complexity} & \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & \\
+\textbf{Intigrity} & \\
+\textbf{Availability} & \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & When trying all HTTP methods, CONNECT returns "Bad Request", while OPTIONS returns "OK". Otherwise, all methods except GET and POST are not allowed\\
+\textbf{Discovery} & script http\_tampering.sh in phase2/scripts/ (from OWASP website)\\
+\textbf{Impact} & The web server might respond in unexpected ways to these methods.\\
+\textbf{Likelihood} & \\
+\textbf{Access Vector} & \\
+\textbf{Access Complexity} & \\
+\textbf{Privileges Required} & \\
+\textbf{User Interaction} & \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & \\
+\textbf{Intigrity} & \\
+\textbf{Availability} & \\
+\end{tabular}
+
+\subsection{Testing for HTTP Parameter pollution}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & The application behaves as it should, ignoring all but the last parameter with the same name. Trying to e.g. pollute the email during registration with a value that has the wrong format shows "Email is invalid". \\
+\textbf{Discovery} & Manipulated parameters using BurpSuite manually, since HPP apparently can't really be tested using tools (too many false positives)\\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & The application behaves as it should, ignoring all but the last parameter with the same name. Trying to e.g. pollute the email during registration registers the user with the last email parameter, if the email hasn't been taken.\\
+\textbf{Discovery} & Manipulated parameters using BurpSuite manually, since HPP apparently can't really be tested using tools (too many false positives)\\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both apps are protected against HTTP parameter pollution.
 
 \subsection{Testing for SQL injection}
-\subsubsection*{Online Banking}
+\subsubsection*{Online Banking}\label{sql:injection:online}
 
 \begin{tabular}{l|p{10cm}}
 
@@ -567,24 +685,80 @@ Table trancode: id, clientid
 \end{verbatim}
 
 \subsubsection*{SecureBank}
-TODO!
+
 \begin{tabular}{l|p{10cm}}
 
-\textbf{Observation} &  \\
-\textbf{Discovery} &  \\
-\textbf{Impact} & \\
-\textbf{Likelihood} & Low \\
-\textbf{Access Vector} & Network \\
-\textbf{Access Complexity} & Low \\
-\textbf{Privileges Required} & None \\
-\textbf{User Interaction} & None \\
-\textbf{Scope} & Unchanged \\
-\textbf{Confidentiality} & Low \\
-\textbf{Intigrity} & Low \\
-\textbf{Availability} & No Impact \\
+\textbf{Observation} & No SQL injections found \\
+\textbf{Discovery} & ZAP, Burp, w3af \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
 \end{tabular}
 
 \subsubsection*{Comparison}
+While our SecureBank is protected against SQL injections, InternetBanking can be attacked easily and in many spots.
+
+\subsection{Testing for LDAP Injection}
+\subsection{Testing for ORM Injection}
+\subsection{Testing for XML Injection}
+\subsection{Testing for SSI Injection}
+\subsection{Testing for XPath Injection}
+We did not test any of these injection types as it appears that these techniques are not used in any of the two applications. Therefore, we decided to not further investigate in these types of injection.
+
+\subsection{IMAP/SMTP Injection}
+
+We don't want to attack the used mail servers, since they're probably not part of the programming part. And we don't want to go to prison for trying to hack gmail.
+
+\subsection{Testing for Code Injection}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & The only code injection we found is the SQL injection in the uploaded file, as described in \ref{sql:injection:online}. Apart from that nothing was found.\\
+\textbf{Discovery} & Tested the action parameter in the GET requests. Our tools found no Code Injections either.\\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & No vulnerability found.\\
+\textbf{Discovery} & Tested the page parameter in the GET requests. Our tools found no Code Injections either.\\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+If we count the SQL injection in the uploaded file to the point about SQL injection, both applications perform the same.
+
+\subsection{Testing for Command Injection}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & W3af found two places where it suspected possible command injection via eval(). Both of these places turned out to just be SQL injection again, though. Apart from this we found no command injection.\\
+\textbf{Discovery} & W3af and then manual testing.\\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We found no places where command injection is possible\\
+\textbf{Discovery} & W3AF, ZAP\\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications allow no command injections (to the OS).
+
 TODO!
 
 \clearpage

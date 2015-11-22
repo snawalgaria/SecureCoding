@@ -1,0 +1,61 @@
+\BOOKMARK [0][-]{chapter*.1}{Executive Summary}{}% 1
+\BOOKMARK [0][-]{chapter.1}{Time Tracking}{}% 2
+\BOOKMARK [0][-]{chapter.2}{Vulnerabiliteis Overview}{}% 3
+\BOOKMARK [1][-]{section.2.1}{Online Banking}{chapter.2}% 4
+\BOOKMARK [2][-]{subsection.2.1.1}{Stored XSS in Registration and Transaction Description}{section.2.1}% 5
+\BOOKMARK [2][-]{subsection.2.1.2}{Missing check for amount in transactions from batch file}{section.2.1}% 6
+\BOOKMARK [2][-]{subsection.2.1.3}{SQL injection in transaction batch file}{section.2.1}% 7
+\BOOKMARK [2][-]{subsection.2.1.4}{Some critical vulnerability}{section.2.1}% 8
+\BOOKMARK [1][-]{section.2.2}{SecureBank}{chapter.2}% 9
+\BOOKMARK [0][-]{chapter.3}{Tools}{}% 10
+\BOOKMARK [1][-]{section.3.1}{Zed Attack Proxy \(ZAP\)}{chapter.3}% 11
+\BOOKMARK [1][-]{section.3.2}{SQLmap}{chapter.3}% 12
+\BOOKMARK [0][-]{chapter.4}{Detailed Report}{}% 13
+\BOOKMARK [1][-]{section.4.1}{Configuration and Deploy Management Testing}{chapter.4}% 14
+\BOOKMARK [2][-]{subsection.4.1.1}{Test File Extensions Handling for Sensitive Information}{section.4.1}% 15
+\BOOKMARK [2][-]{subsection.4.1.2}{Test HTTP Methods}{section.4.1}% 16
+\BOOKMARK [2][-]{subsection.4.1.3}{Test HTTP Strict Transport Security}{section.4.1}% 17
+\BOOKMARK [2][-]{subsection.4.1.4}{Test RIA cross domain policy}{section.4.1}% 18
+\BOOKMARK [1][-]{section.4.2}{Identity Management Testing}{chapter.4}% 19
+\BOOKMARK [2][-]{subsection.4.2.1}{Test Role Definitions}{section.4.2}% 20
+\BOOKMARK [2][-]{subsection.4.2.2}{Test User Registration Process}{section.4.2}% 21
+\BOOKMARK [2][-]{subsection.4.2.3}{Test Account Provisioning Process}{section.4.2}% 22
+\BOOKMARK [2][-]{subsection.4.2.4}{Testing for Account Enumeration and Guessable User Account}{section.4.2}% 23
+\BOOKMARK [2][-]{subsection.4.2.5}{Testing for Weak or unenforced username policy}{section.4.2}% 24
+\BOOKMARK [1][-]{section.4.3}{Authentcation Testing}{chapter.4}% 25
+\BOOKMARK [2][-]{subsection.4.3.1}{Testing for Credentials Transported over Encrypted Channel}{section.4.3}% 26
+\BOOKMARK [2][-]{subsection.4.3.2}{Testing for default credentials}{section.4.3}% 27
+\BOOKMARK [2][-]{subsection.4.3.3}{Testing for Weak lock out mechanism}{section.4.3}% 28
+\BOOKMARK [2][-]{subsection.4.3.4}{Testing for bypassing authentication schema}{section.4.3}% 29
+\BOOKMARK [2][-]{subsection.4.3.5}{Testing for Vulnerable Remember Password}{section.4.3}% 30
+\BOOKMARK [2][-]{subsection.4.3.6}{Testing for Browser Cache Weakness}{section.4.3}% 31
+\BOOKMARK [2][-]{subsection.4.3.7}{Testing for Weak password policy}{section.4.3}% 32
+\BOOKMARK [2][-]{subsection.4.3.8}{Testing for Weak security question/answer}{section.4.3}% 33
+\BOOKMARK [2][-]{subsection.4.3.9}{Testing for Weak password change or reset functionalities}{section.4.3}% 34
+\BOOKMARK [2][-]{subsection.4.3.10}{Testing for Weaker authentication in alternative channel}{section.4.3}% 35
+\BOOKMARK [1][-]{section.4.4}{Authorization Testing}{chapter.4}% 36
+\BOOKMARK [2][-]{subsection.4.4.1}{Testing Directory traversal/file include}{section.4.4}% 37
+\BOOKMARK [2][-]{subsection.4.4.2}{Testing for bypassing authorization schema}{section.4.4}% 38
+\BOOKMARK [2][-]{subsection.4.4.3}{Testing for Privilege Escalation}{section.4.4}% 39
+\BOOKMARK [2][-]{subsection.4.4.4}{Testing for Insecure Direct Object References}{section.4.4}% 40
+\BOOKMARK [1][-]{section.4.5}{Session Management Testing}{chapter.4}% 41
+\BOOKMARK [1][-]{section.4.6}{Data Validation Testing}{chapter.4}% 42
+\BOOKMARK [2][-]{subsection.4.6.1}{Testing for Reflected Cross Site Scripting}{section.4.6}% 43
+\BOOKMARK [2][-]{subsection.4.6.2}{Testing for Stored Cross Site Scripting}{section.4.6}% 44
+\BOOKMARK [2][-]{subsection.4.6.3}{Testing for HTTP Verb Tampering}{section.4.6}% 45
+\BOOKMARK [2][-]{subsection.4.6.4}{Testing for HTTP Parameter pollution}{section.4.6}% 46
+\BOOKMARK [2][-]{subsection.4.6.5}{Testing for SQL injection}{section.4.6}% 47
+\BOOKMARK [2][-]{subsection.4.6.6}{Testing for LDAP Injection}{section.4.6}% 48
+\BOOKMARK [2][-]{subsection.4.6.7}{Testing for ORM Injection}{section.4.6}% 49
+\BOOKMARK [2][-]{subsection.4.6.8}{Testing for XML Injection}{section.4.6}% 50
+\BOOKMARK [2][-]{subsection.4.6.9}{Testing for SSI Injection}{section.4.6}% 51
+\BOOKMARK [2][-]{subsection.4.6.10}{Testing for XPath Injection}{section.4.6}% 52
+\BOOKMARK [2][-]{subsection.4.6.11}{IMAP/SMTP Injection}{section.4.6}% 53
+\BOOKMARK [2][-]{subsection.4.6.12}{Testing for Code Injection}{section.4.6}% 54
+\BOOKMARK [2][-]{subsection.4.6.13}{Testing for Command Injection}{section.4.6}% 55
+\BOOKMARK [1][-]{section.4.7}{Error Handling}{chapter.4}% 56
+\BOOKMARK [2][-]{subsection.4.7.1}{Analysis of Error Codes}{section.4.7}% 57
+\BOOKMARK [2][-]{subsection.4.7.2}{Testing for Stack Traces}{section.4.7}% 58
+\BOOKMARK [1][-]{section.4.8}{Testing for weak Cryptography}{chapter.4}% 59
+\BOOKMARK [1][-]{section.4.9}{Business Logic Testing}{chapter.4}% 60
+\BOOKMARK [1][-]{section.4.10}{Client Side Testing}{chapter.4}% 61

@@ -664,9 +664,62 @@ Both applications do not provide vulnerabilities that allow to bypass the author
 \clearpage
 
 \subsection{Testing for Privilege Escalation}
-TODO!
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were unable to get the privileges of another user. \\
+\textbf{Discovery} & We manually tried to access the employee page while being logged in as a client and got the error message \texttt{Not employee}. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} &  We were unable to get the privileges of another user.\\
+\textbf{Discovery} & We manually tried to access the employee pages like \texttt{edoverify} while being logged in as a client and got the error message \texttt{You are not authenticated to do this}. We also tried to change the account number of the \texttt{userid} GET parameter when downloading a PDF, without success. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications do not provide vulnerabilities that allow a privilege escalation.
+
+\clearpage
+
 \subsection{Testing for Insecure Direct Object References}
-TODO!
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were unable to find insecure direct object references. \\
+\textbf{Discovery} & We manually changed the GET parameter \texttt{action} using ZAP. However, we either got an empty page or the requested page. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were unable to find insecure direct object references. \\
+\textbf{Discovery} & We manually changed the GET parameter \texttt{page}. However, we either got an error message or the requested page. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications do not provide vulnerabilities that allow insecure direct object references.
+
+\clearpage
 
 
 
@@ -1600,5 +1653,7 @@ TODO!
 
 
 \section{Client Side Testing}
+We decided to not perform client-side testing, as this is impossible with strict black-box testing and 
+
 TODO!
 

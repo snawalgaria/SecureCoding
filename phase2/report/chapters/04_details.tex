@@ -853,7 +853,7 @@ Both applications have a correctly implemented logout function.
 \subsubsection*{Online Banking}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & The user is automatically logged out after 10 minutes of inactivity. \\
+\textbf{Observation} & The user is automatically logged out after 10 minutes of inactivity. TODO: Is he? \\
 \textbf{Discovery} & Manual test \\
 \textbf{Impact} & n/a \\
 \textbf{Likelihood} & n/a \\
@@ -863,7 +863,7 @@ Both applications have a correctly implemented logout function.
 \subsubsection*{SecureBank}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & The user is automatically logged out after TODO minutes of inactivity. \\
+\textbf{Observation} & The user is automatically logged out after 10 minutes of inactivity. \\
 \textbf{Discovery} & Manual test \\
 \textbf{Impact} & n/a \\
 \textbf{Likelihood} & n/a \\
@@ -1189,18 +1189,18 @@ Both applications allow no command injections (to the OS).
 
 \begin{tabular}{l|p{10cm}}
 
-\textbf{Observation} & We were able to induce a buffer overflow by putting a string of $258$ \texttt{a}s into the TAN purpose field of the uploaded transaction batch file, although we could not identify whether this a stack or a heap buffer overflow. We were not able to cause a buffer overflow by using formatting characters. \\
+\textbf{Observation} & We were able to induce a buffer overflow by putting a string of $258$ \texttt{a}s into the TAN purpose field of the uploaded transaction batch file, although we could not identify whether this a stack or a heap buffer overflow. We were not able to cause a buffer overflow by using formatting characters. The transaction gets executed correctly, except that the purpose field is empty, though. \\
 \textbf{Discovery} & Using the fuzzer of ZAP, we used the \texttt{jbrofuzz / Buffer Overflows / Long string's of a's} fuzzing base on the transaction purpose field of the uploaded transaction batch file. For string smaller with a length smaller than 255 bytes, the transaction gets executed, and for very large strings, the application claims that the file is too large. However, in the other cases, the application gives no feedback, as described in Section \ref{sql:injection:online}. We also tried to cause buffer overflows caused by string format function by including strings like \texttt{\%s} into the username or transaction purpose field. \\
-\textbf{Impact} & TODO! \\
+\textbf{Impact} & As we could not identify whether this is a stack of a heap buffer overflow, we cannot clearly identify the impact. In the worst case, if the buffer overflow happens on the stack, an attacker has access to the database and the file system. \\
 \textbf{Likelihood} & Medium \\
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low \\
 \textbf{Privileges Required} & Low \\
 \textbf{User Interaction} & None \\
 \textbf{Scope} & Unchanged \\
-\textbf{Confidentiality} & No Impact \\
-\textbf{Intigrity} & No Impact \\
-\textbf{Availability} & Low \\
+\textbf{Confidentiality} & High \\
+\textbf{Intigrity} & High \\
+\textbf{Availability} & High \\
 \end{tabular}
 
 \subsubsection*{SecureBank}
@@ -1215,15 +1215,39 @@ Both applications allow no command injections (to the OS).
 \end{tabular}
 
 \subsubsection*{Comparison}
-TODO!
+The SecureBank application is better in this regard, as it does not offer buffer overflow vulnerabilities.
+
+\subsection{Testing for incubated vulnerabilities}
+We did not test for incubated vulnerabilities for the reason of complexity.
 
 \clearpage
 
-\subsection{Testing for incubated vulnerabilities}
-TODO!
-
 \subsection{Testing for HTTP Splitting/Smuggling}
-TODO!
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were unable to find any HTTP splitting vulnerabilities. \\
+\textbf{Discovery} & Using ZAP, we analyzed the response headers and found \texttt{Location} headers being sent. However, it did not appear that user inputs are sent as part of the location header. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were unable to find any HTTP splitting vulnerabilities. \\
+\textbf{Discovery} & Using ZAP, we analyzed the response headers and found \texttt{Location} headers being sent. However, it did not appear that user inputs are sent as part of the location header. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications are on the same security level in this regard.
 
 \clearpage
 

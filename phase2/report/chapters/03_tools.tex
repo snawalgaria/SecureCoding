@@ -14,3 +14,13 @@ W3AF was able to quite easily find XSS, CSRF and SQL injection points. It also i
 However, it also showed a few false positives (showing sql injections as eval vulnerabilities, path disclosure) and missed a few vulnerabilities that our other tools found, like buffer overflows.
 
 Overall, I'd say W3AF is a Jack of all Trades. If the functionality is not enough, however, it's possible to write custom plugins.
+
+\section{SQL Inject Me}
+
+Already installed in Firefox on the Samurai machines, this tool has one goal and is pretty straightforward to use. It attacks the chosen form fields with brute-force SQL Injection attacks, hoping to get some intel on possible attack vectors. Fields that you don't want to attack can be supplied with a fixed value.
+Attacking the username in the login form of Online Banking passes 15479 of 15480 tests, but the input name \texttt{' OR username IS NOT NULL OR username = '} returns a 302 error code. This shows us that the username field might be vulnerable.
+
+However, seeing that only one test shows some kind of reaction in a place where we afterwards confirmed the existence of a rather simple vulnerability (\texttt{admin'\#}) makes "SQL Inject Me" seem like a rather weak tool.
+
+Something else to behold is that when brute-forcing any kind of form where data is created (like registration), there will be more than 15.000 similar actions performed within a few seconds. The tool doesn't do anything to hide its intentions.
+

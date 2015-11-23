@@ -14,3 +14,9 @@ W3AF was able to quite easily find XSS, CSRF and SQL injection points. It also i
 However, it also showed a few false positives (showing sql injections as eval vulnerabilities, path disclosure) and missed a few vulnerabilities that our other tools found, like buffer overflows.
 
 Overall, I'd say W3AF is a Jack of all Trades. If the functionality is not enough, however, it's possible to write custom plugins.
+
+\section{Burp Suite}
+We also analyzed the applications regarding SQL injections using Burp. However, we did not find more vulnerabilities.
+
+\section{Firebug / Chromium Developer Tools}
+We used the developer tools to inspect the HTML structure of the site. With this tools, we found some HTML5 input patterns, which gave us hints which parameters to tweak using an interception proxy.

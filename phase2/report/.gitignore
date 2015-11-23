@@ -1,2 +1,11 @@
 /build/*
 !/build/main.pdf
+*.aux
+*.out
+*.ist
+*.acn
+*.bcf
+*.glo
+*.run.xml
+*.synctex*
+*.toc

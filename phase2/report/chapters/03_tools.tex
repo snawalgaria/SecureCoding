@@ -1,9 +1,10 @@
 \chapter{Tools}\label{chapter:tools}
 
 \section{Zed Attack Proxy (ZAP)}
-Using the Zed Attack Proxy (ZAP), we were able to reveal significant parts of the directory structure in both web applications. In the \textit{Online Banking} web application, we found a stored XSS vulnerability in the registration and the transaction description as well as a SQL injection vulnerability in the login form using the fuzzer. We were also be able to find a buffer overflow vulnerability for the transaction description in the transaction batch files.
+Using the Zed Attack Proxy (ZAP), we were able to reveal significant parts of the directory structure in both web applications. In the \textit{Online Banking} web application, we found a stored XSS vulnerability in the registration and the transaction description as well as a SQL injection vulnerability in the login form using the fuzzer. We were also be able to find a buffer overflow vulnerability for the transaction description in the transaction batch files. In the \textit{SecureBank} web application, we were unable to find further SQL injection or XSS vulnerabilities.
 
 \section{SQLmap}
+<<<<<<< HEAD
 Using SQLmap, we found the SQL injection vulnerability in the login form, which we found using ZAP earlier. SQLmap did not reveal further SQL injection possibilities.
 
 \section{BURP}
@@ -11,3 +12,15 @@ Using Burp, we could perform SQL injection , while trying to login to the Intern
 
 \section{FireBug}
 FireBug was used for client side testing. We got client side scripts, html , css source code using firebug
+=======
+Using SQLmap, we found the SQL injection vulnerability in the login form of the \textit{Online Banking} application, which we found using ZAP earlier. SQLmap did not reveal further SQL injection possibilities in any of the two applications.
+
+\section{W3AF}
+With W3AF, we made a full audit, including file\_upload(looks for uploadable files), eval(insecure eval() usage), un\_ssl(secure content via http), os\_commanding, lfi(local file inclusion), rfi, sqli(injection), preg\_replace(insecure preg\_replace() in PHP), mx\_injection, generic, format\_string, websocket\_hijacking, shell\_shock, ldapi, buffer\_overflow, redos(DOS using slow regex), global\_redirect(any redirecting scripts), xpath, cors\_origin(consistency of HTTP origin header and sender), htaccess\_methods, dav(WebDAV module configuration), ssi(server side inclusion), csrf, xss, ssl\_certificate, xst(cross site tracing), blind\_sqli, phishing\_vector, response\_splitting, rfd(reflected file download), frontpage(tries uploading files using frontpage extensions).
+
+W3AF was able to quite easily find XSS, CSRF and SQL injection points. It also informed about unhandled errors and possible click-jacking on both sites.
+
+However, it also showed a few false positives (showing sql injections as eval vulnerabilities, path disclosure) and missed a few vulnerabilities that our other tools found, like buffer overflows.
+
+Overall, I'd say W3AF is a Jack of all Trades. If the functionality is not enough, however, it's possible to write custom plugins.
+>>>>>>> 2865d141a146c7c556afeef725d59bb26d5a6be0

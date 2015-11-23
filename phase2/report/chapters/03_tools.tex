@@ -24,3 +24,10 @@ However, seeing that only one test shows some kind of reaction in a place where 
 
 Something else to behold is that when brute-forcing any kind of form where data is created (like registration), there will be more than 15.000 similar actions performed within a few seconds. The tool doesn't do anything to hide its intentions.
 
+\section{Burp Suite}
+We also analyzed the applications regarding SQL injections using Burp. However, we did not find more vulnerabilities. The sequencer is useful for confirming high enough entropy for session IDs.
+
+\section{Firebug / Chromium Developer Tools}
+We used the developer tools to inspect the HTML structure of the site. With these tools, we found some HTML5 input patterns, which gave us hints which parameters to tweak using an interception proxy.
+It's also possible to resend requests with manipulated parameters.
+And if Javascript was heavily used or XSS would be blocked in some half vulnerable way, it can debug the Javascript code step-by-step.

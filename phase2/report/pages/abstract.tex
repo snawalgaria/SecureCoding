@@ -1,5 +1,20 @@
 \chapter{Executive Summary}
 
-%TODO: Abstract
+\section{Online Banking}
+We found several vulnerabilities, which allow an attacker to cause high damage to the bank behind the Online Banking web application. The system, as is, should not be used in production!
 
+It is possible to login as any user without knowing the valid password. The attacker can either brute-force the password, or get into the account using more advanced techniques (SQL injection). This allows an attacker to take over an employee of the bank, get a list of all registered users and approve newly registered users as well as transaction above 10,000 units of currency. Furthermore, it is then possible to change the account balances at will. It is also possible to perform transactions without valid transaction codes using transaction batch files. Beside this, it is also possible to insert scripts into the frontend of an employee using the username field or the transaction description. This allows an attacker to take over the session of an employee.
 
+If an attacker performs a man-in-the-middle attack, he will be able to intercept the whole traffic, as the server only allows communication via unencrypted channels. This allows an attacker to take over the session of a user. However, the attacker has to be more advanced to perform such an attack.
+
+Finally, there is also an issue in the business logics of the application: it is possible to transfer money from other accounts to the own account by putting a negative amount into a transaction in a batch file, and therefore ``steal" money from other customers.
+
+\section{SecureBank}
+We found some issues in the SecureBank's online banking application, which allow an attacker to cause damage to the bank. The system, as is, should not be used in production.
+
+For an attacker, it is possible to brute-force the password of a user, as there is no lock-out mechanism. It is furthermore possible to insert scripts into the frontend of an employee using the transaction description field. While this requires that the attacker is a client of the bank, it allows the attacker to take over the session of an employee.
+
+If an attacker performs a man-in-the-middle attack, he will be able to intercept the whole traffic, as the server only allows communication via unencrypted channels. This allows an attacker to take over the session of a user. However, the attacker has to be more advanced to perform such an attack.
+
+\section{Comparison}
+In summary, we found that the web application of the SecureBank has less and also less critical vulnerabilities than the Online Banking web application.

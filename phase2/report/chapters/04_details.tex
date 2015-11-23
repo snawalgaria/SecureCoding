@@ -736,9 +736,9 @@ Both applications do not provide vulnerabilities that allow insecure direct obje
 \subsubsection*{Online Banking}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
+\textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. \\
 \textbf{Discovery} & BurpSuite \\
-\textbf{Impact} &Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges. By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -753,9 +753,9 @@ Both applications do not provide vulnerabilities that allow insecure direct obje
 \subsubsection*{SecureBank}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
+\textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. \\
 \textbf{Discovery} & BurpSuite \\
-\textbf{Impact} &Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges. By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -806,9 +806,9 @@ Both applications have no attributes other than the Session ID and are thus secu
 \subsubsection*{Online Banking}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & Cookies aren't renewed when logging in. An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
+\textbf{Observation} & Cookies aren't renewed when logging in. \\
 \textbf{Discovery} & Firefox Developer tools \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges. An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
 \textbf{Likelihood} & Medium \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -823,9 +823,9 @@ Both applications have no attributes other than the Session ID and are thus secu
 \subsubsection*{SecureBank}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & Cookies aren't renewed when logging in. An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
+\textbf{Observation} & Cookies aren't renewed when logging in. \\
 \textbf{Discovery} & Firefox Developer tools \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges. An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
 \textbf{Likelihood} & Medium \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -848,9 +848,9 @@ Both applications have the session fixation vulnerability.
 \subsubsection*{Online Banking}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & The cookies are sent over an unencrypted connection. Cookies also aren't renewed when logging in. By using MitM to steal the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
+\textbf{Observation} & The cookies are sent over an unencrypted connection. Cookies also aren't renewed when logging in. \\
 \textbf{Discovery} & BurpSuite \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges. By using MitM to steal the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -865,9 +865,9 @@ Both applications have the session fixation vulnerability.
 \subsubsection*{SecureBank}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & The cookies are sent over an unencrypted connection. Cookies also aren't renewed when logging in. By using MitM to steal the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
+\textbf{Observation} & The cookies are sent over an unencrypted connection. Cookies also aren't renewed when logging in. \\
 \textbf{Discovery} & BurpSuite \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges. By using MitM to steal the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -890,9 +890,9 @@ Both applications are equally insecure regarding this.
 \subsubsection*{Online Banking}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & There is no mechanism to prohibit CSRF. GET requests aren't enough, though, since all of the important data is only transmitted via POST requests. By getting our victim to open a malicious web page, that creates a POST request with JS, we would be able to perform actions in their name. \\
+\textbf{Observation} & There is no mechanism to prohibit CSRF. GET requests aren't enough, though, since all of the important data is only transmitted via POST requests. \\
 \textbf{Discovery} & Manual test \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges. By getting our victim to open a malicious web page, that creates a POST request with JS, we would be able to perform actions in their name. \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low\\
@@ -907,9 +907,9 @@ Both applications are equally insecure regarding this.
 \subsubsection*{SecureBank}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & There is no mechanism to prohibit CSRF. GET requests aren't enough, though, since all of the important data is only transmitted via POST requests. By getting our victim to open a malicious web page, that creates a POST request with JS, we would be able to perform actions in their name. \\
+\textbf{Observation} & There is no mechanism to prohibit CSRF. GET requests aren't enough, though, since all of the important data is only transmitted via POST requests. \\
 \textbf{Discovery} & Manual test \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges. By getting our victim to open a malicious web page, that creates a POST request with JS, we would be able to perform actions in their name. \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low\\
@@ -962,7 +962,7 @@ Both applications have a correctly implemented logout function.
 \begin{tabular}{l|p{10cm}}
 \textbf{Observation} & The user isn't logged out automatically. \\
 \textbf{Discovery} & Manual test \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges. All people using the same (maybe public) machine afterwards have access to the victim's account. \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Physical access to the machine that the victim used \\
 \textbf{Access Complexity} & Low \\
@@ -1067,7 +1067,7 @@ Both applications allowed no reflected XSS.
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low\\
-\textbf{Privileges Required} & N/L: None for the registration XSS, Low user priviledges for XSS in transactions\\
+\textbf{Privileges Required} & N/L: None for the registration XSS, Low user privileges for XSS in transactions\\
 \textbf{User Interaction} & Yes \\
 \textbf{Scope} & Unchanged \\
 \textbf{Confidentiality} & High \\
@@ -1084,7 +1084,7 @@ Both applications allowed no reflected XSS.
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low\\
-\textbf{Privileges Required} & normal user priviledges \\
+\textbf{Privileges Required} & normal user privileges \\
 \textbf{User Interaction} & Yes\\
 \textbf{Scope} & Unchanged \\
 \textbf{Confidentiality} & High\\
@@ -1102,38 +1102,23 @@ Our application is the better one in this regard.
 \subsection{Testing for HTTP Verb Tampering}
 
 \subsubsection*{Online Banking}
-TODO: what harm does Verb Tampering do?
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & When trying all HTTP methods, CONNECT returns "Bad Request", while OPTIONS returns "OK". Otherwise, all methods except GET and POST are not allowed\\
+\textbf{Observation} & When trying all HTTP methods, CONNECT returns "Bad Request", while OPTIONS returns "OK". Otherwise, all methods except GET, HEAD and POST are not allowed\\
 \textbf{Discovery} & script http\_tampering.sh in phase2/scripts/ (from OWASP website) \\
-\textbf{Impact} & The web server might respond in unexpected ways to these methods. \\
-\textbf{Likelihood} & High \\
-\textbf{Access Vector} & HTTP request for CONNECT or OPTIONS\\
-\textbf{Access Complexity} & \\
-\textbf{Privileges Required} & None \\
-\textbf{User Interaction} & None \\
-\textbf{Scope} & Unchanged \\
-\textbf{Confidentiality} & \\
-\textbf{Intigrity} & \\
-\textbf{Availability} & \\
+\textbf{Impact} & The web server might respond in unexpected ways to these methods and might execute scripts without privilege control when using HEAD instead of GET. \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
 \end{tabular}
 
 \subsubsection*{SecureBank}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & When trying all HTTP methods, CONNECT returns "Bad Request", while OPTIONS returns "OK". Otherwise, all methods except GET and POST are not allowed\\
+\textbf{Observation} & When trying all HTTP methods, CONNECT returns "Bad Request", while OPTIONS returns "OK". Otherwise, all methods except GET, HEAD and POST are not allowed\\
 \textbf{Discovery} & script http\_tampering.sh in phase2/scripts/ (from OWASP website)\\
-\textbf{Impact} & The web server might respond in unexpected ways to these methods.\\
-\textbf{Likelihood} & \\
-\textbf{Access Vector} & \\
-\textbf{Access Complexity} & \\
-\textbf{Privileges Required} & \\
-\textbf{User Interaction} & \\
-\textbf{Scope} & Unchanged \\
-\textbf{Confidentiality} & \\
-\textbf{Intigrity} & \\
-\textbf{Availability} & \\
+\textbf{Impact} & The web server might respond in unexpected ways to these methods and might execute scripts without privilege control when using HEAD instead of GET. \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
 \end{tabular}
 
 \subsection{Testing for HTTP Parameter pollution}
@@ -1512,9 +1497,9 @@ All information is sent via an unencrypted channel. See Section \ref{subsec:encr
 \subsubsection*{Online Banking}
 \begin{tabular}{l|p{10cm}}
 
-\textbf{Observation} & When creating transactions, it's possible to enter negative amounts, which results in gaining money at the "recipient's" cost. \\
+\textbf{Observation} & When uploading transaction files, it's possible to enter negative amounts, which results in gaining money at the "recipient's" cost. \\
 \textbf{Discovery} & Manual testing \\
-\textbf{Impact} & Medium \\
+\textbf{Impact} & Attackers can steal money from anybody they want \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low \\
@@ -1574,7 +1559,7 @@ Both applications are securd against forged requests.
 \begin{tabular}{l|p{10cm}}
 
 \textbf{Observation} & No vulnerability found. \\
-\textbf{Discovery} & ZAP \\
+\textbf{Discovery} & ZAP, W3AF \\
 \textbf{Impact} & n/a \\
 \textbf{Likelihood} & n/a \\
 \textbf{CVSS} & n/a \\
@@ -1584,7 +1569,7 @@ Both applications are securd against forged requests.
 \begin{tabular}{l|p{10cm}}
 
 \textbf{Observation} & No vulnerability found. \\
-\textbf{Discovery} & ZAP \\
+\textbf{Discovery} & ZAP, W3AF \\
 \textbf{Impact} & n/a \\
 \textbf{Likelihood} & n/a \\
 \textbf{CVSS} & n/a \\
@@ -1629,7 +1614,7 @@ Both applications have sufficient integrity checks.
 \begin{tabular}{l|p{10cm}}
 
 \textbf{Observation} & All actions in both apps are atomic, so this doesn't apply. \\
-\textbf{Discovery} & n/a \\
+\textbf{Discovery} & Browsing the app. \\
 \textbf{Impact} & n/a \\
 \textbf{Likelihood} & n/a \\
 \textbf{CVSS} & n/a \\
@@ -1644,7 +1629,7 @@ Both applications have sufficient integrity checks.
 
 \textbf{Observation} & Defenses Against Application Mis-use aren't part of either of the applications. When sending many malicious requests at once, due to testing, neither of the applications tried to stop us. The same holds true for any attacker who wants to check the apps for vulnerabilities. \\
 \textbf{Discovery} & ZAP, W3AF \\
-\textbf{Impact} & Low \\
+\textbf{Impact} & This itself is barely a problem, since at best it DDOSes the app. But that would be noticeable then. It makes it easier for an attacker to find other vulnerabilities, though. \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low \\

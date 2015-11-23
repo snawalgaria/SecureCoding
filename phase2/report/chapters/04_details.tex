@@ -1102,38 +1102,23 @@ Our application is the better one in this regard.
 \subsection{Testing for HTTP Verb Tampering}
 
 \subsubsection*{Online Banking}
-TODO: what harm does Verb Tampering do?
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & When trying all HTTP methods, CONNECT returns "Bad Request", while OPTIONS returns "OK". Otherwise, all methods except GET and POST are not allowed\\
+\textbf{Observation} & When trying all HTTP methods, CONNECT returns "Bad Request", while OPTIONS returns "OK". Otherwise, all methods except GET, HEAD and POST are not allowed\\
 \textbf{Discovery} & script http\_tampering.sh in phase2/scripts/ (from OWASP website) \\
-\textbf{Impact} & The web server might respond in unexpected ways to these methods. \\
-\textbf{Likelihood} & High \\
-\textbf{Access Vector} & HTTP request for CONNECT or OPTIONS\\
-\textbf{Access Complexity} & \\
-\textbf{Privileges Required} & None \\
-\textbf{User Interaction} & None \\
-\textbf{Scope} & Unchanged \\
-\textbf{Confidentiality} & \\
-\textbf{Intigrity} & \\
-\textbf{Availability} & \\
+\textbf{Impact} & The web server might respond in unexpected ways to these methods and might execute scripts without privilege control when using HEAD instead of GET. \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
 \end{tabular}
 
 \subsubsection*{SecureBank}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & When trying all HTTP methods, CONNECT returns "Bad Request", while OPTIONS returns "OK". Otherwise, all methods except GET and POST are not allowed\\
+\textbf{Observation} & When trying all HTTP methods, CONNECT returns "Bad Request", while OPTIONS returns "OK". Otherwise, all methods except GET, HEAD and POST are not allowed\\
 \textbf{Discovery} & script http\_tampering.sh in phase2/scripts/ (from OWASP website)\\
-\textbf{Impact} & The web server might respond in unexpected ways to these methods.\\
-\textbf{Likelihood} & \\
-\textbf{Access Vector} & \\
-\textbf{Access Complexity} & \\
-\textbf{Privileges Required} & \\
-\textbf{User Interaction} & \\
-\textbf{Scope} & Unchanged \\
-\textbf{Confidentiality} & \\
-\textbf{Intigrity} & \\
-\textbf{Availability} & \\
+\textbf{Impact} & The web server might respond in unexpected ways to these methods and might execute scripts without privilege control when using HEAD instead of GET. \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
 \end{tabular}
 
 \subsection{Testing for HTTP Parameter pollution}

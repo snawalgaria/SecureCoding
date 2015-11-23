@@ -606,9 +606,63 @@ We could not find an alternative channel for authentication. Therefore, we decid
 \section{Authorization Testing}
 
 \subsection{Testing Directory traversal/file include}
-TODO!
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We could not get access to sensitive files like \texttt{/etc/passwd}. \\
+\textbf{Discovery} & We manually tried to access the client main site with different values for the parameter \texttt{action}, like \texttt{action=../../../etc/passwd}. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We could not get access to sensitive files like \texttt{/etc/passwd}. \\
+\textbf{Discovery} & We manually tried to access the site with different values for the parameter \texttt{page}, like \texttt{page=../../../etc/passwd}. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications do not provide file include vulnerabilities.
+
+\clearpage
 \subsection{Testing for bypassing authorization schema}
-TODO!
+
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We were unable to bypass the authorization schema \\
+\textbf{Discovery} & We manually tried to access the employee page while being logged in as a client and got the error message \texttt{Not employee}. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} &  We were unable to bypass the authorization schema \\
+\textbf{Discovery} & We manually tried to access the employee pages like \texttt{edoverify} while being logged in as a client and got the error message \texttt{You are not authenticated to do this}. \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications do not provide vulnerabilities that allow to bypass the authorization schema.
+
+\clearpage
+
 \subsection{Testing for Privilege Escalation}
 TODO!
 \subsection{Testing for Insecure Direct Object References}

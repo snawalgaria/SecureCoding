@@ -629,9 +629,9 @@ TODO!
 \subsubsection*{Online Banking}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. \\
+\textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
 \textbf{Discovery} & BurpSuite \\
-\textbf{Impact} & By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
+\textbf{Impact} &Medium/High, depending on the victim's priviledges \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -646,9 +646,9 @@ TODO!
 \subsubsection*{SecureBank}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. \\
+\textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
 \textbf{Discovery} & BurpSuite \\
-\textbf{Impact} & By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
+\textbf{Impact} &Medium/High, depending on the victim's priviledges \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -662,6 +662,8 @@ TODO!
 
 \subsubsection*{Comparison}
 Both applications are equally secure/insecure regarding this.
+
+\clearpage
 
 
 \subsection{Testing for Cookies attributes}
@@ -689,15 +691,17 @@ Both applications are equally secure/insecure regarding this.
 \subsubsection*{Comparison}
 Both applications have no attributes other than the Session ID and are thus secure under this aspect.
 
+\clearpage
+
 
 \subsection{Testing for Session Fixation}
 
 \subsubsection*{Online Banking}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & Cookies aren't renewed when logging in. \\
+\textbf{Observation} & Cookies aren't renewed when logging in. An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
 \textbf{Discovery} & Firefox Developer tools \\
-\textbf{Impact} & An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
+\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
 \textbf{Likelihood} & Medium \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -712,9 +716,9 @@ Both applications have no attributes other than the Session ID and are thus secu
 \subsubsection*{SecureBank}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & Cookies aren't renewed when logging in. \\
+\textbf{Observation} & Cookies aren't renewed when logging in. An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
 \textbf{Discovery} & Firefox Developer tools \\
-\textbf{Impact} & An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
+\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
 \textbf{Likelihood} & Medium \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -727,10 +731,178 @@ Both applications have no attributes other than the Session ID and are thus secu
 \end{tabular}
 
 \subsubsection*{Comparison}
-Both applications have no attributes other than the Session ID and are thus secure under this aspect.
+Both applications have the session fixation vulnerability.
+
+\clearpage
 
 
-TODO!
+\subsection{Testing for Exposed Session Variables}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & The cookies are sent over an unencrypted connection. Cookies also aren't renewed when logging in. By using MitM to steal the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
+\textbf{Discovery} & BurpSuite \\
+\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Adjacent Network \\
+\textbf{Access Complexity} & Low\\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & Yes, the user has to do any action for which the cookie will be transmitted. \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & High\\
+\textbf{Availability} & None \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & The cookies are sent over an unencrypted connection. Cookies also aren't renewed when logging in. By using MitM to steal the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
+\textbf{Discovery} & BurpSuite \\
+\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Adjacent Network \\
+\textbf{Access Complexity} & Low\\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & Yes, the user has to do any action for which the cookie will be transmitted. \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & High\\
+\textbf{Availability} & None \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications are equally insecure regarding this.
+
+\clearpage
+
+
+\subsection{Testing for Cross Site Request Forgery}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & There is no mechanism to prohibit CSRF. GET requests aren't enough, though, since all of the important data is only transmitted via POST requests. By getting our victim to open a malicious web page, that creates a POST request with JS, we would be able to perform actions in their name. \\
+\textbf{Discovery} & Manual test \\
+\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low\\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & Yes \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & High\\
+\textbf{Availability} & None \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & There is no mechanism to prohibit CSRF. GET requests aren't enough, though, since all of the important data is only transmitted via POST requests. By getting our victim to open a malicious web page, that creates a POST request with JS, we would be able to perform actions in their name. \\
+\textbf{Discovery} & Manual test \\
+\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low\\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & Yes \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & High\\
+\textbf{Availability} & None \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications are equally insecure regarding this.
+
+\clearpage
+
+
+\subsection{Testing for logout functionality}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & The logout button is easily visible and works as it should: It invalidates the session. \\
+\textbf{Discovery} & Manual test \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & The logout button is easily visible and works as it should: It invalidates the session. \\
+\textbf{Discovery} & Manual test \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications have a correctly implemented logout function.
+
+\clearpage
+
+
+\subsection{Test Session Timeout}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & The user is automatically logged out after 10 minutes of inactivity. \\
+\textbf{Discovery} & Manual test \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & The user is automatically logged out after TODO minutes of inactivity. \\
+\textbf{Discovery} & Manual test \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications have a correctly implemented logout function.
+
+\clearpage
+
+
+\subsection{Testing for Session puzzling}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We found no way to perform Session Puzzling. The same cookie is used for all interactions. \\
+\textbf{Discovery} & Zap, w3af \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We found no way to perform Session Puzzling. The same cookie is used for all interactions. \\
+\textbf{Discovery} & Zap, w3af \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications aren't vulnerable to Session puzzling.
+
+\clearpage
+
 
 
 
@@ -766,6 +938,9 @@ TODO!
 
 \subsubsection*{Comparison}
 Both applications allowed no reflected XSS.
+
+\clearpage
+
 
 \subsection{Testing for Stored Cross Site Scripting}
 
@@ -807,10 +982,13 @@ Both applications allowed no reflected XSS.
 Both applications allowed for stored XSS, but Online Banking was easier to compromise (no account needed).
 Our application is the better one in this regard.
 
+\clearpage
+
+
 \subsection{Testing for HTTP Verb Tampering}
 
 \subsubsection*{Online Banking}
-TODO
+TODO: what harm does Verb Tampering do?
 
 \begin{tabular}{l|p{10cm}}
 \textbf{Observation} & When trying all HTTP methods, CONNECT returns "Bad Request", while OPTIONS returns "OK". Otherwise, all methods except GET and POST are not allowed\\
@@ -868,6 +1046,9 @@ TODO
 
 \subsubsection*{Comparison}
 Both apps are protected against HTTP parameter pollution.
+
+\clearpage
+
 
 \subsection{Testing for SQL injection}
 \subsubsection*{Online Banking}\label{sql:injection:online}
@@ -932,6 +1113,9 @@ Table trancode: id, clientid
 \subsubsection*{Comparison}
 The Online Banking web application is vulnerable to SQL injection at different places, allowing an attacker to take over user accounts and transfer money without knowing any credentials. In the web application of the SecureBank, we were not able to find SQL injection vulnerabilities.
 
+\clearpage
+
+
 \subsection{Testing for LDAP Injection}
 \subsection{Testing for ORM Injection}
 \subsection{Testing for XML Injection}
@@ -942,6 +1126,9 @@ We did not test any of these injection types as it appears that these techniques
 \subsection{IMAP/SMTP Injection}
 
 We don't want to attack the used mail servers, since they're probably not part of the programming part. And we don't want to go to prison for trying to hack gmail.
+
+\clearpage
+
 
 \subsection{Testing for Code Injection}
 
@@ -968,6 +1155,9 @@ We don't want to attack the used mail servers, since they're probably not part o
 \subsubsection*{Comparison}
 If we count the SQL injection in the uploaded file to the point about SQL injection, both applications perform the same.
 
+\clearpage
+
+
 \subsection{Testing for Command Injection}
 
 \subsubsection*{Online Banking}
@@ -993,42 +1183,6 @@ If we count the SQL injection in the uploaded file to the point about SQL inject
 \subsubsection*{Comparison}
 Both applications allow no command injections (to the OS).
 
-\clearpage
-
-\subsection{Testing for Buffer overflow}
-\subsubsection*{Online Banking}
-
-\begin{tabular}{l|p{10cm}}
-
-\textbf{Observation} & We were able to induce a buffer overflow by putting a string of $258$ \texttt{a}s into the TAN purpose field of the uploaded transaction batch file, although we could not identify whether this a stack or a heap buffer overflow. We were not able to cause a buffer overflow by using formatting characters. \\
-\textbf{Discovery} & Using the fuzzer of ZAP, we used the \texttt{jbrofuzz / Buffer Overflows / Long string's of a's} fuzzing base on the transaction purpose field of the uploaded transaction batch file. For string smaller with a length smaller than 255 bytes, the transaction gets executed, and for very large strings, the application claims that the file is too large. However, in the other cases, the application gives no feedback, as described in Section \ref{sql:injection:online}. We also tried to cause buffer overflows caused by string format function by including strings like \texttt{\%s} into the username or transaction purpose field. \\
-\textbf{Impact} & TODO! \\
-\textbf{Likelihood} & Medium \\
-\textbf{Access Vector} & Network \\
-\textbf{Access Complexity} & Low \\
-\textbf{Privileges Required} & Low \\
-\textbf{User Interaction} & None \\
-\textbf{Scope} & Unchanged \\
-\textbf{Confidentiality} & No Impact \\
-\textbf{Intigrity} & No Impact \\
-\textbf{Availability} & Low \\
-\end{tabular}
-
-\subsubsection*{SecureBank}
-
-\begin{tabular}{l|p{10cm}}
-
-\textbf{Observation} & We were unable to produce a buffer overflow. \\
-\textbf{Discovery} & We tried to use long strings of \texttt{a}s on the username and the description field of the uploaded transaction batch file. However, the file was either rejected with the comment that it does not satisfy the specifications or the transaction was executed. We also tried to cause buffer overflows caused by string format function by including strings like \texttt{\%s} into the username or transaction purpose field. \\
-\textbf{Impact} & n/a \\
-\textbf{Likelihood} & n/a \\
-\textbf{CVSS} & n/a \\
-\end{tabular}
-
-\subsection{Testing for incubated vulnerabilities}
-TODO!
-
-\subsection{Testing for HTTP Splitting/Smuggling}
 TODO!
 
 \clearpage
@@ -1124,14 +1278,102 @@ We were not able to produce stack traces in both applications using invalid inpu
 \subsubsection*{Comparison}
 Both applications transport sensitive information about non-encrypted channels.
 
+\clearpage
+
+
 \subsection{Testing for Padding Oracle}
 As there is no transport layer encryption in any of the two applications, we decided to not test for a padding oracle.
 
 \subsection{Testing for Sensitive information sent via unencrypted channels}
 All information is sent via an unencrypted channel. See Section \ref{subsec:encryption}
 
+\clearpage
+
+
+
+
+
+
+
+
+
+
+
+
 \section{Business Logic Testing}
+
+
+\subsection{Test Business Logic Data Validation}
+\subsubsection*{Online Banking}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & When creating transactions, it's possible to enter negative amounts, which results in gaining money at the "recipient's" cost. \\
+\textbf{Discovery} & Manual testing \\
+\textbf{Impact} & Medium \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & Low \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & No Impact \\
+\textbf{Intigrity} & Low \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We found no ways to make unreasonable requests, like negative money transactions. \\
+\textbf{Discovery} & Manual testing \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+The Online Banking fails here, where our application correctly validates business data.
+
+\clearpage
+
+
+\subsection{Test Ability to Forge Requests}
+\subsubsection*{Online Banking}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & None of the forms have hidden input fields that save critical information. Editing a user as admin, e.g. has a hidden user ID field. But since admins are allowed to change any user's values, that's no vulnerability. \\
+\textbf{Discovery} & Firefox dev tools \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & There's a hidden input field in the file upload form to limit the file size. But if we go around this by uploading by forging the request and increasing this value, we're still unable to upload files with a size of more than 3000. \\
+\textbf{Discovery} & Firefox dev tools, manual \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications are securd against forged requests.
+
+\clearpage
+
 TODO!
+
+
+
+
+
+
+
+
+
+
 
 \section{Client Side Testing}
 TODO!

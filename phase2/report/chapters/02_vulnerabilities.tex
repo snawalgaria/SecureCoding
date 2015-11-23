@@ -21,6 +21,15 @@ With stored cross site scripting attacks it is possible to inject JavaScript cod
 
 It is possible to get money from another client of the bank by filling in a negative number in the amount field of a transaction batch file. Therefore, one client can generate an infinite amount of money, while reducing the amount of money of other clients.
 
+\subsection{SQL injection in login form}
+\begin{itemize}
+	\item Likelihood: high
+	\item Implication: high
+	\item Risk: high
+\end{itemize}
+
+The application is vulnerable to SQL injections in the login form. It is possible to login as a user while only knowing its name.
+
 \subsection{SQL injection in transaction batch file}
 \begin{itemize}
 	\item Likelihood: medium
@@ -30,14 +39,23 @@ It is possible to get money from another client of the bank by filling in a nega
 
 The application is vulnerable to SQL injections in the transaction batch files. Therefore, it is possible to perform transactions while using any unused TAN in the system, which is not known to the attacker and might come from another client.
 
-\subsection{Some critical vulnerability}
+\subsection{Missing lock out mechanism}
+\begin{itemize}
+	\item Likelihood: high
+	\item Implication: medium
+	\item Risk: medium
+\end{itemize}
+
+The application does not provide a lock out mechanism, allowing an attacker to brute-force for the password of a known username.
+
+\subsection{Missing transport layer security}
 \begin{itemize}
 	\item Likelihood: high
 	\item Implication: high
 	\item Risk: high
 \end{itemize}
 
-The web application is vulnerable.
+The application does not communicate over a TLS/SSL encrypted channel. This allows Man-in-the-Middle attacks, allowing to take over the session of a user.
 
 \section{SecureBank}
 
@@ -49,3 +67,22 @@ The web application is vulnerable.
 \end{itemize}
 
 With stored cross site scripting attacks it is possible to inject JavaScript code, which is run whenever an employee logs in and opens the list of unapproved accounts or transactions. It is also possible to inject script from other sites.
+
+\subsection{Missing lock out mechanism}
+\begin{itemize}
+	\item Likelihood: high
+	\item Implication: medium
+	\item Risk: medium
+\end{itemize}
+
+The application does not provide a lock out mechanism, allowing an attacker to brute-force for the password of a known username.
+
+\subsection{Missing transport layer security}
+\begin{itemize}
+	\item Likelihood: high
+	\item Implication: high
+	\item Risk: high
+\end{itemize}
+
+The application does not communicate over a TLS/SSL encrypted channel. This allows Man-in-the-Middle attacks, allowing to take over the session of a user.
+

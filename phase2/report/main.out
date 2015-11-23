@@ -73,4 +73,10 @@
 \BOOKMARK [1][-]{section.4.9}{Business Logic Testing}{chapter.4}% 73
 \BOOKMARK [2][-]{subsection.4.9.1}{Test Business Logic Data Validation}{section.4.9}% 74
 \BOOKMARK [2][-]{subsection.4.9.2}{Test Ability to Forge Requests}{section.4.9}% 75
-\BOOKMARK [1][-]{section.4.10}{Client Side Testing}{chapter.4}% 76
+\BOOKMARK [2][-]{subsection.4.9.3}{Test Integrity Checks}{section.4.9}% 76
+\BOOKMARK [2][-]{subsection.4.9.4}{Test for Process Timing}{section.4.9}% 77
+\BOOKMARK [2][-]{subsection.4.9.5}{Test Number of Times a Function Can be Used Limits}{section.4.9}% 78
+\BOOKMARK [2][-]{subsection.4.9.6}{Testing for the Circumvention of Work Flows}{section.4.9}% 79
+\BOOKMARK [2][-]{subsection.4.9.7}{Test Defenses Against Application Mis-use}{section.4.9}% 80
+\BOOKMARK [2][-]{subsection.4.9.8}{Test Upload of Unexpected File Types}{section.4.9}% 81
+\BOOKMARK [1][-]{section.4.10}{Client Side Testing}{chapter.4}% 82

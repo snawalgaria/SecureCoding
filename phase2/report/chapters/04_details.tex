@@ -1363,6 +1363,112 @@ Both applications are securd against forged requests.
 
 \clearpage
 
+
+\subsection{Test Integrity Checks}
+\subsubsection*{Online Banking}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & No vulnerability found. \\
+\textbf{Discovery} & ZAP \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & No vulnerability found. \\
+\textbf{Discovery} & ZAP \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications have sufficient integrity checks.
+
+\clearpage
+
+
+\subsection{Test for Process Timing}
+\subsubsection*{Both}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & Apart from blind SQL, this is not applicable, since all actions are done in atomic steps, without locking. \\
+\textbf{Discovery} & n/a \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\clearpage
+
+
+\subsection{Test Number of Times a Function Can be Used Limits}
+\subsubsection*{Both}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & There's no benefit for the users when using functions more often. Thus this isn't applicable for either of the apps. \\
+\textbf{Discovery} & n/a \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\clearpage
+
+
+\subsection{Testing for the Circumvention of Work Flows}
+\subsubsection*{Both}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & All actions in both apps are atomic, so this doesn't apply. \\
+\textbf{Discovery} & n/a \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\clearpage
+
+
+\subsection{Test Defenses Against Application Mis-use}
+\subsubsection*{Both}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & Defenses Against Application Mis-use aren't part of either of the applications. When sending many malicious requests at once, due to testing, neither of the applications tried to stop us. The same holds true for any attacker who wants to check the apps for vulnerabilities. \\
+\textbf{Discovery} & ZAP, W3AF \\
+\textbf{Impact} & Low \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Network \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & None \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & Low \\
+\textbf{Intigrity} & None \\
+\textbf{Availability} & Low \\
+\end{tabular}
+
+\clearpage
+
+
+\subsection{Test Upload of Unexpected File Types}
+\subsubsection*{Both}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & While it's technically possible to upload files for transactions, these files aren't stored (or at least we couldn't find them), so this vulnerability is not applicable. \\
+\textbf{Discovery} & w3af, Zap \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\clearpage
+
+
+
 TODO!
 
 

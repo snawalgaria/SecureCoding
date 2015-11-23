@@ -738,7 +738,7 @@ Both applications do not provide vulnerabilities that allow insecure direct obje
 \begin{tabular}{l|p{10cm}}
 \textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
 \textbf{Discovery} & BurpSuite \\
-\textbf{Impact} &Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} &Medium/High, depending on the victim's privileges \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -755,7 +755,7 @@ Both applications do not provide vulnerabilities that allow insecure direct obje
 \begin{tabular}{l|p{10cm}}
 \textbf{Observation} & Only cookies for the PHP session ID were used. This hints at the cookies being rather secure. Using BurpSuite's sequencer we confirm that the entropy is excellent. However, the cookies are sent over an unencrypted connection, which can be exploited with a MitM attack. By stealing the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
 \textbf{Discovery} & BurpSuite \\
-\textbf{Impact} &Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} &Medium/High, depending on the victim's privileges \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -808,7 +808,7 @@ Both applications have no attributes other than the Session ID and are thus secu
 \begin{tabular}{l|p{10cm}}
 \textbf{Observation} & Cookies aren't renewed when logging in. An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
 \textbf{Discovery} & Firefox Developer tools \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges \\
 \textbf{Likelihood} & Medium \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -825,7 +825,7 @@ Both applications have no attributes other than the Session ID and are thus secu
 \begin{tabular}{l|p{10cm}}
 \textbf{Observation} & Cookies aren't renewed when logging in. An attacker might create a session and make the user authenticate with it, thus giving the attacker access to the victim's session. \\
 \textbf{Discovery} & Firefox Developer tools \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges \\
 \textbf{Likelihood} & Medium \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -850,7 +850,7 @@ Both applications have the session fixation vulnerability.
 \begin{tabular}{l|p{10cm}}
 \textbf{Observation} & The cookies are sent over an unencrypted connection. Cookies also aren't renewed when logging in. By using MitM to steal the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
 \textbf{Discovery} & BurpSuite \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -867,7 +867,7 @@ Both applications have the session fixation vulnerability.
 \begin{tabular}{l|p{10cm}}
 \textbf{Observation} & The cookies are sent over an unencrypted connection. Cookies also aren't renewed when logging in. By using MitM to steal the session from a user (admin or not), we would be able to impersonate them and do actions in their name. This compromises the integrity of the application. \\
 \textbf{Discovery} & BurpSuite \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Adjacent Network \\
 \textbf{Access Complexity} & Low\\
@@ -892,7 +892,7 @@ Both applications are equally insecure regarding this.
 \begin{tabular}{l|p{10cm}}
 \textbf{Observation} & There is no mechanism to prohibit CSRF. GET requests aren't enough, though, since all of the important data is only transmitted via POST requests. By getting our victim to open a malicious web page, that creates a POST request with JS, we would be able to perform actions in their name. \\
 \textbf{Discovery} & Manual test \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low\\
@@ -909,7 +909,7 @@ Both applications are equally insecure regarding this.
 \begin{tabular}{l|p{10cm}}
 \textbf{Observation} & There is no mechanism to prohibit CSRF. GET requests aren't enough, though, since all of the important data is only transmitted via POST requests. By getting our victim to open a malicious web page, that creates a POST request with JS, we would be able to perform actions in their name. \\
 \textbf{Discovery} & Manual test \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low\\
@@ -962,7 +962,7 @@ Both applications have a correctly implemented logout function.
 \begin{tabular}{l|p{10cm}}
 \textbf{Observation} & The user isn't logged out automatically. \\
 \textbf{Discovery} & Manual test \\
-\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Impact} & Medium/High, depending on the victim's privileges \\
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Physical access to the machine that the victim used \\
 \textbf{Access Complexity} & Low \\
@@ -1067,7 +1067,7 @@ Both applications allowed no reflected XSS.
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low\\
-\textbf{Privileges Required} & N/L: None for the registration XSS, Low user priviledges for XSS in transactions\\
+\textbf{Privileges Required} & N/L: None for the registration XSS, Low user privileges for XSS in transactions\\
 \textbf{User Interaction} & Yes \\
 \textbf{Scope} & Unchanged \\
 \textbf{Confidentiality} & High \\
@@ -1084,7 +1084,7 @@ Both applications allowed no reflected XSS.
 \textbf{Likelihood} & High \\
 \textbf{Access Vector} & Network \\
 \textbf{Access Complexity} & Low\\
-\textbf{Privileges Required} & normal user priviledges \\
+\textbf{Privileges Required} & normal user privileges \\
 \textbf{User Interaction} & Yes\\
 \textbf{Scope} & Unchanged \\
 \textbf{Confidentiality} & High\\

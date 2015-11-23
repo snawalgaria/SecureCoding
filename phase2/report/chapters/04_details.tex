@@ -960,11 +960,18 @@ Both applications have a correctly implemented logout function.
 \subsubsection*{Online Banking}
 
 \begin{tabular}{l|p{10cm}}
-\textbf{Observation} & The user is automatically logged out after 10 minutes of inactivity. TODO: Is he? \\
+\textbf{Observation} & The user isn't logged out automatically. \\
 \textbf{Discovery} & Manual test \\
-\textbf{Impact} & n/a \\
-\textbf{Likelihood} & n/a \\
-\textbf{CVSS} & n/a \\
+\textbf{Impact} & Medium/High, depending on the victim's priviledges \\
+\textbf{Likelihood} & High \\
+\textbf{Access Vector} & Physical access to the machine that the victim used \\
+\textbf{Access Complexity} & Low \\
+\textbf{Privileges Required} & None \\
+\textbf{User Interaction} & Yes \\
+\textbf{Scope} & Unchanged \\
+\textbf{Confidentiality} & High \\
+\textbf{Intigrity} & High\\
+\textbf{Availability} & None \\
 \end{tabular}
 
 \subsubsection*{SecureBank}
@@ -978,7 +985,7 @@ Both applications have a correctly implemented logout function.
 \end{tabular}
 
 \subsubsection*{Comparison}
-Both applications have a correctly implemented logout function.
+SecureBank is a lot more secure in this regard.
 
 \clearpage
 
@@ -1261,6 +1268,33 @@ We don't want to attack the used mail servers, since they're probably not part o
 
 \subsubsection*{Comparison}
 If we count the SQL injection in the uploaded file to the point about SQL injection, both applications perform the same.
+
+\clearpage
+
+\subsection{Testing for Local/Remote File Inclusion}
+
+\subsubsection*{Online Banking}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & No paths are supplied through any of the GET or POST requests, so the application is secure. \\
+\textbf{Discovery} & Tested the action parameter in the GET requests. Our tools found no File Inclusion points either.\\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{SecureBank}
+
+\begin{tabular}{l|p{10cm}}
+\textbf{Observation} & No paths are supplied through any of the GET or POST requests, so the application is secure. \\
+\textbf{Discovery} & Tested the action parameter in the GET requests. Our tools found no File Inclusion points either.\\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications are equally secure regarding Local/Remote File Inclusion.
 
 \clearpage
 
@@ -1626,24 +1660,57 @@ Both applications have sufficient integrity checks.
 
 
 \subsection{Test Upload of Unexpected File Types}
-\subsubsection*{Both}
+\subsubsection*{Online Banking}
 \begin{tabular}{l|p{10cm}}
 
-\textbf{Observation} & While it's technically possible to upload files for transactions, these files aren't stored (or at least we couldn't find them), so this vulnerability is not applicable. \\
+\textbf{Observation} & While it's technically possible to upload files for transactions, these files aren't stored permanently (or at least we couldn't find them), so this vulnerability is not applicable. Online Banking also ensures that only .txt files can be uploaded. \\
 \textbf{Discovery} & w3af, Zap \\
 \textbf{Impact} & n/a \\
 \textbf{Likelihood} & n/a \\
 \textbf{CVSS} & n/a \\
 \end{tabular}
 
+\subsubsection*{SecureBank}
+\begin{tabular}{l|p{10cm}}
+
+\textbf{Observation} & While it's technically possible to upload files for transactions, these files aren't stored permanently (or at least we couldn't find them), so this vulnerability is not applicable. \\
+\textbf{Discovery} & w3af, Zap \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
+
+\subsubsection*{Comparison}
+Both applications seem secure, but Online Banking goes one step further and therefore wins in this regard.
+
 \clearpage
 
 
+\subsection{Test Upload of Malicious Files}
+\subsubsection*{Online Banking}
+\begin{tabular}{l|p{10cm}}
 
-TODO!
+\textbf{Observation} & Only .txt files are allowed. If they then don't conform to the format for uploading transactions, we get the error message "Invalid format". Since transaction files probably also aren't stored permanently, we consider Online Banking to be secure. \\
+\textbf{Discovery} & Uploaded eicar.com.txt (http://www.eicar.org/85-0-Download.html) \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
 
+\subsubsection*{SecureBank}
+\begin{tabular}{l|p{10cm}}
 
+\textbf{Observation} & If uploaded files don't conform to the format for uploading transactions, we get an empty page, just like when the file isn't in the right transaction format. This could hint at a vulnerability. However, nothing hints at transaction files being stored anywhere. \\
+\textbf{Discovery} & Uploaded eicar.com (http://www.eicar.org/85-0-Download.html) \\
+\textbf{Impact} & n/a \\
+\textbf{Likelihood} & n/a \\
+\textbf{CVSS} & n/a \\
+\end{tabular}
 
+\subsubsection*{Comparison}
+Both applications seem to reject the uploaded file, but Online Banking makes that clearer, due to its error message. Since the uploaded files are just stored until they're parsed, vulnerability is unlikely.
+
+\clearpage
 
 
 

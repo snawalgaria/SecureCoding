@@ -1686,12 +1686,12 @@ Both applications seem secure, but Online Banking goes one step further and ther
 \clearpage
 
 
-\subsection{Test Upload of Unexpected File Types}
+\subsection{Test Upload of Malicious Files}
 \subsubsection*{Online Banking}
 \begin{tabular}{l|p{10cm}}
 
-\textbf{Observation} & While it's technically possible to upload files for transactions, these files aren't stored permanently (or at least we couldn't find them), so this vulnerability is not applicable. Online Banking also ensures that only .txt files can be uploaded. \\
-\textbf{Discovery} & w3af, Zap \\
+\textbf{Observation} & Only .txt files are allowed. If they then don't conform to the format for uploading transactions, we get the error message "Invalid format". Since transaction files probably also aren't stored permanently, we consider Online Banking to be secure. \\
+\textbf{Discovery} & Uploaded eicar.com.txt (http://www.eicar.org/85-0-Download.html) \\
 \textbf{Impact} & n/a \\
 \textbf{Likelihood} & n/a \\
 \textbf{CVSS} & n/a \\
@@ -1700,20 +1700,17 @@ Both applications seem secure, but Online Banking goes one step further and ther
 \subsubsection*{SecureBank}
 \begin{tabular}{l|p{10cm}}
 
-\textbf{Observation} & While it's technically possible to upload files for transactions, these files aren't stored permanently (or at least we couldn't find them), so this vulnerability is not applicable. \\
-\textbf{Discovery} & w3af, Zap \\
+\textbf{Observation} & If uploaded files don't conform to the format for uploading transactions, we get an empty page, just like when the file isn't in the right transaction format. This could hint at a vulnerability. However, nothing hints at transaction files being stored anywhere. \\
+\textbf{Discovery} & Uploaded eicar.com (http://www.eicar.org/85-0-Download.html) \\
 \textbf{Impact} & n/a \\
 \textbf{Likelihood} & n/a \\
 \textbf{CVSS} & n/a \\
 \end{tabular}
 
 \subsubsection*{Comparison}
-Both applications seem secure, but Online Banking goes one step further and therefore wins in this regard.
+Both applications seem to reject the uploaded file, but Online Banking makes that clearer, due to its error message. Since the uploaded files are just stored until they're parsed, vulnerability is unlikely.
 
 \clearpage
-
-
-
 
 
 
